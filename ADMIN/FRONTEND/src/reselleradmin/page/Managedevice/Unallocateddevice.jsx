@@ -103,7 +103,7 @@ const Unallocateddevice = ({ userInfo, handleLogout }) => {
                                                         <th>Charger Id</th>
                                                         <th>Charger Model</th>
                                                         <th>Charger Type</th>
-                                                        <th>Gun Connector</th>
+                                                        {/* <th>Gun Connector</th> */}
                                                         <th>Max Current</th>
                                                         <th>Status</th>
                                                         <th>Actions</th>

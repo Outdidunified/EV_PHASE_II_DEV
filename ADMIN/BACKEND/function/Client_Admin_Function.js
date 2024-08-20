@@ -493,10 +493,10 @@ async function FetchAllocatedCharger(req) {
         const financeCollection = db.collection("finance_details");
 
         // Fetch the eb_charges from finance_details
-        const financeDetails = await financeCollection.findOne();
-        if (!financeDetails) {
-            throw new Error('No finance details found');
-        }
+        // const financeDetails = await financeCollection.findOne();
+        // if (!financeDetails) {
+        //     throw new Error('No finance details found');
+        // }
 
         // Aggregation to fetch chargers with client names and append unit_price
         const chargersWithClients = await devicesCollection.aggregate([
@@ -517,7 +517,7 @@ async function FetchAllocatedCharger(req) {
             {
                 $addFields: {
                     association_name: '$associationDetails.association_name',
-                    unit_price: financeDetails.eb_charges // Append unit_price to each charger
+                    //unit_price: financeDetails.eb_charges // Append unit_price to each charger
                 }
             },
             {
