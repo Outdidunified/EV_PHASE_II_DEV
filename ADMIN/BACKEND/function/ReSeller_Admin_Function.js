@@ -173,7 +173,7 @@ async function addNewClient(req){
             client_phone_no,
             client_email_id,
             client_address,
-            client_wallet: Double(0.00),
+            client_wallet: 0.00,
             created_by,
             created_date,
             modified_by,
@@ -606,10 +606,10 @@ async function FetchAllocatedCharger(req) {
         const financeCollection = db.collection("finance_details");
 
         // Fetch the eb_charges from finance_details
-        const financeDetails = await financeCollection.findOne();
-        if (!financeDetails) {
-            throw new Error('No finance details found');
-        }
+        // const financeDetails = await financeCollection.findOne();
+        // if (!financeDetails) {
+        //     throw new Error('No finance details found');
+        // }
 
         // Aggregation to fetch chargers with client names and append unit_price
         const chargersWithClients = await devicesCollection.aggregate([
@@ -630,7 +630,7 @@ async function FetchAllocatedCharger(req) {
             {
                 $addFields: {
                     client_name: '$clientDetails.client_name',
-                    unit_price: financeDetails.eb_charges // Append unit_price to each charger
+                    //unit_price: financeDetails.eb_charges // Append unit_price to each charger
                 }
             },
             {
@@ -655,10 +655,10 @@ async function FetchUnAllocatedCharger(req) {
         const financeCollection = db.collection("finance_details");
 
         // Fetch the eb_charges from finance_details
-        const financeDetails = await financeCollection.findOne();
-        if (!financeDetails) {
-            throw new Error('No finance details found');
-        }
+        // const financeDetails = await financeCollection.findOne();
+        // if (!financeDetails) {
+        //     throw new Error('No finance details found');
+        // }
 
         // Fetch chargers that are not allocated to any client
         const chargers = await devicesCollection.find({ assigned_client_id: null, assigned_reseller_id: reseller_id }).toArray();
@@ -666,7 +666,7 @@ async function FetchUnAllocatedCharger(req) {
         // Append unit_price to each charger
         const chargersWithUnitPrice = chargers.map(charger => ({
             ...charger,
-            unit_price: financeDetails.eb_charges
+            //unit_price: financeDetails.eb_charges
         }));
 
         return chargersWithUnitPrice; // Only return data, don't send response

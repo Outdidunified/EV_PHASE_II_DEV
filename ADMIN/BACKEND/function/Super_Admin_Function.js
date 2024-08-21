@@ -572,16 +572,16 @@ async function FetchCharger() {
         const chargers = await devicesCollection.find({ assigned_reseller_id: null }).toArray();
 
         // Fetch the eb_charges from finance_details (assuming there's only one relevant finance document)
-        const financeDetails = await financeCollection.findOne();
+        //const financeDetails = await financeCollection.findOne();
 
-        if (!financeDetails) {
-            throw new Error('No finance details found');
-        }
+        // if (!financeDetails) {
+        //     throw new Error('No finance details found');
+        // }
 
         // Append the eb_charges to each charger
         const chargersWithUnitPrice = chargers.map(charger => ({
             ...charger,
-            unit_price: financeDetails.eb_charges
+            //unit_price: financeDetails.eb_charges
         }));
         return chargersWithUnitPrice; // Return the chargers with appended unit_price
     } catch (error) {
