@@ -113,7 +113,7 @@ void initState() {
 
     try {
       final response = await http.post(
-        Uri.parse('http://122.166.210.142:9098/searchCharger'), // Replace with your actual backend URL
+        Uri.parse('http://122.166.210.142:8052/searchCharger'), // Replace with your actual backend URL
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'searchChargerID': searchChargerID,
@@ -164,7 +164,7 @@ void initState() {
   Future<void> updateConnectorUser(String searchChargerID, int connectorId, int connectorType) async {
     try {
       final response = await http.post(
-        Uri.parse('http://122.166.210.142:9098/updateConnectorUser'), // Replace with your actual backend URL
+        Uri.parse('http://122.166.210.142:8052/updateConnectorUser'), // Replace with your actual backend URL
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'searchChargerID': searchChargerID,
@@ -236,7 +236,7 @@ void initState() {
 
     try {
       final response = await http.post(
-        Uri.parse('http://122.166.210.142:9098/getRecentSessionDetails'),
+        Uri.parse('http://122.166.210.142:8052/getRecentSessionDetails'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'user_id':widget.userId,
@@ -272,16 +272,18 @@ Future<void> fetchAllChargers() async {
 
   try {
     final response = await http.post(
-      Uri.parse('http://122.166.210.142:9098/getAllChargersWithStatusAndPrice'), // Replace with your actual backend URL
+      Uri.parse('http://122.166.210.142:8052/getAllChargersWithStatusAndPrice'), // Replace with your actual backend URL
       headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'user_id':widget.userId,
         }),
       );
-
+      final data = json.decode(response.body);
+      print("dataAll : $data");
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      print("dataAll : $data");
       setState(() {
         availableChargers = data['data'] ?? [];
         activeFilter = 'All Chargers'; // Set active filter
@@ -439,6 +441,19 @@ Future<void> fetchAllChargers() async {
                         ),
                     if (!isLoading && activeFilter == 'All Chargers')
                       for (var charger in availableChargers)
+                      if ( charger['status'] == null )
+                          _buildChargerCard(
+                            context,
+                            charger['charger_id'] ?? 'Unknown ID',
+                            charger['model'] ?? 'Unknown Model',
+                            "Not yet received",
+                            "1.3 Km", // Replace with actual distance if available
+                            charger['unit_price']?.toString() ?? 'Unknown Price',
+                            0,
+                            charger['charger_accessibility']?.toString() ?? 'Unknown',
+                          ),
+                          for (var charger in availableChargers)
+                      if ( charger['status'] != null )
                         for (var status in charger['status'] ?? [])
                           _buildChargerCard(
                             context,
