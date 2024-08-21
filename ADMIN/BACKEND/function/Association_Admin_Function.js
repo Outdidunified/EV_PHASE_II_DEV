@@ -402,11 +402,16 @@ async function DeActivateUser(req, res, next) {
 async function FetchAllocatedChargerByClientToAssociation(req) {
     try {
         const { association_id } = req.body;
+
+        if (!association_id) {
+            throw new Error('Association ID is required');
+        }
+
         const db = await database.connectToDatabase();
         const devicesCollection = db.collection("charger_details");
         const financeCollection = db.collection("finance_details");
 
-        // Fetch the eb_charges from finance_details
+        // Fetch the finance details
         const financeDetails = await financeCollection.findOne();
         if (!financeDetails) {
             throw new Error('No finance details found');
@@ -415,18 +420,34 @@ async function FetchAllocatedChargerByClientToAssociation(req) {
         // Fetch chargers assigned to the specified association_id
         const chargers = await devicesCollection.find({ assigned_association_id: association_id }).toArray();
 
+        // Calculate total price per unit if finance details are present
+        const totalPercentage = [
+            financeDetails.app_charges,
+            financeDetails.other_charges,
+            financeDetails.parking_charges,
+            financeDetails.rent_charges,
+            financeDetails.open_a_eb_charges,
+            financeDetails.open_other_charges
+        ].reduce((sum, charge) => sum + parseFloat(charge || 0), 0);
+
+        const pricePerUnit = parseFloat(financeDetails.eb_charges || 0);
+        const totalPrice = pricePerUnit + (pricePerUnit * totalPercentage / 100);
+
+        const total_price = totalPrice.toFixed(2); // Format total price to 2 decimal places
+
         // Append unit_price to each charger
         const chargersWithUnitPrice = chargers.map(charger => ({
             ...charger,
-            unit_price: financeDetails.eb_charges
+            unit_price: total_price
         }));
 
-        return chargersWithUnitPrice; // Only return data, don't send response
+        return chargersWithUnitPrice; // Return the chargers with the unit price included
     } catch (error) {
-        console.error(`Error fetching chargers: ${error}`);
+        console.error(`Error fetching chargers: ${error.message}`);
         throw new Error('Failed to fetch chargers');
     }
 }
+
 
 //UpdateDevice 
 async function UpdateDevice(req, res, next) {
@@ -608,7 +629,6 @@ async function AddUserToAssociation(req, res) {
             { email_id: email_id },
             {
                 $set: {
-                    association_id: parseInt(association_id),
                     assigned_association: parseInt(association_id),
                     modified_date: new Date(),
                     modified_by: modified_by
@@ -646,7 +666,7 @@ async function FetchUsersWithSpecificRolesToUnAssgin(req, res) {
             {
                 $match: {
                     role_id: { $nin: [1, 2, 3, 4] },
-                    association_id: association_id
+                    assigned_association: association_id
                 }
             },
             {
@@ -705,7 +725,7 @@ async function RemoveUserFromAssociation(req, res) {
             { user_id: user_id },
             {
                 $set: {
-                    association_id: null,
+                    assigned_association: null,
                     modified_date: new Date(),
                     modified_by: modified_by
                 }
