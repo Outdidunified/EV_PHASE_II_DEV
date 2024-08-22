@@ -25,8 +25,8 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
 
     // Edit manage device
     const [charger_id, setChargerID] = useState(dataItem?.charger_id || '');
-    const [charger_model, setModel] = useState(dataItem?.model || '');
-    const [charger_type, setType] = useState(dataItem?.type || '');
+    const [charger_model, setModel] = useState(dataItem?.charger_model || '');
+    const [charger_type, setType] = useState(dataItem?.charger_type || '');
     const [vendor, setVendor] = useState(dataItem?.vendor || '');
     const [max_current, setMaxCurrent] = useState(dataItem?.max_current || '');
     const [max_power, setMaxPower] = useState(dataItem?.max_power || '');
@@ -37,7 +37,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
         charger_id: dataItem?.charger_id || '',
         tag_id: dataItem?.tag_id || '',
         charger_model: dataItem?.charger_model || '',
-        type: dataItem?.type || '',
+        type: dataItem?.charger_type || '',
         vendor: dataItem?.vendor || '',
         max_current: dataItem?.max_current || '',
         max_power: dataItem?.max_power || '',
