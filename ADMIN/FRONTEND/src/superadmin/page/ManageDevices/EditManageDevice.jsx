@@ -240,7 +240,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                                 if (value < 1) {
                                                                                     value = '';
                                                                                 } else if (value > 32) {
-                                                                                    setErrorMessageCurrent('Max Current limit is 1 to 32');
+                                                                                    setErrorMessageCurrent('Max Current must be between 1 and 32');
 
                                                                                     value = '32';
                                                                                 }
@@ -268,16 +268,16 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                             // Ensure the value is within the specified range
                                                                             if (value < 1) {
                                                                                 value = '';
-                                                                            } else if (value > 200) {
-                                                                                setErrorMessagePower('Max Power limit is 1 to 200');
-                                                                                value = '200';
+                                                                            } else if (value > 22000) {
+                                                                                setErrorMessagePower('Max Power must be between 1 and 22,000');
+                                                                                value = '22000';
                                                                             }
                                                                             
                                                                             // Update the state with the sanitized and restricted value
                                                                             setMaxPower(value);
                                                                         }} 
                                                                          required/> 
-                                                                                                                                                  {errorMessagePower && <div className="text-danger">{errorMessagePower}</div>}
+                                                                        {errorMessagePower && <div className="text-danger">{errorMessagePower}</div>}
 
                                                                     </div>
                                                                 </div>
