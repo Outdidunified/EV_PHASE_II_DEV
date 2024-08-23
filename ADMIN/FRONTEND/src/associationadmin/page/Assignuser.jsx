@@ -229,6 +229,7 @@ const Assignuser = ({ userInfo, handleLogout }) => {
                             <th>Email ID</th>
                             <th>Phone</th>
                             <th>Status</th>
+                            <th>Tag ID</th>
                             <th>Assign Tag ID</th>
                             <th>Option</th>
                           </tr>
@@ -252,6 +253,7 @@ const Assignuser = ({ userInfo, handleLogout }) => {
                                   <td>{dataItem.email_id ? dataItem.email_id : '-'}</td>
                                   <td>{dataItem.phone_no ? dataItem.phone_no : '-'}</td>
                                   <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
+                                  <td>{dataItem.tag_id ? dataItem.tag_id : '-'}</td>
                                   <td>
                                     <button type="button" className="btn btn-warning" onClick={() => handleViewAssignTagID(dataItem)} style={{marginBottom:'10px'}}>Assign</button><br/>
                                   </td>  
