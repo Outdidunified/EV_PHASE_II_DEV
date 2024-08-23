@@ -128,69 +128,69 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                     <div className="row col-12 col-xl-12">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Charger ID: <span style={{fontWeight:'normal'}}>{newUser.charger_id ? newUser.charger_id : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Charger ID: <span style={{fontWeight:'normal'}}>{newUser.charger_id ? newUser.charger_id : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Charger Model: <span style={{fontWeight:'normal'}}>{newUser.charger_model ? newUser.charger_model +'KW': '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Charger Model: <span style={{fontWeight:'normal'}}>{newUser.charger_model ? newUser.charger_model +'KW': '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Charger Type: <span style={{fontWeight:'normal'}}>{newUser.charger_type ? newUser.charger_type : '-'}</span></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="row col-12 col-xl-12">
-                                                        <div className="col-md-4">
-                                                            <div className="form-group row">
-                                                                <div className="col-sm-12">Model: <span style={{fontWeight:'normal'}}>{newUser.model ?  newUser.model : '-'}</span></div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="form-group row">
-                                                                <div className="col-sm-12">Type: <span style={{ fontWeight: 'normal' }}>{newUser.type ?  newUser.type : '-'}</span></div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="form-group row">
-                                                                <div className="col-sm-12">Vendor: <span style={{fontWeight:'normal'}}>{newUser.vendor ?  newUser.vendor : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Charger Type: <span style={{fontWeight:'normal'}}>{newUser.charger_type ? newUser.charger_type : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="row col-12 col-xl-12">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Gun Connector: <span style={{ fontWeight: 'normal' }}>{newUser.gun_connector === 1 ? 'Single phase' : newUser.gun_connector === 2 ? 'CSS Type 2' : newUser.gun_connector === 3 ? '3 phase socket' : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Model: <span style={{fontWeight:'normal'}}>{newUser.model ?  newUser.model : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Max Current: <span style={{fontWeight:'normal'}}>{newUser.max_current ?  newUser.max_current : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Type: <span style={{ fontWeight: 'normal' }}>{newUser.type ?  newUser.type : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Max Power: <span style={{fontWeight:'normal'}}>{newUser.max_power ? newUser.max_power : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Vendor: <span style={{fontWeight:'normal'}}>{newUser.vendor ?  newUser.vendor : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="row col-12 col-xl-12">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Socket Count: <span style={{fontWeight:'normal'}}>{newUser.socket_count === 1 ? '1 Socket ' : newUser.socket_count === 2 ? '2 Sockets' : newUser.socket_count === 3 ? '3 Sockets' : newUser.socket_count === 4 ? '4 Sockets' : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Gun Connector: <span style={{ fontWeight: 'normal' }}>{newUser.gun_connector === 1 ? 'Single phase' : newUser.gun_connector === 2 ? 'CSS Type 2' : newUser.gun_connector === 3 ? '3 phase socket' : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Current or Active User: <span style={{fontWeight:'normal'}}>{newUser.current_active_user ?  newUser.current_active_user : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Max Current: <span style={{fontWeight:'normal'}}>{newUser.max_current ?  newUser.max_current : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12 card-title">Max Power: <span style={{fontWeight:'normal'}}>{newUser.max_power ? newUser.max_power : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12 card-title">Socket Count: <span style={{fontWeight:'normal'}}>{newUser.socket_count === 1 ? '1 Socket ' : newUser.socket_count === 2 ? '2 Sockets' : newUser.socket_count === 3 ? '3 Sockets' : newUser.socket_count === 4 ? '4 Sockets' : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12 card-title">Current or Active User: <span style={{fontWeight:'normal'}}>{newUser.current_active_user ?  newUser.current_active_user : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Reseller Commission: <span style={{fontWeight:'normal'}}>{newUser.reseller_commission ? newUser.reseller_commission : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Reseller Commission: <span style={{fontWeight:'normal'}}>{newUser.reseller_commission ? newUser.reseller_commission : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         </div>
@@ -199,17 +199,17 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
 
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Client Commission: <span style={{fontWeight:'normal'}}>{newUser.client_commission ? newUser.client_commission : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Client Commission: <span style={{fontWeight:'normal'}}>{newUser.client_commission ? newUser.client_commission : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">IP: <span style={{fontWeight:'normal'}}>{newUser.ip ? newUser.ip : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">IP: <span style={{fontWeight:'normal'}}>{newUser.ip ? newUser.ip : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Latitude: <span style={{fontWeight:'normal'}}>{newUser.lat ? newUser.lat : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Latitude: <span style={{fontWeight:'normal'}}>{newUser.lat ? newUser.lat : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         </div>
@@ -217,39 +217,39 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row col-12 col-xl-12">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Longitude: <span style={{fontWeight:'normal'}}>{newUser.long ? newUser.long : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Longitude: <span style={{fontWeight:'normal'}}>{newUser.long ? newUser.long : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Short Description: <span style={{fontWeight:'normal'}}>{newUser.short_description ? newUser.short_description : '-'}</span></div>   
+                                                                <div className="col-sm-12 card-title">Short Description: <span style={{fontWeight:'normal'}}>{newUser.short_description ? newUser.short_description : '-'}</span></div>   
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Wifi Username: <span style={{fontWeight:'normal'}}>{newUser.wifi_username ? newUser.wifi_username : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Wifi Username: <span style={{fontWeight:'normal'}}>{newUser.wifi_username ? newUser.wifi_username : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="row col-12 col-xl-12">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Charger Accessibility: <span style={{fontWeight:'normal'}}>{newUser.charger_accessibility ? newUser.charger_accessibility : '-'}</span></div>  
+                                                                <div className="col-sm-12 card-title">Charger Accessibility: <span style={{fontWeight:'normal'}}>{newUser.charger_accessibility ? newUser.charger_accessibility : '-'}</span></div>  
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Unit Price: <span style={{fontWeight:'normal'}}>{newUser.unit_price ? newUser.unit_price : '-'}</span></div> 
+                                                                <div className="col-sm-12 card-title">Unit Price: <span style={{fontWeight:'normal'}}>{newUser.unit_price ? newUser.unit_price : '-'}</span></div> 
                                                             </div>
                                                         </div>
                                                        {/* <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Assigned User: <span style={{fontWeight:'normal'}}>{newUser.assigned_user ? newUser.assigned_user : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Assigned User: <span style={{fontWeight:'normal'}}>{newUser.assigned_user ? newUser.assigned_user : '-'}</span></div>
                                                             </div>
                                                         </div> */}
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Wifi Password: <span style={{fontWeight:'normal'}}>{newUser.wifi_password ? newUser.wifi_password : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Wifi Password: <span style={{fontWeight:'normal'}}>{newUser.wifi_password ? newUser.wifi_password : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -257,17 +257,17 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Created By: <span style={{fontWeight:'normal'}}>{newUser.created_by ? newUser.created_by : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Created By: <span style={{fontWeight:'normal'}}>{newUser.created_by ? newUser.created_by : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Created Date: <span style={{fontWeight:'normal'}}>{newUser.created_date ? formatTimestamp(newUser.created_date) : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Created Date: <span style={{fontWeight:'normal'}}>{newUser.created_date ? formatTimestamp(newUser.created_date) : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Modified By: <span style={{fontWeight:'normal'}}>{newUser.modified_by ? newUser.modified_by : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Modified By: <span style={{fontWeight:'normal'}}>{newUser.modified_by ? newUser.modified_by : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -275,12 +275,12 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Modified Date: <span style={{fontWeight:'normal'}}>{newUser.modified_date ? formatTimestamp(newUser.modified_date) : '-'}</span></div>
+                                                                <div className="col-sm-12 card-title">Modified Date: <span style={{fontWeight:'normal'}}>{newUser.modified_date ? formatTimestamp(newUser.modified_date) : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12">Status: <span style={{fontWeight:'normal'}}>{newUser.status === true ? <span className="text-success">Active</span> :  <span className="text-danger">DeActive</span>}</span></div>
+                                                                <div className="col-sm-12 card-title">Status: <span style={{fontWeight:'normal'}}>{newUser.status === true ? <span className="text-success">Active</span> :  <span className="text-danger">DeActive</span>}</span></div>
                                                             </div>
                                                         </div>                                                               
                                                     </div>
