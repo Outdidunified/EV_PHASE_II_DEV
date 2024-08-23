@@ -172,7 +172,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                                 <div className="template-demo">
                                                                     <div className="form-group row">
                                                                         <div className="col-sm-9" style={{ margin: '0 auto' }}>
-                                                                            <select className="form-control" value={reseller_id} onChange={handleResellerChange}>
+                                                                            <select className="form-control" value={reseller_id} onChange={handleResellerChange} required>
                                                                                 <option value="">Select Reseller</option>
                                                                                 {resellers.map((roles, index) => (
                                                                                     <option key={index} value={roles.reseller_id}>{roles.reseller_name}</option>
@@ -191,7 +191,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                                         {filteredChargers.map((charger) => (
                                                                             <div className="form-check form-check-success" key={charger.charger_id}>
                                                                                 <label className="form-check-label">
-                                                                                    <input style={{ textAlign: 'center' }} type="checkbox" className="form-check-input" value={charger.charger_id} onChange={handleChargerChange}/>
+                                                                                    <input style={{ textAlign: 'center' }} type="checkbox" className="form-check-input" value={charger.charger_id} onChange={handleChargerChange} required/>
                                                                                     {charger.charger_id}
                                                                                     <i className="input-helper"></i>
                                                                                 </label>
