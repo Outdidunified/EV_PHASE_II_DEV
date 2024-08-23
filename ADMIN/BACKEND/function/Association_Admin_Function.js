@@ -660,7 +660,7 @@ async function FetchUsersWithSpecificRolesToUnAssgin(req, res) {
 
         const db = await database.connectToDatabase();
         const usersCollection = db.collection("users");
-        
+
         // Aggregation pipeline
         const users = await usersCollection.aggregate([
             {
@@ -688,17 +688,28 @@ async function FetchUsersWithSpecificRolesToUnAssgin(req, res) {
             {
                 $lookup: {
                     from: "tag_id", // Collection to join with for tag_id
-                    localField: "tag_id", // Field from users collection
-                    foreignField: "id", // Field from tag_id collection
-                    as: "tagDetails" // Output array field
+                    let: { userTagId: "$tag_id" }, // Use let to reference the user tag_id
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: ["$id", "$$userTagId"] // Match if tag_id from tag_id collection equals userTagId
+                                }
+                            }
+                        }
+                    ],
+                    as: "tagDetails"
                 }
             },
             {
-                $unwind: "$tagDetails" // Deconstruct the array
+                $unwind: {
+                    path: "$tagDetails",
+                    preserveNullAndEmptyArrays: true // Preserve records where tagDetails is null or empty
+                }
             },
             {
                 $addFields: {
-                    tag_id: "$tagDetails.tag_id" // Add tag_id field from tagDetails
+                    tag_id: { $ifNull: ["$tagDetails.tag_id", null] } // Add tag_id field, keep null if no match
                 }
             }
         ]).toArray();
@@ -714,6 +725,7 @@ async function FetchUsersWithSpecificRolesToUnAssgin(req, res) {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
 
 
 // RemoveUserFromAssociation
