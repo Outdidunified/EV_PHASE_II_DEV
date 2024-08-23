@@ -652,7 +652,7 @@ async function AddUserToAssociation(req, res) {
 // FetchUsersWithSpecificRolesToUnAssgin
 async function FetchUsersWithSpecificRolesToUnAssgin(req, res) {
     try {
-        const { association_id } = req.body;
+        const { association_id } = req.body; 
 
         if (!association_id) {
             return res.status(400).json({ message: 'Association ID is required' });
