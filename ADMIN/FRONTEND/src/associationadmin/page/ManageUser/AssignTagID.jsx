@@ -139,7 +139,7 @@ const AssignTagID = ({ userInfo, handleLogout }) => {
 
     // Back manageuser page
     const backManageUserPage = () => {
-        navigate('/associationadmin/ManageUsers');
+        navigate('/associationadmin/Assignuser');
     };
     return (
         <div className='container-scroller'>
