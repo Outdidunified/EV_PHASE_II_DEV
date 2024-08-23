@@ -39,13 +39,13 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     
     // Clone data
     const handleClone = (cloneModel) => {
-        const selectedModelData = data.find(item => item.model === cloneModel);
+        const selectedModelData = data.find(item => item.charger_model === cloneModel);
         if (selectedModelData) {
             setModel(selectedModelData.charger_model);
             setVendor(selectedModelData.vendor);
             setMaxCurrent(selectedModelData.max_current);
             setMaxPower(selectedModelData.max_power);
-            setSelectedChargerType(selectedModelData.type);
+            setSelectedChargerType(selectedModelData.charger_type);
         }
     };
 
@@ -169,7 +169,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                 </button>
                                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                                                     <h6 className="dropdown-header">Select clone model</h6>
-                                                    {Array.from(new Set(data.map(item => item.model))).map((uniqueModel, index) => (
+                                                    {Array.from(new Set(data.map(item => item.charger_model))).map((uniqueModel, index) => (
                                                         <p key={index} className="dropdown-item" onClick={() => handleClone(uniqueModel)}>{uniqueModel} KW</p>
                                                     ))}
                                                 </div>

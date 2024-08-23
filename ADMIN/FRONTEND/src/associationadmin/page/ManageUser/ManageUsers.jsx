@@ -366,7 +366,7 @@ const ManageUsers = ({ userInfo, handleLogout }) => {
                                                         ))
                                                         ) : (
                                                             <tr>
-                                                                <td colSpan="6" style={{ marginTop: '50px', textAlign: 'center' }}>No Manage user's found</td>
+                                                                <td colSpan="7" style={{ marginTop: '50px', textAlign: 'center' }}>No Manage user's found</td>
                                                             </tr>
                                                         )
                                                     )}
