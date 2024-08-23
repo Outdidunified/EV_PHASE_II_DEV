@@ -742,7 +742,7 @@ async function RemoveUserFromAssociation(req, res) {
         const usersCollection = db.collection("users");
 
         // Find the user to ensure they exist
-        const user = await usersCollection.findOne({ user_id: user_id , association_id:association_id});
+        const user = await usersCollection.findOne({ user_id: user_id , assigned_association:association_id});
 
         if (!user) {
             return res.status(404).json({ message: 'User does not exits' });
