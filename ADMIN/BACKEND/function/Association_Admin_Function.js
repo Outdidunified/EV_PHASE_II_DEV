@@ -624,6 +624,10 @@ async function AddUserToAssociation(req, res) {
             return res.status(404).json({ message: 'User not found' });
         }
 
+        if(existingUser.assigned_association !== null){
+            return res.status(404).json({ message: 'User is already assigned' });
+        }
+
         // Update the user details with the association ID
         const result = await usersCollection.updateOne(
             { email_id: email_id },
