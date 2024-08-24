@@ -272,7 +272,14 @@ const Assignuser = ({ userInfo, handleLogout }) => {
                                   <td>{dataItem.status===true ? <span className="text-success">Active</span> : <span className="text-danger">DeActive</span>}</td>
                                   <td>{dataItem.tag_id ? dataItem.tag_id : '-'}</td>
                                   <td>
-                                    <button type="button" className="btn btn-warning" onClick={() => handleViewAssignTagID(dataItem)} style={{marginBottom:'10px'}}>Assign</button><br/>
+                                  <button
+                                      type="button"
+                                      className="btn btn-warning"
+                                      onClick={() => handleViewAssignTagID(dataItem)}
+                                      style={{ marginBottom: '10px' }}
+                                  >
+                                      {dataItem.tag_id === null ? 'Assign' : 'Re-assign'}
+                                  </button>
                                   </td>  
                                   <th>
                                     <button type="submit" className="btn btn-danger mr-2" onClick={() => handleSelectRemove(dataItem.user_id)}>Remove</button>
