@@ -95,7 +95,7 @@ class _EditUserModalState extends State<EditUserModal> {
 
     try {
       var response = await http.post(
-        Uri.parse('http://122.166.210.142:8052/profile/UpdateUserProfile'),
+        Uri.parse('http://122.166.210.142:9098/profile/UpdateUserProfile'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'user_id': userId,
@@ -118,11 +118,11 @@ class _EditUserModalState extends State<EditUserModal> {
         Navigator.pop(context, 'refresh');
       } else {
         final responseData = jsonDecode(response.body);
-        final errorMessage = responseData['error_message'] ?? "Failed to update; ensure your credentials are correct.";
+        final errorMessage = responseData['error_message'] ?? "Failed to update! No changes are made, kindly check the credentials";
         _showAlertBanner(errorMessage);
       }
     } catch (e) {
-            _showAlertBanner('Internal server error');
+      _showAlertBanner( 'Internal server error ');
     }
   }
 
