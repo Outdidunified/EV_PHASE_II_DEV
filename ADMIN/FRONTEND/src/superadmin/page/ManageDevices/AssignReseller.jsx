@@ -191,7 +191,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                                         {filteredChargers.map((charger) => (
                                                                             <div className="form-check form-check-success" key={charger.charger_id}>
                                                                                 <label className="form-check-label">
-                                                                                    <input style={{ textAlign: 'center' }} type="checkbox" className="form-check-input" value={charger.charger_id} onChange={handleChargerChange} required/>
+                                                                                    <input style={{ textAlign: 'center' }} type="checkbox" className="form-check-input" value={charger.charger_id} onChange={handleChargerChange}/>
                                                                                     {charger.charger_id}
                                                                                     <i className="input-helper"></i>
                                                                                 </label>
