@@ -198,9 +198,9 @@ router.post('/FetchCommissionAmtClient', async (req, res) => {
 
 //MANAGE FINANCE
 // Route to FetchFinanceDetails
-router.get('/FetchFinanceDetails', async (req, res) => {
+router.post('/FetchFinanceDetails', async (req, res) => {
     try {
-        const data = await functions.FetchFinanceDetails(req, res);
+        const data = await functions.FetchFinanceDetails(req);
         res.status(200).json({ status: 'Success', data: data });
 
     } catch (error) {
