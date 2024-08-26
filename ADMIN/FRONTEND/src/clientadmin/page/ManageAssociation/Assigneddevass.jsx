@@ -15,30 +15,30 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
 
     const fetchChargerDetailsCalled = useRef(false);
 
+    const fetchChargerDetails = async () => {
+        try {
+            const response = await fetch('/clientadmin/FetchChargerDetailsWithSession', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ association_id }),
+            });
+            if (response.ok) {
+                const responseData = await response.json();
+                setOriginalData(responseData.data);
+                setFilteredData(responseData.data); // Initialize filtered data with all data
+            } else {
+                console.error('Failed to fetch assigned chargers');
+            }
+        } catch (error) {
+            console.error('An error occurred while fetching assigned chargers');
+            console.error('Error:', error);
+        }
+    };
+
     // fetch charger details
     useEffect(() => {
-        const fetchChargerDetails = async () => {
-            try {
-                const response = await fetch('/clientadmin/FetchChargerDetailsWithSession', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ association_id }),
-                });
-                if (response.ok) {
-                    const responseData = await response.json();
-                    setOriginalData(responseData.data);
-                    setFilteredData(responseData.data); // Initialize filtered data with all data
-                } else {
-                    console.error('Failed to fetch assigned chargers');
-                }
-            } catch (error) {
-                console.error('An error occurred while fetching assigned chargers');
-                console.error('Error:', error);
-            }
-        };
-
         if (!fetchChargerDetailsCalled.current && association_id) {
             fetchChargerDetails();
             fetchChargerDetailsCalled.current = true; // Mark fetchChargerDetails as called
@@ -143,6 +143,7 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
                 setTheadsticky('sticky');
                 setTheadfixed('fixed');
                 setTheadBackgroundColor('white');
+                fetchChargerDetails();
             } else {
                 const responseData = await response.json();
                 Swal.fire({

@@ -1355,6 +1355,38 @@ async function AssginChargerToAssociation(req, res) {
     }
 }
 
+async function updateCommission(req){
+    try{
+        const{chargerID,client_commission,modified_by} = req.body;
+        const db = await database.connectToDatabase();
+        const ChargerCollection = db.collection("charger_details");
+
+        if(!chargerID || client_commission === undefined || !modified_by){
+            throw new Error(`Commission update fields are not available`);
+        }
+        const where = { charger_id: chargerID };
+        const update = {
+            $set: {
+                client_commission: client_commission,
+                modified_by: modified_by,
+                modified_date: new Date()
+            }
+        };
+
+        const result = await ChargerCollection.updateOne(where, update);
+
+        if (result.modifiedCount === 0) {
+            throw new Error(`Record not found to update client commission`);
+        }
+
+        return true;
+
+    }catch(error){
+        logger.error(`Error in update commission: ${error}`);
+        throw new Error(error.message)
+    }
+}
+
 
 module.exports = { 
     //MANAGE USER
@@ -1392,4 +1424,5 @@ module.exports = {
     FetchUnAllocatedChargerToAssgin,
     //ASSGIN FINANCE TO CHARGER
     AssginChargerToAssociation,
+    updateCommission
 };
