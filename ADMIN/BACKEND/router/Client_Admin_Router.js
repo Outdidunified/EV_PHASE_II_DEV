@@ -229,7 +229,7 @@ router.post('/AssignFinanceToCharger', functions.AssignFinanceToCharger, (req, r
 // Route to FetchFinanceDetailsForSelection
 router.get('/FetchFinanceDetailsForSelection', async (req, res) => {
     try {
-        const data = await functions.FetchFinanceDetails(req, res);
+        const data = await functions.FetchFinanceDetailsForSelection(req, res);
         res.status(200).json({ status: 'Success', data: data });
 
     } catch (error) {
