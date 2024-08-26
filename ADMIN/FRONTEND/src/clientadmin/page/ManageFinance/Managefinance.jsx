@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Header from '../../components/Header';
 import axios from 'axios';
 import Sidebar from '../../components/Sidebar';
@@ -13,22 +13,31 @@ const Managefinance = ({ userInfo, handleLogout }) => {
     const fetchUsersCalled = useRef(false); 
 
     // fetch finance details
-    const fetchFinanceDetails = async () => {
+    const fetchFinanceDetails = useCallback(async () => {
         try {
-            const response = await axios.get('/clientadmin/FetchFinanceDetails');
-            setFinanceDetails(response.data.data || []);
+            const response = await axios.post('/clientadmin/FetchFinanceDetails', {
+                client_id: userInfo.data.client_id
+            });
+          
+            if (response.status === 200) {
+                setFinanceDetails(response.data.data || []);
+            } else {
+                const data = response.data.data;
+                console.error('Error fetching finance: ', data);
+                setFinanceDetails([]);
+            }
         } catch (error) {
-            console.error('Error fetching users:', error);
+            console.error('Error fetching finance:', error);
             setFinanceDetails([]);
         }
-    };
+    }, [userInfo.data.client_id]);
 
     useEffect(() => {
         if (!fetchUsersCalled.current) {
             fetchFinanceDetails();
             fetchUsersCalled.current = true;
         }
-    }, []);
+    }, [fetchFinanceDetails]);
 
     // search
     const handleSearch = (e) => {

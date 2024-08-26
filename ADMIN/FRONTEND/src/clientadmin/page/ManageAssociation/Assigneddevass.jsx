@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Header from '../../components/Header';
 import Sidebar from '../../components/Sidebar';
 import Footer from '../../components/Footer';
@@ -15,7 +15,7 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
 
     const fetchChargerDetailsCalled = useRef(false);
 
-    const fetchChargerDetails = async () => {
+    const fetchChargerDetails = useCallback(async () => {
         try {
             const response = await fetch('/clientadmin/FetchChargerDetailsWithSession', {
                 method: 'POST',
@@ -35,7 +35,7 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
             console.error('An error occurred while fetching assigned chargers');
             console.error('Error:', error);
         }
-    };
+    }, [association_id]);
 
     // fetch charger details
     useEffect(() => {
@@ -43,7 +43,7 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
             fetchChargerDetails();
             fetchChargerDetailsCalled.current = true; // Mark fetchChargerDetails as called
         }
-    }, [association_id]);
+    }, [association_id, fetchChargerDetails]);
 
     useEffect(() => {
         if (association_id) {
