@@ -1006,13 +1006,14 @@ async function FetchFinanceDetails(req) {
 }
 
 //FetchFinanceDetailsForSelection
-async function FetchFinanceDetailsForSelection() {
+async function FetchFinanceDetailsForSelection(req) {
     try {
+        const{client_id} = req.body;
         const db = await database.connectToDatabase();
         const Collection = db.collection("finance_details");
 
         // Fetch all finance details documents
-        const financeDetailsList = await Collection.find({status: true}).toArray();
+        const financeDetailsList = await Collection.find({client_id: client_id, status: true}).toArray();
 
         // Prepare the list of finance data with total prices
         const financeDataList = financeDetailsList.map((financeDetails) => {
