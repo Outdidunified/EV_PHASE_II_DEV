@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
     const [clientsList, setClientsList] = useState([]);
     const fetchClientsCalled = useRef(false);
     const fetchUnallocatedChargersCalled = useRef(false);
+    const fetchFinanceIdCalled = useRef(false); 
 
     // fetch associated users
     useEffect(() => {
@@ -63,26 +64,31 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
     }, [userInfo.data.client_id]); // Use userInfo.data.reseller_id as the dependency
 
     // Fetch finance details
-    useEffect(() => {
-        const fetchFinanceId = async () => {
-            try {
-                const response = await axios.get('/clientadmin/FetchFinanceDetailsForSelection');
-                if (response.data && Array.isArray(response.data.data)) {
-                    const financeIds = response.data.data.map(item => ({
-                        finance_id: item.finance_id,
-                        totalprice: item.totalprice
-                    }));
-                    setFinanceOptions(financeIds);
-                } else {
-                    console.error('Expected an array from API response, received:', response.data);
-                }
-            } catch (error) {
-                console.error('Error fetching finance details:', error);
+    const fetchFinanceId = useCallback(async () => {
+        try {
+            const response = await axios.post('/clientadmin/FetchFinanceDetailsForSelection', {
+                client_id: userInfo.data.client_id,
+            });
+            if (response.data && Array.isArray(response.data.data)) {
+                const financeIds = response.data.data.map(item => ({
+                    finance_id: item.finance_id,
+                    totalprice: item.totalprice
+                }));
+                setFinanceOptions(financeIds);
+            } else {
+                console.error('Expected an array from API response, received:', response.data);
             }
-        };
+        } catch (error) {
+            console.error('Error fetching finance details:', error);
+        }
+    }, [userInfo.data.client_id]);
 
-        fetchFinanceId();
-    }, []);
+    useEffect(() => {
+        if (!fetchFinanceIdCalled.current) {
+            fetchFinanceId();
+            fetchFinanceIdCalled.current = true;
+        }
+    }, [fetchFinanceId]);
 
     // select associated changes
     const handleAssociationChange = (e) => {
