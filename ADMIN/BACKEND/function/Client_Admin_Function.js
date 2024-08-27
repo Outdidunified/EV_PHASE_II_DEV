@@ -996,7 +996,7 @@ async function FetchFinanceDetails(req) {
                 created_date: financeDetails.created_date,
                 modified_by: financeDetails.modified_by,
                 modified_date: financeDetails.modified_date,
-                totalprice: totalPrice,
+                totalprice: totalPrice.toFixed(2),
                 status: financeDetails.status,
             };
         });
@@ -1051,7 +1051,7 @@ async function FetchFinanceDetailsForSelection(req) {
                 created_date: financeDetails.created_date,
                 modified_by: financeDetails.modified_by,
                 modified_date: financeDetails.modified_date,
-                totalprice: totalPrice,
+                totalprice: totalPrice.toFixed(2),
                 status: financeDetails.status,
             };
         });
