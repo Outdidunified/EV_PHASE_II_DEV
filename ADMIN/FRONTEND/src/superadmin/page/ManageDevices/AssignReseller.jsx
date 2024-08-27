@@ -52,12 +52,12 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
         }
     }, []);
 
-    // Selected status
+    // Selected reseller
     const handleResellerChange = (e) => {
         setSelectedReseller(e.target.value);
     };
 
-    // Charger select
+    // Charger checkbox toggle
     const handleChargerChange = (e) => {
         const value = e.target.value;
         setSelectedChargers(prevState =>
@@ -72,7 +72,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
         setSelectedModel(model);
     };
 
-    // Charger list filter
+    // Filter chargers based on selected model
     const filteredChargers = selectedModel ? chargers.filter(charger => charger.charger_model === selectedModel) : chargers;
 
     // Assign charger update
@@ -148,7 +148,7 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
                                                     <h6 className="dropdown-header">Select Charger Model</h6>
                                                     {chargers.length === 0 ? (
-                                                         <option disabled style={{paddingLeft:'50px'}}>No data found</option>
+                                                        <p disabled style={{ paddingLeft: '50px' }}>No data found</p>
                                                     ) : (
                                                         Array.from(new Set(chargers.map(item => item.charger_model))).map((uniqueModel, index) => (
                                                             <p key={index} className="dropdown-item" onClick={() => handleModelChange(uniqueModel)}>{uniqueModel} KW</p>
@@ -196,27 +196,34 @@ const AssignReseller = ({ userInfo, handleLogout }) => {
                                                                 <h4 className="card-title">Charger List</h4>
                                                                 <div className="template-demo" style={{ paddingLeft: '50px' }}>
                                                                     <div className="form-group" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                                                                    {filteredChargers.length === 0 ? (
-                                                                         <option disabled style={{paddingRight:'50px'}}>No data found</option>
-                                                                    ) : (
-                                                                        filteredChargers.map((charger) => (
-                                                                            <div className="form-check form-check-success" key={charger.charger_id}>
-                                                                                <label className="form-check-label">
-                                                                                    <input style={{ textAlign: 'center' }} type="checkbox" className="form-check-input" value={charger.charger_id} onChange={handleChargerChange} />
-                                                                                    {charger.charger_id}
-                                                                                    <i className="input-helper"></i>
-                                                                                </label>
-                                                                                <hr />
-                                                                            </div>
-                                                                        ))
-                                                                    )}
+                                                                        {filteredChargers.length === 0 ? (
+                                                                            <p disabled style={{ paddingRight: '50px' }}>No data found</p>
+                                                                        ) : (
+                                                                            filteredChargers.map((charger) => (
+                                                                                <div className="form-check form-check-success" key={charger.charger_id}>
+                                                                                    <label className="form-check-label">
+                                                                                        <input
+                                                                                            style={{ textAlign: 'center' }}
+                                                                                            type="checkbox"
+                                                                                            className="form-check-input"
+                                                                                            value={charger.charger_id}
+                                                                                            onChange={handleChargerChange}
+                                                                                            checked={charger_ids.includes(charger.charger_id)}
+                                                                                        />
+                                                                                        {charger.charger_id}
+                                                                                        <i className="input-helper"></i>
+                                                                                    </label>
+                                                                                    <hr />
+                                                                                </div>
+                                                                            ))
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div style={{ textAlign: 'center' }}>
-                                                        <button type="submit" className="btn btn-primary mr-2">Submit</button>
+                                                    <div style={{ paddingTop: '20px' }}>
+                                                        <button type="submit" className="btn btn-primary btn-fw">Assign</button>
                                                     </div>
                                                 </form>
                                             </div>
