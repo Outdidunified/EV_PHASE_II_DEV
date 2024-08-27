@@ -111,7 +111,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">EB Charges</label>
-                                                                    <div className="col-sm-5">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">₹</span>
@@ -131,7 +131,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">App Charges</label>
-                                                                    <div className="col-sm-5">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -151,7 +151,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Other Charges</label>
-                                                                    <div className="col-sm-5">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -171,7 +171,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Parking Charges</label>
-                                                                    <div className="col-sm-5">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -190,7 +190,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Rent Charges</label>
-                                                                    <div className="col-sm-5">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -210,7 +210,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Open A EB Charges</label>
-                                                                    <div className="col-sm-5">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -230,7 +230,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Open Other Charges</label>
-                                                                    <div className="col-sm-5">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>

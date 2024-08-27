@@ -286,7 +286,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Commission </label>
-                                                                    <div className="col-sm-4">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -357,7 +357,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Select Unit Price</label>
-                                                                    <div className="col-sm-4">
+                                                                    <div className="col-sm-9">
                                                                         <select
                                                                             className="form-control"
                                                                             value={selectedFinanceId}
