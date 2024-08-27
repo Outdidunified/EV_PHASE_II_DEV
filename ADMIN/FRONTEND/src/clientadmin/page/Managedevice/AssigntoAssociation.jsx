@@ -274,11 +274,15 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                             onChange={handleAssociationChange}
                                                                         >
                                                                             <option value="">Select Association</option>
-                                                                            {clientsList.map((clientObj) => (
-                                                                                <option key={clientObj.client_id} value={clientObj.association_id}>
-                                                                                    {clientObj.association_name}
-                                                                                </option>
-                                                                            ))}
+                                                                            {clientsList.length === 0 ? (
+                                                                                <option disabled>No data found</option>
+                                                                            ) : (
+                                                                                clientsList.map((clientObj) => (
+                                                                                    <option key={clientObj.client_id} value={clientObj.association_id}>
+                                                                                        {clientObj.association_name}
+                                                                                    </option>
+                                                                                ))
+                                                                            )}
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -365,11 +369,15 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                             style={{ color: 'black' }}
                                                                         >
                                                                             <option value="">Select Unit Price</option>
-                                                                            {financeOptions.map((finance) => (
-                                                                                <option key={finance.finance_id} value={finance.finance_id}>
-                                                                                    {`₹${finance.totalprice}`}
-                                                                                </option>
-                                                                            ))}
+                                                                            {financeOptions.length === 0 ? (
+                                                                                <option disabled>No data found</option>
+                                                                            ) : (
+                                                                                financeOptions.map((finance) => (
+                                                                                    <option key={finance.finance_id} value={finance.finance_id}>
+                                                                                        {`₹${finance.totalprice}`}
+                                                                                    </option>
+                                                                                ))
+                                                                            )}
                                                                         </select>
                                                                     </div>
                                                                 </div>

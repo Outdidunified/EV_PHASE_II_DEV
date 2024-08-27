@@ -233,11 +233,15 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                             onChange={handleClientChange}
                                                                         >
                                                                             <option value="">Select Client</option>
-                                                                            {clientsList.map((clientObj) => (
-                                                                                <option key={clientObj.client_id} value={clientObj.client_id}>
-                                                                                    {clientObj.client_name}
-                                                                                </option>
-                                                                            ))}
+                                                                            {clientsList.length === 0 ? (
+                                                                                <option disabled>No data found</option>
+                                                                            ) : (
+                                                                                clientsList.map((clientObj) => (
+                                                                                    <option key={clientObj.client_id} value={clientObj.client_id}>
+                                                                                        {clientObj.client_name}
+                                                                                    </option>
+                                                                                ))
+                                                                            )}
                                                                         </select>
                                                                     </div>
                                                                 </div>
