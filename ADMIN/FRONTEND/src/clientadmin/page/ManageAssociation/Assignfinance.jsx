@@ -49,7 +49,7 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
             setChargerId(charger_id);
         }
         if (!fetchFinanceIdCalled.current) {
-            fetchFinanceId(finance_id);
+        fetchFinanceId(finance_id);
             fetchFinanceIdCalled.current = true;
         }
     }, [location, fetchFinanceId]);

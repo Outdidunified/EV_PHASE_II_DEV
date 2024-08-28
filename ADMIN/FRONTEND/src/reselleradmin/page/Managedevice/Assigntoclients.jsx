@@ -307,7 +307,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                                         <span className="text-danger">No Chargers Available</span>
                                                                                     )}
                                                                                 </button>
-                                                                                <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                                <div className="dropdown-menu" aria-labelledby="dropdownMenuButton" style={{ maxHeight: '200px', overflowY: 'auto' }}>
                                                                                     {unallocatedChargers.length > 0 ? (
                                                                                         unallocatedChargers.map((chargerObj) => (
                                                                                             <div key={chargerObj.charger_id} className="dropdown-item">
