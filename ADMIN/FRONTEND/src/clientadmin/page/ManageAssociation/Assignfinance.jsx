@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef} from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Sidebar from '../../components/Sidebar';
@@ -12,20 +12,14 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
     const [chargerId, setChargerId] = useState('');
     const [financeOptions, setFinanceOptions] = useState([]);
     const [selectedFinanceId, setSelectedFinanceId] = useState('');
-    // const [totalPrice, setTotalPrice] = useState('');
-
-    useEffect(() => {
-        const { charger_id, finance_id } = location.state || {};
-        if (charger_id) {
-            setChargerId(charger_id);
-        }
-        fetchFinanceId(finance_id);
-    }, [location]);
+    const fetchFinanceIdCalled = useRef(false); 
 
     // Fetch finance details
-    const fetchFinanceId = async (finance_id) => {
+    const fetchFinanceId = useCallback(async (finance_id) => {
         try {
-            const response = await axios.get('/clientadmin/FetchFinanceDetailsForSelection');
+            const response = await axios.post('/clientadmin/FetchFinanceDetailsForSelection', {
+                client_id: userInfo.data.client_id,
+            });
             if (response.data && Array.isArray(response.data.data)) {
                 const financeIds = response.data.data.map(item => ({
                     finance_id: item.finance_id,
@@ -47,7 +41,18 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
         } catch (error) {
             console.error('Error fetching finance details:', error);
         }
-    };
+    }, [userInfo.data.client_id]);
+
+    useEffect(() => {
+        const { charger_id, finance_id } = location.state || {};
+        if (charger_id) {
+            setChargerId(charger_id);
+        }
+        if (!fetchFinanceIdCalled.current) {
+            fetchFinanceId(finance_id);
+            fetchFinanceIdCalled.current = true;
+        }
+    }, [location, fetchFinanceId]);
 
     // Handle selection change
     const handleFinanceChange = (e) => {
@@ -167,9 +172,13 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
                                                                             required
                                                                         >
                                                                             <option value="" disabled>Select Unit Price</option>
-                                                                            {financeOptions.map((financeItem, index) => (
-                                                                                <option key={index} value={financeItem.finance_id}>{`₹${financeItem.totalprice}`}</option>
-                                                                            ))}
+                                                                            {financeOptions.length === 0 ? (
+                                                                                <option disabled>No data found</option>
+                                                                            ) : (
+                                                                                financeOptions.map((financeItem, index) => (
+                                                                                    <option key={index} value={financeItem.finance_id}>{`₹${financeItem.totalprice}`}</option>
+                                                                                ))
+                                                                            )}
                                                                         </select>
                                                                     </div>
                                                                 </div>
