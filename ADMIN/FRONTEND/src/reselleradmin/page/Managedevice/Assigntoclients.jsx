@@ -233,11 +233,15 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                             onChange={handleClientChange}
                                                                         >
                                                                             <option value="">Select Client</option>
-                                                                            {clientsList.map((clientObj) => (
-                                                                                <option key={clientObj.client_id} value={clientObj.client_id}>
-                                                                                    {clientObj.client_name}
-                                                                                </option>
-                                                                            ))}
+                                                                            {clientsList.length === 0 ? (
+                                                                                <option disabled>No data found</option>
+                                                                            ) : (
+                                                                                clientsList.map((clientObj) => (
+                                                                                    <option key={clientObj.client_id} value={clientObj.client_id}>
+                                                                                        {clientObj.client_name}
+                                                                                    </option>
+                                                                                ))
+                                                                            )}
                                                                         </select>
                                                                     </div>
                                                                 </div>
@@ -245,7 +249,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Commission</label>
-                                                                    <div className="col-sm-4">
+                                                                    <div className="col-sm-9">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>

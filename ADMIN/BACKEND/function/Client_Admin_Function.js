@@ -770,8 +770,12 @@ async function CreateUser(req, res, next) {
                 { email_id: email_id }
             ]
          });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Email ID already exists' });
+         if (existingUser) {
+            if (existingUser.email_id === email_id) {
+                return res.status(400).json({ message: 'Email ID already exists' });
+            } else if (existingUser.username === username) {
+                return res.status(400).json({ message: 'Username already exists' });
+            }
         }
 
         // Use aggregation to fetch the highest user_id
@@ -992,7 +996,7 @@ async function FetchFinanceDetails(req) {
                 created_date: financeDetails.created_date,
                 modified_by: financeDetails.modified_by,
                 modified_date: financeDetails.modified_date,
-                totalprice: totalPrice,
+                totalprice: totalPrice.toFixed(2),
                 status: financeDetails.status,
             };
         });
@@ -1047,7 +1051,7 @@ async function FetchFinanceDetailsForSelection(req) {
                 created_date: financeDetails.created_date,
                 modified_by: financeDetails.modified_by,
                 modified_date: financeDetails.modified_date,
-                totalprice: totalPrice,
+                totalprice: totalPrice.toFixed(2),
                 status: financeDetails.status,
             };
         });

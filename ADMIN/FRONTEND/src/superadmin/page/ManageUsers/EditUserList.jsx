@@ -254,19 +254,20 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                         </div>
                                                         <div className="row">
-                                                            {dataItem.role_id === 5 &&  <div className="col-md-6">
-                                                                <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Wallet</label>
-                                                                    <div className="col-sm-9">
-                                                                        <input type="text" className="form-control" value={wallet_bal}
-                                                                            onChange={(e) => {
-                                                                            const value = e.target.value;
-                                                                            const sanitizedValue = value.replace(/[^0-9]/g, '');
-                                                                            setWalletBal(sanitizedValue);}} required  />
+                                                            {dataItem.role_id === 5 && 
+                                                                <div className="col-md-6">
+                                                                    <div className="form-group row">
+                                                                        <label className="col-sm-3 col-form-label">Wallet</label>
+                                                                        <div className="col-sm-9">
+                                                                            <input type="text" className="form-control" value={wallet_bal}
+                                                                                onChange={(e) => {
+                                                                                const value = e.target.value;
+                                                                                const sanitizedValue = value.replace(/[^0-9]/g, '');
+                                                                                setWalletBal(sanitizedValue);}} required  />
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>}
-                                                           
+                                                            }
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-3 col-form-label">Status</label>
