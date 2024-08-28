@@ -289,6 +289,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                             value={selectedAssociationId}
                                                                             style={{color:'black'}}
                                                                             onChange={handleAssociationChange}
+                                                                            required
                                                                         >
                                                                             <option value="">Select Association</option>
                                                                             {clientsList.length === 0 ? (
@@ -318,6 +319,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                                 maxLength={5}
                                                                                 value={commission}
                                                                                 onChange={handleCommissionChange}
+                                                                                required
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -359,6 +361,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                                                         id={`charger-${chargerObj.charger_id}`}
                                                                                                         checked={selectedChargers.includes(chargerObj.charger_id)}
                                                                                                         onChange={(e) => handleChargerChange(chargerObj.charger_id, e.target.checked)}
+                                                                                                        required
                                                                                                     />
                                                                                                     <label className="form-check-label" htmlFor={`charger-${chargerObj.charger_id}`}>
                                                                                                         {chargerObj.charger_id}
@@ -384,6 +387,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                             value={selectedFinanceId}
                                                                             onChange={handleFinanceChange}
                                                                             style={{ color: 'black' }}
+                                                                            required
                                                                         >
                                                                             <option value="">Select Unit Price</option>
                                                                             {financeOptions.length === 0 ? (

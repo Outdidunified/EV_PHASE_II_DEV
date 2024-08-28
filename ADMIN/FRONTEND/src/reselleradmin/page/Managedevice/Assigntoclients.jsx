@@ -248,6 +248,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                             value={selectedClientId}
                                                                             style={{color:'black'}}
                                                                             onChange={handleClientChange}
+                                                                            required
                                                                         >
                                                                             <option value="">Select Client</option>
                                                                             {clientsList.length === 0 ? (
@@ -277,6 +278,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                                 maxLength={5}
                                                                                 value={commission}
                                                                                 onChange={handleCommissionChange}
+                                                                                required
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -318,6 +320,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                                                         id={`charger-${chargerObj.charger_id}`}
                                                                                                         checked={selectedChargers.includes(chargerObj.charger_id)}
                                                                                                         onChange={(e) => handleChargerChange(chargerObj.charger_id, e.target.checked)}
+                                                                                                        required
                                                                                                     />
                                                                                                     <label className="form-check-label" htmlFor={`charger-${chargerObj.charger_id}`}>
                                                                                                         {chargerObj.charger_id}
