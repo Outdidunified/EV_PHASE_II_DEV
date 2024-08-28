@@ -124,7 +124,7 @@ const Managefinance = ({ userInfo, handleLogout }) => {
                                                         filteredFinanceDetails.map((finance, index) => (
                                                             <tr key={index}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{finance.totalprice ? finance.totalprice : '-'}</td>
+                                                                <td>{finance.totalprice ? finance.totalprice +' ₹': '-'}</td>
                                                                 <td>{finance.eb_charges  ? finance.eb_charges +' ₹': '-'}</td>
                                                                 <td>{finance.app_charges ? finance.app_charges +' %' : '-'}</td>
                                                                 <td>{finance.open_a_eb_charges ?  finance.open_a_eb_charges +' %' : '-'}</td>
