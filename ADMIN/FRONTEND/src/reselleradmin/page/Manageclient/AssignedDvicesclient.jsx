@@ -13,6 +13,7 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
     const [filteredData, setFilteredData] = useState([]);
     const fetchChargerDetailsCalled = useRef(false);
     const [initialResellerCommission, setInitialResellerCommission] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     // Fetch charger details
     const fetchChargerDetails = useCallback(async () => {
@@ -187,24 +188,40 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
                                                 <div className="input-group-prepend">
                                                     <span className="input-group-text" style={{color:'black', width:'185px'}}>Reseller Commission</span>
                                                 </div>
-                                                <input type="text" className="form-control" placeholder="Client Commission" value={reseller_commission} maxLength={6}
+                                                <input type="text" className="form-control" placeholder="Client Commission" value={reseller_commission} maxLength={5}
+                                                 
                                                     onChange={(e) => {
-                                                        let value = e.target.value; // Define `value` here
-
-                                                        // Remove any non-digit or non-decimal characters
+                                                        let value = e.target.value;
+                                                        // Allow only numbers and a single decimal point
                                                         value = value.replace(/[^0-9.]/g, '');
-
-                                                        // Ensure only one decimal point is allowed
+                                                    
+                                                        // Ensure there's only one decimal point and limit to two decimal places
                                                         const parts = value.split('.');
                                                         if (parts.length > 2) {
-                                                        value = parts[0] + '.' + parts[1]; // Combine the first two parts if more than one decimal point is present
+                                                            value = parts[0] + '.' + parts[1];
+                                                        } else if (parts.length === 2 && parts[1].length > 2) {
+                                                            value = parts[0] + '.' + parts[1].slice(0, 2);
                                                         }
-
-                                                        setEditRellComm(value); // Update state with sanitized value
+                                                    
+                                                        // Limit the length to 6 characters
+                                                        if (value.length > 5) {
+                                                            value = value.slice(0, 5);
+                                                        }
+                                                    
+                                                        // Convert to float and validate range
+                                                        const numericValue = parseFloat(value);
+                                                        if (numericValue < 1 || numericValue > 25) {
+                                                            setErrorMessage('Please enter a value between 1.00% and 25.00%.');
+                                                        } else {
+                                                            setErrorMessage(''); // Clear error if within range
+                                                        }
+                                                    
+                                                        setEditRellComm(value);
                                                     }}
                                                 required/>
                                             </div>
                                         </div>
+                                        {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                         <div style={{textAlign:'center'}}>
                                             <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}} disabled={!isUpdateButtonEnabled}>Update</button>
                                         </div>

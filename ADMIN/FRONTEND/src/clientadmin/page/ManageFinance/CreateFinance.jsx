@@ -15,14 +15,18 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
 
     const [errorMessage, setErrorMessage] = useState('');
    
-    const handleInputChange = (e, field) => {
+    const handleInputChangers = (e, field) => {
         let value = e.target.value;
 
         // Allow only numbers and a single decimal point
         value = value.replace(/[^0-9.]/g, '');
+
         const parts = value.split('.');
+        // Ensure there's only one decimal point and limit to two decimal places
         if (parts.length > 2) {
             value = parts[0] + '.' + parts[1];
+        } else if (parts.length === 2 && parts[1].length > 2) {
+            value = parts[0] + '.' + parts[1].slice(0, 2);
         }
 
         // Limit the length to 6 characters
@@ -30,8 +34,48 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
             value = value.slice(0, 6);
         }
 
+        // Convert to float and validate range
+        const numericValue = parseFloat(value);
+        if (numericValue < 1 || numericValue > 100) {
+            setErrorMessage('Please enter a value between 1.00 ₹ and 100.00 ₹.');
+        } else {
+            setErrorMessage(''); // Clear error if within range
+        }
+
         setNewFinance({ ...newFinance, [field]: value });
     };
+
+    const handleInputChange = (e, field) => {
+        let value = e.target.value;
+    
+        // Allow only numbers and a single decimal point
+        value = value.replace(/[^0-9.]/g, '');
+    
+        // Ensure there's only one decimal point and limit to two decimal places
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts[1];
+        } else if (parts.length === 2 && parts[1].length > 2) {
+            value = parts[0] + '.' + parts[1].slice(0, 2);
+        }
+    
+        // Limit the length to 6 characters
+        if (value.length > 5) {
+            value = value.slice(0, 5);
+        }
+    
+        // Convert to float and validate range
+        const numericValue = parseFloat(value);
+        if (numericValue < 1 || numericValue > 10) {
+            setErrorMessage('Please enter a value between 1.00% and 10.00%.');
+        } else {
+            setErrorMessage(''); // Clear error if within range
+        }
+    
+        setNewFinance({ ...newFinance, [field]: value });
+    };
+    
+    
     // create finance
     const createFinance = async (e) => {
         e.preventDefault();
@@ -121,7 +165,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                                                 className="form-control" placeholder="EB Chargers"
                                                                                 maxLength={6}
                                                                                 value={newFinance.eb_charges}
-                                                                                onChange={(e) => handleInputChange(e, 'eb_charges')}
+                                                                                onChange={(e) => handleInputChangers(e, 'eb_charges')}
                                                                                 required
                                                                             />
                                                                         </div>
@@ -139,7 +183,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                                             <input
                                                                                 type="text"
                                                                                 className="form-control" placeholder="App Charges"
-                                                                                maxLength={6}
+                                                                                maxLength={5}
                                                                                 value={newFinance.app_charges}
                                                                                 onChange={(e) => handleInputChange(e, 'app_charges')}
                                                                                 required
@@ -159,7 +203,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                                             <input
                                                                                 type="text"
                                                                                 className="form-control" placeholder="Other Charges"
-                                                                                maxLength={6}
+                                                                                maxLength={5}
                                                                                 value={newFinance.other_charges}
                                                                                 onChange={(e) => handleInputChange(e, 'other_charges')}
                                                                                 required
@@ -179,7 +223,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                                             <input
                                                                                 type="text"
                                                                                 className="form-control" placeholder="Parking Charges"
-                                                                                maxLength={6}
+                                                                                maxLength={5}
                                                                                 value={newFinance.parking_charges}
                                                                                 onChange={(e) => handleInputChange(e, 'parking_charges')} required
                                                                             />
@@ -198,7 +242,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                                             <input
                                                                                 type="text"
                                                                                 className="form-control" placeholder="Rent Charges"
-                                                                                maxLength={6}
+                                                                                maxLength={5}
                                                                                 value={newFinance.rent_charges}
                                                                                 onChange={(e) => handleInputChange(e, 'rent_charges')}
                                                                                 required
@@ -218,7 +262,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                                             <input
                                                                                 type="text"
                                                                                 className="form-control" placeholder="Open A EB Charges"
-                                                                                maxLength={6}
+                                                                                maxLength={5}
                                                                                 value={newFinance.open_a_eb_charges}
                                                                                 onChange={(e) => handleInputChange(e, 'open_a_eb_charges')}
                                                                                 required
@@ -238,7 +282,7 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
                                                                             <input
                                                                                 type="text"
                                                                                 className="form-control" placeholder="Open Other Charges"
-                                                                                maxLength={6}
+                                                                                maxLength={5}
                                                                                 value={newFinance.open_other_charges}
                                                                                 onChange={(e) => handleInputChange(e, 'open_other_charges')}
                                                                                 required
