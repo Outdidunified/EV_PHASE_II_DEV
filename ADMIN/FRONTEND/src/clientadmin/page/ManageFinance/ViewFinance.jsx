@@ -122,7 +122,7 @@ const ViewFinance = ({ userInfo, handleLogout }) => {
                                                     <div className="row col-12 col-xl-12">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>EB Charges: <span style={{fontWeight:'normal'}}>{newfinance.eb_charges ? newfinance.eb_charges +' ₹' : '-'}</span></div>
+                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>EB Charges: <span style={{fontWeight:'normal'}}>{newfinance.eb_charges ? `₹ ${newfinance.eb_charges}` : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">

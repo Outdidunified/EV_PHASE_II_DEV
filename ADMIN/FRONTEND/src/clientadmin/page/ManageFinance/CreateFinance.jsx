@@ -17,37 +17,44 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
    
     const handleInputChangers = (e, field) => {
         let value = e.target.value;
-
+    
         // Allow only numbers and a single decimal point
         value = value.replace(/[^0-9.]/g, '');
-
-        const parts = value.split('.');
+    
+        // Check if the value starts with multiple zeros
+        if (value.startsWith('00')) {
+            value = value.slice(1); // Remove one leading zero
+        }
         // Ensure there's only one decimal point and limit to two decimal places
+        const parts = value.split('.');
         if (parts.length > 2) {
             value = parts[0] + '.' + parts[1];
         } else if (parts.length === 2 && parts[1].length > 2) {
             value = parts[0] + '.' + parts[1].slice(0, 2);
         }
-
-        // Limit the length to 6 characters
+    
+        // Convert to float and validate range
+        const numericValue = parseFloat(value);
+        let errorMessage = '';
+        if (numericValue < 1 || numericValue > 100) {
+            errorMessage = 'Please enter a value between ₹1.00 and ₹100.00.';
+        }
+    
+        // Limit the length to 6 characters and apply validation
         if (value.length > 6) {
             value = value.slice(0, 6);
         }
-
-        // Convert to float and validate range
-        const numericValue = parseFloat(value);
-        if (numericValue < 1 || numericValue > 100) {
-            setErrorMessage('Please enter a value between 1.00 ₹ and 100.00 ₹.');
-        } else {
-            setErrorMessage(''); // Clear error if within range
+    
+        // Update the state based on validation
+        if (!errorMessage) {
+            setNewFinance({ ...newFinance, [field]: value });
         }
-
-        setNewFinance({ ...newFinance, [field]: value });
+        setErrorMessage(errorMessage);
     };
 
     const handleInputChange = (e, field) => {
         let value = e.target.value;
-    
+
         // Allow only numbers and a single decimal point
         value = value.replace(/[^0-9.]/g, '');
     
@@ -59,22 +66,24 @@ const CreateFinance = ({ userInfo, handleLogout }) => {
             value = parts[0] + '.' + parts[1].slice(0, 2);
         }
     
-        // Limit the length to 6 characters
-        if (value.length > 5) {
-            value = value.slice(0, 5);
-        }
-    
         // Convert to float and validate range
         const numericValue = parseFloat(value);
-        if (numericValue < 1 || numericValue > 10) {
-            setErrorMessage('Please enter a value between 1.00% and 10.00%.');
-        } else {
-            setErrorMessage(''); // Clear error if within range
+        let errorMessage = '';
+        if (numericValue < 0 || numericValue > 10) {
+            errorMessage = 'Please enter a value between 0.00% and 10.00%.';
         }
     
-        setNewFinance({ ...newFinance, [field]: value });
-    };
+        // Limit the length to 6 characters and apply validation
+        if (value.length > 6) {
+            value = value.slice(0, 6);
+        }
     
+        // Update the state based on validation
+        if (!errorMessage) {
+            setNewFinance({ ...newFinance, [field]: value });
+        }
+        setErrorMessage(errorMessage);
+    };
     
     // create finance
     const createFinance = async (e) => {
