@@ -22,8 +22,8 @@ const ManageTagID = ({ userInfo, handleLogout }) => {
             const res = await axios.post('/associationadmin/FetchAllTagIDs', {
                 association_id: userInfo.data.association_id
             });
-            setData(res.data.data);
-            setLoading(false);
+                setData(res.data.data);
+                setLoading(false);
         } catch (err) {
             console.error('Error fetching data:', err);
             setError('Error fetching data. Please try again.');
@@ -311,11 +311,26 @@ const ManageTagID = ({ userInfo, handleLogout }) => {
         return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
 
+    // const getMinDate = () => {
+    //     const date = new Date();
+    //     date.setDate(date.getDate() +2); // Move to the next day
+    //     date.setHours(0, 0, 0, 0); // Set time to midnight (00:00:00) of the next day
+    //     return date.toISOString().slice(0, 16); // Format for datetime-local input
+    // }; 
+    
     const getMinDate = () => {
         const date = new Date();
-        date.setDate(date.getDate() + 1); // Move to the next day
-        date.setHours(0, 0, 0, 0); // Set time to midnight (00:00:00)
-        return date.toISOString().slice(0, 16); // Format for datetime-local input
+        date.setDate(date.getDate() + 1); // Move to two days ahead
+        date.setHours(0, 5, 0, 0); // Set time to 12:05 AM (local time) on the next day
+    
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+        // Format the date and time string for the datetime-local input
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
     
     return (
@@ -358,7 +373,7 @@ const ManageTagID = ({ userInfo, handleLogout }) => {
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'180px'}}>Tag ID Expiry Date</span>
                                                                     </div>
-                                                                    <input type="datetime-local" className="form-control" value={add_tag_id_expiry_date} onChange={(e) => setTagIDExpiryDate(e.target.value)}/>
+                                                                    <input type="datetime-local" className="form-control" value={add_tag_id_expiry_date} onChange={(e) => setTagIDExpiryDate(e.target.value)}  min={getMinDate()}/>
                                                                 </div>
                                                             </div>
                                                             <div style={{textAlign:'center'}}>
@@ -395,7 +410,7 @@ const ManageTagID = ({ userInfo, handleLogout }) => {
                                                                     className="form-control"    
                                                                     value={formatDateForInput(tag_id_expiry_date)}
                                                                     onChange={(e) => setEditTagIDExpiryDate(e.target.value)}
-                                                                    min={getMinDate()} // Restricts to dates starting from tomorrow
+                                                                    min={getMinDate()}
                                                                 />
                                                             </div>
                                                             <div style={{textAlign:'center'}}>
