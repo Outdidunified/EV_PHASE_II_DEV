@@ -66,6 +66,16 @@ const registerUser = async (req, res, next) => {
 
         const db = await database.connectToDatabase();
         const usersCollection = db.collection('users');
+        const userRoleCollection = db.collection('user_roles');
+
+        const checkRole = await userRoleCollection.findOne({ role_id: 5});
+
+        if(!checkRole || checkRole.status === false){
+            const errorMessage = 'User registration blocked !';
+            console.log(errorMessage)
+            return res.status(403).json({ message: errorMessage });
+        }
+
 
         // Check if the username or email is already taken
         const existingUser = await usersCollection.findOne({

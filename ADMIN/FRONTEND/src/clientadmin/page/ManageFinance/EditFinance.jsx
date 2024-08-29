@@ -25,33 +25,45 @@ const EditFinance = ({ userInfo, handleLogout }) => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const validateInputrs = (value) => {
-        // Allow only numbers and a single decimal point
-        value = value.replace(/[^0-9.]/g, '');
+       // Allow only numbers and a single decimal point
+       value = value.replace(/[^0-9.]/g, '');
+    
+       // Check if the value starts with multiple zeros
+       if (value.startsWith('00')) {
+           value = value.slice(1); // Remove one leading zero
+       }
         
-        const parts = value.split('.');
-        
-        // Ensure there's only one decimal point and limit to two decimal places
-        if (parts.length > 2) {
-            value = parts[0] + '.' + parts[1];
-        } else if (parts.length === 2 && parts[1].length > 2) {
-            value = parts[0] + '.' + parts[1].slice(0, 2);
-        }
-
-        // Limit the length to 7 characters
-        if (value.length > 6) {
-            value = value.slice(0, 6);
-        }
-
-        // Convert to float and validate range
-        const numericValue = parseFloat(value);
-        if (numericValue < 1 || numericValue > 100) {
-            setErrorMessage('Please enter a value between 1.00 ₹ and 100.00 ₹.');
-        } else {
-            setErrorMessage(''); // Clear error if within range
-        }
-
-        return value;
+       const parts = value.split('.');
+       
+       // Ensure there's only one decimal point and limit to two decimal places
+       if (parts.length > 2) {
+           value = parts[0] + '.' + parts[1];
+       } else if (parts.length === 2 && parts[1].length > 2) {
+           value = parts[0] + '.' + parts[1].slice(0, 2);
+       }
+   
+       // Ensure that the value does not start with zero unless it is "0.00"
+       if (value.startsWith('0') && value.length > 1 && !value.startsWith('0.')) {
+           value = value.replace(/^0+/, ''); // Remove leading zeros
+       }
+   
+       // Limit the length to 7 characters
+       if (value.length > 6) {
+           value = value.slice(0, 6);
+       }
+   
+       // Convert to float and validate range
+       const numericValue = parseFloat(value);
+       if (numericValue < 1 || numericValue > 100) {
+           setErrorMessage(`Please enter a value between ₹1.00 and ₹100.00.`);
+           return '';
+       } else {
+           setErrorMessage(''); // Clear error if within range
+       }
+   
+       return value;
     }; 
+    
 
     // Input validation function
     const validateInput = (value) => {
@@ -66,24 +78,28 @@ const EditFinance = ({ userInfo, handleLogout }) => {
         } else if (parts.length === 2 && parts[1].length > 2) {
             value = parts[0] + '.' + parts[1].slice(0, 2);
         }
-
-        // Limit the length to 6 characters
-        if (value.length > 5) {
-            value = value.slice(0, 5);
+    
+        // Ensure that the value does not start with zero unless it is "0.00"
+        if (value.startsWith('0') && value.length > 1 && !value.startsWith('0.')) {
+            value = value.replace(/^0+/, ''); // Remove leading zeros
         }
-
+    
+        // Limit the length to 7 characters
+        if (value.length > 6) {
+            value = value.slice(0, 6);
+        }
+    
         // Convert to float and validate range
         const numericValue = parseFloat(value);
-        if (numericValue < 1 || numericValue > 10) {
-            setErrorMessage('Please enter a value between 1.00% and 10.00%.');
+        if (numericValue < 0 || numericValue > 10) {
+            setErrorMessage('Please enter a value between 0.00%  and 10.00% .');
+            return '';
         } else {
             setErrorMessage(''); // Clear error if within range
         }
-
+    
         return value;
     };
-
-    
 
     // Handle change and validation for all fields
     const handleInputChangers = (setter) => (e) => {
