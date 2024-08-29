@@ -92,20 +92,23 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
             value = parts[0] + '.' + parts[1].slice(0, 2);
         }
     
-        // Limit the length to 6 characters
+        // Convert to float and validate range
+        const numericValue = parseFloat(value);
+        let errorMessage = '';
+        if (numericValue < 0 || numericValue > 25) {
+            errorMessage = 'Please enter a value between 0.00% and 25.00%.';
+        }
+    
+        // Limit the length to 6 characters and apply validation
         if (value.length > 5) {
             value = value.slice(0, 5);
         }
     
-        // Convert to float and validate range
-        const numericValue = parseFloat(value);
-        if (numericValue < 1 || numericValue > 25) {
-            setErrorMessage('Please enter a value between 1.00% and 25.00%.');
-        } else {
-            setErrorMessage(''); // Clear error if within range
+        // Update the state based on validation
+        if (!errorMessage) {
+            setCommission(value);
         }
-    
-        setCommission(value);
+        setErrorMessage(errorMessage);
     };
     
     // submit data
