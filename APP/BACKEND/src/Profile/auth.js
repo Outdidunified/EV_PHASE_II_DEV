@@ -24,7 +24,7 @@ const authenticate = async (req) => {
                 }
             },
             { $unwind: '$roles' },
-            { $match: { 'roles.status': true } }, // Check role status
+            //{ $match: { 'roles.status': true } }, // Check role status
             { $limit: 1 }
         ]).toArray();
 
