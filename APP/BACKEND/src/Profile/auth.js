@@ -35,11 +35,12 @@ const authenticate = async (req) => {
         const user = userWithRole[0];
 
         // Ensure both passwords are treated as strings
-        const passwordString = password.toString();
-        const userPasswordString = user.password.toString();
+        //const passwordString = password.toString();
+        //const userPasswordString = user.password.toString();
 
         // Verify the password
-        const passwordMatch = await bcrypt.compare(passwordString, userPasswordString);
+        //const passwordMatch = await bcrypt.compare(passwordString, userPasswordString);
+        const passwordMatch = (parseInt(password) === user.password);
         if (!passwordMatch) {
             return { error: true, status: 401, message: 'Invalid credentials' };
         }
@@ -92,7 +93,7 @@ const registerUser = async (req, res, next) => {
         }
 
         // Hash the password
-        const hashedPassword = await bcrypt.hash(passwordString, 10); // 10 is the salt rounds
+        //const hashedPassword = await bcrypt.hash(passwordString, 10); // 10 is the salt rounds
 
         // Use aggregation to fetch the highest user_id
         const lastUser = await usersCollection.find().sort({ user_id: -1 }).limit(1).toArray();
@@ -109,7 +110,7 @@ const registerUser = async (req, res, next) => {
             association_id: null,
             user_id: newUserId,
             username: username,
-            password: hashedPassword,
+            password: password,
             phone_no: parseInt(phone_no),
             email_id: email_id,
             wallet_bal: 0.00,
