@@ -57,7 +57,8 @@ async function UpdateUserProfile(req, res, next) {
         }
 
         // Validate the current password
-        const isCurrentPasswordValid = await bcrypt.compare(current_password, existingUser.password);
+        //const isCurrentPasswordValid = await bcrypt.compare(current_password, existingUser.password);
+        const isCurrentPasswordValid = (parseInt(current_password) === existingUser.password);
         if (!isCurrentPasswordValid) {
             return res.status(401).json({ message: 'Current password is incorrect' });
         }
@@ -66,25 +67,25 @@ async function UpdateUserProfile(req, res, next) {
             username: username,
             phone_no: parseInt(phone_no),
             modified_by: username,
-            modified_date: new Date(),
+            modified_date: new Date()
         };
 
         // Only update the password if a new password is provided
         if (new_password) {
             // Convert new password to a string if it is not already
-            const newPasswordString = String(new_password);
+            //const newPasswordString = String(new_password);
 
             // Hash the new password
-            const hashedNewPassword = await bcrypt.hash(newPasswordString, 10);
+            //const hashedNewPassword = await bcrypt.hash(newPasswordString, 10);
 
             // Include the hashed new password in the update fields
-            updateFields.password = hashedNewPassword;
+            updateFields.password = parseInt(new_password);
 
             // Check if the new data is the same as the existing data
             const isSameData = (
                 existingUser.username === username &&
                 existingUser.phone_no === phone_no &&
-                await bcrypt.compare(newPasswordString, existingUser.password)
+                parseInt(new_password) === existingUser.password
             );
 
             if (isSameData) {
