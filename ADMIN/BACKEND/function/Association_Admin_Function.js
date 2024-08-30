@@ -623,9 +623,14 @@ async function AddUserToAssociation(req, res) {
         const usersCollection = db.collection("users");
 
         const existingUser = await usersCollection.findOne({
-            $or: [
-                { email_id: email_id },
-                { phone_no: parseInt(phone_no) }
+            $and: [
+                {
+                    $or: [
+                        { email_id: email_id },
+                        { phone_no: parseInt(phone_no) }
+                    ]
+                },
+                {role_id: 5}
             ]
         });
 
