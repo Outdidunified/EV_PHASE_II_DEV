@@ -622,13 +622,30 @@ async function AddUserToAssociation(req, res) {
         const db = await database.connectToDatabase();
         const usersCollection = db.collection("users");
 
-        // Check if the user exists
-        const existingUser = await usersCollection.findOne({ email_id: email_id, phone_no: parseInt(phone_no) });
-        if (!existingUser || existingUser.role_id !== 5) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+        const existingUser = await usersCollection.findOne({
+            $or: [
+                { email_id: email_id },
+                { phone_no: parseInt(phone_no) }
+            ]
+        });
 
-        if(existingUser.assigned_association !== null){
+        if (!existingUser) {
+            return res.status(404).json({ message: 'User not found' });
+        } 
+        
+        if (existingUser.email_id !== email_id) {
+            return res.status(404).json({ message: 'Email is incorrect' });
+        }
+        
+        if (existingUser.phone_no !== parseInt(phone_no)) {
+            return res.status(404).json({ message: 'Phone number is incorrect' });
+        }
+        
+        if (existingUser.role_id !== 5) {
+            return res.status(404).json({ message: 'User does not have the required role' });
+        }
+        
+        if (existingUser.assigned_association !== null) {
             return res.status(404).json({ message: 'User is already assigned' });
         }
 
