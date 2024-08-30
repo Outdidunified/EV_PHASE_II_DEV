@@ -63,7 +63,7 @@ const registerUser = async (req, res, next) => {
         }
 
         // Ensure password is a string
-        const passwordString = password.toString();
+        //const passwordString = password.toString();
 
         const db = await database.connectToDatabase();
         const usersCollection = db.collection('users');
@@ -110,7 +110,7 @@ const registerUser = async (req, res, next) => {
             association_id: null,
             user_id: newUserId,
             username: username,
-            password: password,
+            password: parseInt(password),
             phone_no: parseInt(phone_no),
             email_id: email_id,
             wallet_bal: 0.00,
