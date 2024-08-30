@@ -12,6 +12,7 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
     const [chargerId, setChargerId] = useState('');
     const [financeOptions, setFinanceOptions] = useState([]);
     const [selectedFinanceId, setSelectedFinanceId] = useState('');
+    const [isEdited, setIsEdited] = useState(false); // New state to track if the unit price is edited
     const fetchFinanceIdCalled = useRef(false); 
 
     // Fetch finance details
@@ -32,7 +33,6 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
                     const selectedFinance = financeIds.find(item => item.finance_id === finance_id);
                     if (selectedFinance) {
                         setSelectedFinanceId(selectedFinance.finance_id);
-                        // setTotalPrice(selectedFinance.totalprice);
                     }
                 }
             } else {
@@ -49,7 +49,7 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
             setChargerId(charger_id);
         }
         if (!fetchFinanceIdCalled.current) {
-        fetchFinanceId(finance_id);
+            fetchFinanceId(finance_id);
             fetchFinanceIdCalled.current = true;
         }
     }, [location, fetchFinanceId]);
@@ -58,11 +58,7 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
     const handleFinanceChange = (e) => {
         const selectedId = e.target.value;
         setSelectedFinanceId(selectedId);
-
-        const selectedFinance = financeOptions.find(item => item.finance_id === selectedId);
-        if (selectedFinance) {
-            // setTotalPrice(selectedFinance.totalprice);
-        }
+        setIsEdited(true); // Mark as edited when a selection is changed
     };
 
     // Handle form submission
@@ -185,7 +181,9 @@ const Assignfinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                         </div>
                                                         <div style={{ textAlign: 'center' }}>
-                                                            <button type="submit" className="btn btn-primary mr-2">Assign</button>
+                                                            <button type="submit" className="btn btn-primary mr-2" disabled={!isEdited}>
+                                                                Assign
+                                                            </button>
                                                         </div>
                                                     </form>
                                                 </div>
