@@ -955,11 +955,13 @@ async function UpdateCommissionToWallet(sessionPrice, uniqueIdentifier) {
 
 async function updateWallet(collection, id, amount, type) {
     const walletField = `${type}_wallet`;
-    const numericAmount = parseFloat(amount.toFixed(2));
+    const numericAmount = parseFloat(amount.toFixed(3));
+
+    const roundedAmount = Math.round(numericAmount * 1000) / 1000;
 
     const updateResult = await collection.updateOne(
         { [`${type}_id`]: id },
-        { $inc: { [walletField]: numericAmount } }
+        { $inc: { [walletField]: roundedAmount } }
     );
 
     if (updateResult.modifiedCount > 0) {
