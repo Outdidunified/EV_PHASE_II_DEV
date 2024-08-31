@@ -268,7 +268,7 @@ async function UpdateAssociationUser(req, res, next) {
         const updateData = {
             association_name,
             association_phone_no,
-            association_wallet:association_wallet || existingAssociation.association_wallet,
+            association_wallet:parseFloat(association_wallet) || parseFloat(existingAssociation.association_wallet),
             association_address,
             modified_date: new Date(),
             modified_by
@@ -846,7 +846,7 @@ async function UpdateUser(req, res, next) {
                 $set: {
                     username: username,
                     phone_no: phone_no,
-                    wallet_bal: wallet_bal || existingUser.wallet_bal, 
+                    wallet_bal: parseFloat(wallet_bal) || parseFloat(existingUser.wallet_bal), 
                     modified_date: new Date(),
                     modified_by: modified_by,
                     status: status,

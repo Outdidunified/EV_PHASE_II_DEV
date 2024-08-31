@@ -339,7 +339,7 @@ async function UpdateUser(req, res, next) {
                     username: username,
                     phone_no: phone_no,
                     password: parseInt(password),
-                    wallet_bal: wallet_bal || existingUser.wallet_bal, 
+                    wallet_bal: parseFloat(wallet_bal) || parseFloat(existingUser.wallet_bal), 
                     modified_date: new Date(),
                     modified_by: modified_by,
                     status: status,
