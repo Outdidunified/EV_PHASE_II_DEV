@@ -433,7 +433,7 @@ async function UpdateUser(req, res, next) {
                 $set: {
                     username: username,
                     phone_no: phone_no,
-                    wallet_bal: wallet_bal || existingUser.wallet_bal, 
+                    wallet_bal: parseFloat(wallet_bal) || parseFloat(existingUser.wallet_bal), 
                     modified_date: new Date(),
                     password: parseInt(password),
                     modified_by: modified_by,
@@ -975,7 +975,7 @@ async function UpdateReseller(req, res) {
                 $set: {
                     reseller_phone_no,
                     reseller_address,
-                    reseller_wallet,
+                    reseller_wallet: parseFloat(reseller_wallet),
                     modified_date: new Date(),
                     modified_by,
                     status
