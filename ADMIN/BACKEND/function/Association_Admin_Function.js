@@ -415,37 +415,58 @@ async function FetchAllocatedChargerByClientToAssociation(req) {
         const devicesCollection = db.collection("charger_details");
         const financeCollection = db.collection("finance_details");
 
-        // Fetch the finance details
-        const financeDetails = await financeCollection.findOne();
-        if (!financeDetails) {
-            throw new Error('No finance details found');
-        }
-
         // Fetch chargers assigned to the specified association_id
         const chargers = await devicesCollection.find({ assigned_association_id: association_id }).toArray();
 
-        // Calculate total price per unit if finance details are present
-        const totalPercentage = [
-            financeDetails.app_charges,
-            financeDetails.other_charges,
-            financeDetails.parking_charges,
-            financeDetails.rent_charges,
-            financeDetails.open_a_eb_charges,
-            financeDetails.open_other_charges
-        ].reduce((sum, charge) => sum + parseFloat(charge || 0), 0);
+        if (!chargers.length) {
+            throw new Error('No chargers found for the specified association');
+        }
 
-        const pricePerUnit = parseFloat(financeDetails.eb_charges || 0);
-        const totalPrice = pricePerUnit + (pricePerUnit * totalPercentage / 100);
+        // Fetch all finance details
+        const financeDetailsList = await financeCollection.find().toArray();
 
-        const total_price = totalPrice.toFixed(2); // Format total price to 2 decimal places
+        if (!financeDetailsList.length) {
+            throw new Error('No finance details found');
+        }
 
-        // Append unit_price to each charger
-        const chargersWithUnitPrice = chargers.map(charger => ({
-            ...charger,
-            unit_price: total_price
-        }));
+        // Create a map of finance details for quick lookup by finance_id
+        const financeDetailsMap = financeDetailsList.reduce((map, financeDetails) => {
+            map[financeDetails.finance_id] = financeDetails;
+            return map;
+        }, {});
+
+        // Calculate and append unit_price to each charger
+        const chargersWithUnitPrice = chargers.map(charger => {
+            const financeDetails = financeDetailsMap[charger.finance_id];
+
+            if (financeDetails) {
+                const totalPercentage = [
+                    financeDetails.app_charges,
+                    financeDetails.other_charges,
+                    financeDetails.parking_charges,
+                    financeDetails.rent_charges,
+                    financeDetails.open_a_eb_charges,
+                    financeDetails.open_other_charges
+                ].reduce((sum, charge) => sum + parseFloat(charge || 0), 0);
+
+                const pricePerUnit = parseFloat(financeDetails.eb_charges || 0);
+                const totalPrice = pricePerUnit + (pricePerUnit * totalPercentage / 100);
+                const total_price = totalPrice.toFixed(2); // Format to 2 decimal places
+
+                return {
+                    ...charger,
+                    unit_price: total_price
+                };
+            } else {
+                return {
+                    ...charger,
+                    unit_price: null // If no finance details found, set unit_price to null
+                };
+            }
+        });
 
         return chargersWithUnitPrice; // Return the chargers with the unit price included
+
     } catch (error) {
         console.error(`Error fetching chargers: ${error.message}`);
         throw new Error('Failed to fetch chargers');
