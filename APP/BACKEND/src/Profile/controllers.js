@@ -63,6 +63,13 @@ async function UpdateUserProfile(req, res, next) {
             return res.status(401).json({ error_message: 'Current password is incorrect' });
         }
 
+        if(new_password === ''){
+            const isPhoneChanged = (parseInt(phone_no) === existingUser.phone_no);
+            if (isPhoneChanged) {
+                return res.status(401).json({ error_message: 'No changes were made !' });
+            }
+        }
+
         let updateFields = {
             username: username,
             phone_no: parseInt(phone_no),
