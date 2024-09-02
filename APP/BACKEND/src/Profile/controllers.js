@@ -44,7 +44,7 @@ async function UpdateUserProfile(req, res, next) {
     try {
         // Validate the input
         if (!user_id || !username || !phone_no || !current_password) {
-            return res.status(400).json({ message: 'User ID, Username, Phone Number, and Current Password are required' });
+            return res.status(400).json({ error_message: 'User ID, Username, Phone Number, and Current Password are required' });
         }
 
         const db = await database.connectToDatabase();
@@ -53,14 +53,14 @@ async function UpdateUserProfile(req, res, next) {
         // Check if the user exists
         const existingUser = await usersCollection.findOne({ user_id: user_id });
         if (!existingUser) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ error_message: 'User not found' });
         }
 
         // Validate the current password
         //const isCurrentPasswordValid = await bcrypt.compare(current_password, existingUser.password);
         const isCurrentPasswordValid = (parseInt(current_password) === existingUser.password);
         if (!isCurrentPasswordValid) {
-            return res.status(401).json({ message: 'Current password is incorrect' });
+            return res.status(401).json({ error_message: 'Current password is incorrect' });
         }
 
         let updateFields = {
@@ -89,12 +89,12 @@ async function UpdateUserProfile(req, res, next) {
             );
 
             if (isSameData) {
-                return res.status(400).json({ message: 'No changes found' });
+                return res.status(400).json({ error_message: 'No changes found' });
             }
         } else {
             // Check if the username and phone number are unchanged
             if (existingUser.username === username && existingUser.phone_no === phone_no) {
-                return res.status(400).json({ message: 'No changes found' });
+                return res.status(400).json({ error_message: 'No changes found' });
             }
         }
 
@@ -105,7 +105,7 @@ async function UpdateUserProfile(req, res, next) {
         );
 
         if (updateResult.matchedCount === 0) {
-            return res.status(500).json({ message: 'Failed to update user profile' });
+            return res.status(500).json({ error_message: 'Failed to update user profile' });
         }
 
         return res.status(200).json({ message: 'User profile updated successfully' });
@@ -113,7 +113,7 @@ async function UpdateUserProfile(req, res, next) {
     } catch (error) {
         console.error(error);
         logger.error(`Error updating user profile: ${error}`);
-        return res.status(500).json({ message: 'Internal Server Error' });
+        return res.status(500).json({ error_message: 'Internal Server Error' });
     }
 }
 
