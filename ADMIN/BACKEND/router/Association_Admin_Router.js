@@ -98,7 +98,7 @@ router.post('/FetchAllocatedChargerByClientToAssociation', async (req, res) => {
         const Chargers = await functions.FetchAllocatedChargerByClientToAssociation(req);
         
         if(Chargers.status === 404){
-            res.status(404).json({status: 'Success', data: Chargers.message });
+            res.status(200).json({status: 'Success', data: [] });
         }else{
             const Chargerslist = JSON.parse(JSON.stringify(Chargers));
             res.status(200).json({status: 'Success', data: Chargerslist });
