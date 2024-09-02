@@ -110,7 +110,7 @@ const Sessionhistoryass = ({ userInfo, handleLogout }) => {
                                                         ))
                                                     ) : (
                                                         <tr className="text-center">
-                                                            <td colSpan="9">No Record Found</td>
+                                                            <td colSpan="9">No sessions found</td>
                                                         </tr>
                                                     )}
                                                 </tbody>
