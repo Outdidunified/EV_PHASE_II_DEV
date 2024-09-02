@@ -419,14 +419,20 @@ async function FetchAllocatedChargerByClientToAssociation(req) {
         const chargers = await devicesCollection.find({ assigned_association_id: association_id }).toArray();
 
         if (!chargers.length) {
-            throw new Error('No chargers found for the specified association');
+            //throw new Error('No chargers found for the specified association');
+            const message = "No Charger's were found";
+            const status = 404;
+            return {message, status};
         }
 
         // Fetch all finance details
         const financeDetailsList = await financeCollection.find().toArray();
 
         if (!financeDetailsList.length) {
-            throw new Error('No finance details found');
+            //throw new Error('No finance details found');
+            const message = "No finance's were found";
+            const status = 404;
+            return {message, status};
         }
 
         // Create a map of finance details for quick lookup by finance_id
