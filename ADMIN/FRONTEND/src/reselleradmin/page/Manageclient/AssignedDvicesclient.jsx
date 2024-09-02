@@ -59,7 +59,7 @@ const Assigneddevicesclient = ({ userInfo, handleLogout }) => {
  
     // View session history page
     const navigateToSessionHistory = (data) => {
-        const sessiondata = data.sessiondata[0]; // Assuming sessiondata is an array and we take the first element
+        const sessiondata = data.sessiondata; // Assuming sessiondata is an array and we take the first element
         navigate('/reselleradmin/Sessionhistoryclient', { state: { sessiondata } });
     };
 

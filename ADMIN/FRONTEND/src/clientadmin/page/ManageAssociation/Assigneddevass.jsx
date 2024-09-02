@@ -76,7 +76,7 @@ const Assigneddevass = ({ userInfo, handleLogout }) => {
 
     // view session history page
     const navsessionhistory = (item) => {
-        const sessiondata = item.sessiondata[0];
+        const sessiondata = item.sessiondata;
         navigate('/clientadmin/Sessionhistoryass', { state: { sessiondata } });
     };
 
