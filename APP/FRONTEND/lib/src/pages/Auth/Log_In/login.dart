@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       var response = await http.post(
-        Uri.parse('http://122.166.210.142:8052/profile/CheckLoginCredentials'),
+        Uri.parse('http://122.166.210.142:9098/profile/CheckLoginCredentials'),
         headers: {'Content-Type': 'application/json'}, // Ensure content type is set
         body: jsonEncode({
           'email_id': email,
@@ -86,22 +86,27 @@ class _LoginPageState extends State<LoginPage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('user', username); // Store username
         prefs.setInt('userId', userId); // Store userId
-        Provider.of<UserData>(context, listen: false).updateUserData(username, userId);
+        prefs.setString('email', email); // Store email
+        Provider.of<UserData>(context, listen: false).updateUserData(username, userId, email);
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => HomePage(
               username: username,
               userId: userId,
+              email: email,
+
             ),
           ),
         );
       } else {
         final data = json.decode(response.body);
-        _showAlertBanner(data['message']);}
+        _showAlertBanner(data['message']);
+      }
     } catch (e) {
-      _showAlertBanner('Internal server error');
+      _showAlertBanner('Internal server error ');
     }
   }
+
 
   void _showAlertBanner(String message) {
     setState(() {
@@ -117,7 +122,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return storedUser != null
-        ? HomePage(username: storedUser!) // Navigate to HomePage if user is already logged in
+        ? HomePage(username: storedUser!, email: '',) // Navigate to HomePage if user is already logged in
         : Scaffold(
             backgroundColor: Colors.black,
             appBar: AppBar(
