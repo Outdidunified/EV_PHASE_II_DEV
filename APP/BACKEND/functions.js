@@ -842,7 +842,8 @@ async function autostop_unit(firstMeterValues,lastMeterValues,autostopSettings,u
     const lastEnergy = lastMeterValues || 0;
     
     const result = lastEnergy - startEnergy;
-    let calculatedUnit = parseFloat(result / 1000).toFixed(3);
+    // let calculatedUnit = parseFloat(result / 1000).toFixed(3);
+    let calculatedUnit = parseFloat(result).toFixed(3);
 
     console.dir(autostopSettings);
     // console.log(`${autostopSettings.unit_value},${calculatedUnit}`);
