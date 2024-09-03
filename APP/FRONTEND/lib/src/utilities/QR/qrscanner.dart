@@ -1,12 +1,19 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import '../../pages/home.dart';
 
 class QRViewExample extends StatefulWidget {
-  final Function(String) handleSearchRequestCallback; // Add function parameter
+  final Function(String) handleSearchRequestCallback;
+  final String username;
+  final int? userId;
 
-  const QRViewExample({Key? key, required this.handleSearchRequestCallback}) : super(key: key);
+  const QRViewExample({
+    Key? key,
+    required this.handleSearchRequestCallback,
+    required this.username,
+    this.userId,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _QRViewExampleState();
@@ -16,15 +23,16 @@ class _QRViewExampleState extends State<QRViewExample> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  bool _isProcessing = false; // Flag to prevent multiple calls
+  bool _isProcessing = false;
+  bool _isDisposed = false;
 
   @override
   void reassemble() {
     super.reassemble();
     if (Platform.isAndroid) {
-      controller!.pauseCamera();
+      controller?.pauseCamera();
     }
-    controller!.resumeCamera();
+    controller?.resumeCamera();
   }
 
   @override
@@ -39,7 +47,8 @@ class _QRViewExampleState extends State<QRViewExample> {
   }
 
   Widget _buildQrView(BuildContext context) {
-    var scanArea = (MediaQuery.of(context).size.width < 500 || MediaQuery.of(context).size.height < 500)
+    var scanArea = (MediaQuery.of(context).size.width < 500 ||
+            MediaQuery.of(context).size.height < 500)
         ? 300.0
         : 300.0;
 
@@ -55,7 +64,6 @@ class _QRViewExampleState extends State<QRViewExample> {
             borderWidth: 10,
             cutOutSize: scanArea,
           ),
-          onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
         ),
         Positioned(
           top: 45,
@@ -63,7 +71,15 @@ class _QRViewExampleState extends State<QRViewExample> {
           child: IconButton(
             icon: Icon(Icons.close, color: Colors.white, size: 35),
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomePage(
+                    username: widget.username,
+                    userId: widget.userId, email: '',
+                  ),
+                ),
+              );
             },
           ),
         ),
@@ -78,10 +94,13 @@ class _QRViewExampleState extends State<QRViewExample> {
               } else {
                 bool isFlashOn = snapshot.data == true;
                 return IconButton(
-                  icon: Icon(isFlashOn ? Icons.flash_on : Icons.flash_off, color: Colors.white, size: 35),
+                  icon: Icon(isFlashOn ? Icons.flash_on : Icons.flash_off,
+                      color: Colors.white, size: 35),
                   onPressed: () async {
-                    await controller?.toggleFlash();
-                    setState(() {});
+                    if (!_isDisposed) {
+                      await controller?.toggleFlash();
+                      setState(() {});
+                    }
                   },
                 );
               }
@@ -100,29 +119,23 @@ class _QRViewExampleState extends State<QRViewExample> {
     controller.scannedDataStream.listen((scanData) async {
       if (!_isProcessing && scanData.code != null && scanData.code!.isNotEmpty) {
         setState(() {
-          _isProcessing = true; // Set the flag to prevent multiple calls
+          _isProcessing = true;
         });
         controller.pauseCamera();
         await widget.handleSearchRequestCallback(scanData.code!);
-        Navigator.of(context).pop(scanData.code);
+        if (!_isDisposed) {
+          Navigator.of(context).pop(scanData.code);
+        }
         setState(() {
-          _isProcessing = false; // Reset the flag
+          _isProcessing = false;
         });
       }
     });
   }
 
-  void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
-    log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
-    if (!p) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No permission')),
-      );
-    }
-  }
-
   @override
   void dispose() {
+    _isDisposed = true;
     controller?.dispose();
     super.dispose();
   }
