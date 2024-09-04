@@ -982,7 +982,8 @@ async function autostop_price(firstMeterValues, lastMeterValues, autostopSetting
 
     // Calculate the energy consumed in kWh
     const result = lastEnergy - startEnergy;
-    const calculatedUnit = parseFloat(result / 1000).toFixed(3);
+    // const calculatedUnit = parseFloat(result / 1000).toFixed(3);
+    const calculatedUnit = parseFloat(result).toFixed(3);
     const unit = isNaN(calculatedUnit) ? 0 : calculatedUnit;
 
 
