@@ -984,10 +984,12 @@ async function autostop_price(firstMeterValues, lastMeterValues, autostopSetting
     
         // Calculate the energy consumed in kWh
         const result = lastEnergy - startEnergy;
+        result = result < 0 ? 0 : result;
+
         // const calculatedUnit = parseFloat(result / 1000).toFixed(3);
         const calculatedUnit = parseFloat(result).toFixed(3);
         const unit = isNaN(calculatedUnit) ? 0 : calculatedUnit;
-        console.log(`ConsummedUnit:`, unit);
+        console.log(`Total unit consummed: ${result} = ${lastEnergy}(last energy) - ${startEnergy}(start energy)`);
 
         const sessionPrice = await calculatePrice(unit, uniqueIdentifier);
         const formattedSessionPrice = isNaN(sessionPrice) || sessionPrice === 'NaN' ? 0 : parseFloat(sessionPrice).toFixed(2);
