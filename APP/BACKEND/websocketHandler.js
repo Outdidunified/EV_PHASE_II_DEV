@@ -1052,7 +1052,11 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                         const connectorIdTypeField = `connector_${connectorId}_type`;
                         const connectorTypeValue = socketGunConfig[connectorIdTypeField];
 
-                        await handleChargingSession(uniqueIdentifier, connectorId, startTime, stopTime, unit, sessionPrice, user, chargingSessionID.get(key), connectorTypeValue);
+                        if(!user){
+                            await handleChargingSession(uniqueIdentifier, connectorId, startTime, stopTime, unit, sessionPrice, user, chargingSessionID.get(key), connectorTypeValue);
+                        }else{
+                            console.log(`ChargerID ${uniqueIdentifier}: User is ${user}, so cant update the sesison price and commission.`);
+                        }
                 
                         if (charging_states.get(key) == false) {
                             const result = await updateCurrentOrActiveUserToNull(uniqueIdentifier, connectorId);
