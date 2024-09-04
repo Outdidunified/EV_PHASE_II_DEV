@@ -60,7 +60,7 @@ const getUniqueIdentifierFromRequest = async (request, ws) => {
     }
 };
 
-const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, ClientConnections, clients, OCPPResponseMap, meterValuesMap, sessionFlags, charging_states, startedChargingSet, chargingSessionID) => {
+const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, ClientConnections, clients, OCPPResponseMap, meterValuesMap, sessionFlags, charging_states, startedChargingSet, chargingSessionID, chargerStartTime, chargerStopTime) => {
     wss.on('connection', async (ws, req) => {
         ws.isAlive = true;
         const uniqueIdentifier = await getUniqueIdentifierFromRequest(req, ws); // Await here
@@ -433,7 +433,8 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             if (status == 'Charging' && !startedChargingSet.has(key)) {
                                 sessionFlags.set(key, 1);
                                 charging_states.set(key, true);
-                                StartTimestamp = timestamp;
+                                //StartTimestamp = timestamp;
+                                chargerStartTime.set(key, timestamp);
                                 startedChargingSet.add(key);
                                 GenerateChargingSessionID = generateRandomTransactionId();
                                 chargingSessionID.set(key, GenerateChargingSessionID);
@@ -441,7 +442,8 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
 
                             if ((status === 'SuspendedEV' || status === 'Faulted') && (charging_states.get(key) == true)) {
                                 sessionFlags.set(key, 1);
-                                StopTimestamp = timestamp;
+                                //StopTimestamp = timestamp;
+                                chargerStopTime.set(key, timestamp);
                                 charging_states.set(key, false);
                                 startedChargingSet.delete(key);
                                 deleteMeterValues(key);
@@ -1025,7 +1027,8 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                         
                         if (charging_states.get(key) === true) {
                             sessionFlags.set(key, 1);
-                            StopTimestamp = timestamp;
+                            // StopTimestamp = timestamp;
+                            chargerStopTime.set(key, timestamp);
                             charging_states.set(key, false);
                             startedChargingSet.delete(key);
                         }
@@ -1045,8 +1048,10 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             console.log("StartMeterValues or LastMeterValues is not available.");
                         }
                         const user = await getUsername(uniqueIdentifier, connectorId);
-                        const startTime = StartTimestamp;
-                        const stopTime = StopTimestamp;
+                        // const startTime = StartTimestamp;
+                        const startTime = chargerStartTime.get(key);
+                        // const stopTime = StopTimestamp;
+                        const stopTime = chargerStopTime.get(key);
                         // Fetch the connector type from socket_gun_config
                         const socketGunConfig = await db.collection('socket_gun_config').findOne({ charger_id: uniqueIdentifier});
                         const connectorIdTypeField = `connector_${connectorId}_type`;
@@ -1070,8 +1075,10 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             console.log('End charging session is not updated - while stop only it will work');
                         }
                 
-                        StartTimestamp = null;
-                        StopTimestamp = null;
+                        // StartTimestamp = null;
+                        chargerStartTime.set(key, null);
+                        chargerStopTime.set(key, null);
+                        //StopTimestamp = null;
                         sessionFlags.set(key, 0);
                     }
                 }
