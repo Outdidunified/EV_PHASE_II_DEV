@@ -171,7 +171,7 @@ const Logs = () => {
                                                     <div className="col-4 col-xl-8">
                                                     {/* <h4 className="card-title" style={{paddingTop:'10px'}}>EVSE Live Log</h4>  */}
                                                         {/* backgroundColor: "#28a745" */}
-                                                        <div className="live-indicator" style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "red", color: "white", padding: "6px 10px", borderRadius: "15px",fontWeight: "bold", fontSize: "15px", cursor: "pointer",  width: "150px" }}>                                                            
+                                                        <div className="live-indicator" style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "red", color: "white", padding: "6px 10px", borderRadius: "15px",fontWeight: "bold", fontSize: "16px", cursor: "pointer",  width: "150px", height: "40px" }}>                                                            
                                                             <span className="live-dot" style={{ width: "12px", height: "12px", backgroundColor: "white", borderRadius: "50%", marginRight: "6px", animation: "pulse 0.2s infinite" }}></span><span className="live-text">EVSE Live Log</span>
                                                         </div>
                                                     </div>
