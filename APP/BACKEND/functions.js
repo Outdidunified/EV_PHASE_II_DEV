@@ -254,7 +254,7 @@ async function handleChargingSession(charger_id, connectorId,startTime, stopTime
     console.log(`TableCheck: ${JSON.stringify(existingDocument)}`);
 
     if (existingDocument) {
-        if (existingDocument.stop_time === null) {
+        if (existingDocument.stop_time === null && existingDocument.start_time) {
             const result = await collection.updateOne({ charger_id: charger_id,connector_id: connectorId, session_id: SessionID, stop_time: null }, {
                 $set: {
                     stop_time: stopTime !== null ? stopTime : undefined,
