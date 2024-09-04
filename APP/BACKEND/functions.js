@@ -955,26 +955,34 @@ async function UpdateCommissionToWallet(sessionPrice, uniqueIdentifier) {
 }
 
 async function updateWallet(collection, id, amount, type) {
-    const walletField = `${type}_wallet`;
-    const numericAmount = parseFloat(amount.toFixed(3));
+    try {
+        const walletField = `${type}_wallet`;
+        const numericAmount = parseFloat(amount.toFixed(3));
 
-    const roundedAmount = Math.round(numericAmount * 1000) / 1000;
+        // Retrieve the current wallet value
+        const getWallet = await collection.findOne({ [`${type}_id`]: id });
 
-    const updateResult = await collection.updateOne(
-        { [`${type}_id`]: id },
-        { $inc: { [walletField]: roundedAmount } }
-    );
+        const currentWallet = parseFloat(getWallet[walletField]) || 0;
+        const updatedWallet = parseFloat((currentWallet + numericAmount).toFixed(3));
 
-    if (updateResult.modifiedCount > 0) {
-        console.log(`${type} wallet updated successfully for ID: ${id}. Amount: ${numericAmount}`);
-        return true;
-    } else {
-        console.log(`Failed to update ${type} wallet for ID: ${id}`);
-        return false;
+        // Update the wallet with the new value
+        const updateResult = await collection.updateOne(
+            { [`${type}_id`]: id },
+            { $set: { [walletField]: updatedWallet } }
+        );
+
+        if (updateResult.modifiedCount > 0) {
+            console.log(`${type} wallet updated successfully for ID: ${id}. New Amount: ${updatedWallet}`);
+            return true;
+        } else {
+            console.log(`Failed to update ${type} wallet for ID: ${id}. No changes were made.`);
+            return false;
+        }
+    } catch (error) {
+        console.error(`Error updating ${type} wallet for ID: ${id}: ${error.message}`);
+        throw new Error(`Unable to update ${type} wallet for ID: ${id}`);
     }
 }
-
-
 
 async function autostop_price(firstMeterValues, lastMeterValues, autostopSettings, uniqueIdentifier, connectorId) {
     // Calculate the session price
