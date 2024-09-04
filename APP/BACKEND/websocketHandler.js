@@ -433,11 +433,7 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             if (status == 'Charging' && !startedChargingSet.has(key)) {
                                 sessionFlags.set(key, 1);
                                 charging_states.set(key, true);
-<<<<<<< HEAD
                                 //StartTimestamp = timestamp;
-=======
-                                StartTimestamp = timestamp;
->>>>>>> a9c55627f06679e07aef95e6c617705ff17a817b
                                 chargerStartTime.set(key, timestamp);
                                 startedChargingSet.add(key);
                                 GenerateChargingSessionID = generateRandomTransactionId();
@@ -1032,11 +1028,7 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                         if (charging_states.get(key) === true) {
                             sessionFlags.set(key, 1);
                             // StopTimestamp = timestamp;
-<<<<<<< HEAD
                             chargerStopTime.set(key, timestamp);
-=======
-                            chargerStopTime.set(key, null);
->>>>>>> a9c55627f06679e07aef95e6c617705ff17a817b
                             charging_states.set(key, false);
                             startedChargingSet.delete(key);
                         }
@@ -1057,15 +1049,9 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                         }
                         const user = await getUsername(uniqueIdentifier, connectorId);
                         // const startTime = StartTimestamp;
-<<<<<<< HEAD
                         const startTime = chargerStartTime.get(key);
                         // const stopTime = StopTimestamp;
                         const stopTime = chargerStopTime.get(key);
-=======
-                        const startTime = chargerStartTime(key);
-                        // const stopTime = StopTimestamp;
-                        const stopTime = chargerStopTime(key);
->>>>>>> a9c55627f06679e07aef95e6c617705ff17a817b
                         // Fetch the connector type from socket_gun_config
                         const socketGunConfig = await db.collection('socket_gun_config').findOne({ charger_id: uniqueIdentifier});
                         const connectorIdTypeField = `connector_${connectorId}_type`;
