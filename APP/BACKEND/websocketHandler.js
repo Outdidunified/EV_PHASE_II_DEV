@@ -819,24 +819,27 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                                 autostopSettings = meterValues.autostopSettings;
                             }
                     
+                            const processMeterValues = async (firstMeter, lastMeter, settings, identifier, connector) => {
+                                if (settings.isUnitChecked) {
+                                    await autostop_unit(firstMeter, lastMeter, settings, identifier, connector);
+                                } else if (settings.isPriceChecked) {
+                                    await autostop_price(firstMeter, lastMeter, settings, identifier, connector);
+                                }
+                            };
+                            
                             if (!meterValues.firstMeterValues && !meterValues.connectorId) {
                                 meterValues.connectorId = connectorId;
                                 meterValues.firstMeterValues = await captureMetervalues(Identifier, requestData, uniqueIdentifier, clientIpAddress, UniqueChargingSessionId, connectorId);
                                 console.log(`First MeterValues for ${uniqueIdentifier} for Connector ${connectorId}: ${meterValues.firstMeterValues}`);
-                                if (autostopSettings.isUnitChecked) {
-                                    await autostop_unit(meterValues.firstMeterValues, meterValues.lastMeterValues, autostopSettings, uniqueIdentifier, connectorId);
-                                } else if (autostopSettings.isPriceChecked) {
-                                    await autostop_price(meterValues.firstMeterValues, meterValues.lastMeterValues, autostopSettings, uniqueIdentifier, connectorId);
-                                }
+                            
+                                await processMeterValues(meterValues.firstMeterValues, meterValues.lastMeterValues, autostopSettings, uniqueIdentifier, connectorId);
                             } else {
                                 meterValues.lastMeterValues = await captureMetervalues(Identifier, requestData, uniqueIdentifier, clientIpAddress, UniqueChargingSessionId, connectorId);
                                 console.log(`Last MeterValues for ${uniqueIdentifier} for Connector ${connectorId}: ${meterValues.lastMeterValues}`);
-                                if (autostopSettings.isUnitChecked) {
-                                    await autostop_unit(meterValues.firstMeterValues, meterValues.lastMeterValues, autostopSettings, uniqueIdentifier, connectorId);
-                                } else if (autostopSettings.isPriceChecked) {
-                                    await autostop_price(meterValues.firstMeterValues, meterValues.lastMeterValues, autostopSettings, uniqueIdentifier, connectorId);
-                                }
+                            
+                                await processMeterValues(meterValues.firstMeterValues, meterValues.lastMeterValues, autostopSettings, uniqueIdentifier, connectorId);
                             }
+                            
                         } else {
                             console.error('Invalid MeterValues frame:', requestErrors);
                             response = [3, Identifier, { "errors": requestErrors }];

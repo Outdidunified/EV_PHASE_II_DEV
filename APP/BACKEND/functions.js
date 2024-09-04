@@ -994,18 +994,18 @@ async function autostop_price(firstMeterValues, lastMeterValues, autostopSetting
         console.log(`formattedPrice:`, formattedSessionPrice);
 
         // Update commission to wallet
-        const commissionUpdateResult = await UpdateCommissionToWallet(formattedSessionPrice, uniqueIdentifier);
-        if(commissionUpdateResult){
-            console.log('Commission updated to wallet successfully');
-        }else{
-            console.log('Commission failed to update');
-        }
+        // const commissionUpdateResult = await UpdateCommissionToWallet(formattedSessionPrice, uniqueIdentifier);
+        // if(commissionUpdateResult){
+        //     console.log('Commission updated to wallet successfully');
+        // }else{
+        //     console.log('Commission failed to update');
+        // }
 
         // Check if the auto stop conditions are met
         if (autostopSettings.price_value && autostopSettings.isPriceChecked === true) {
             if (autostopSettings.price_value <= formattedSessionPrice) {
                 console.log(`Charger ${uniqueIdentifier} stop initiated - auto stop price`);
-                const result = await chargerStopCall(uniqueIdentifier, connectorId);
+                const result = await Chargercontrollers.chargerStopCall(uniqueIdentifier, connectorId);
                 if (result === true) {
                     console.log(`AutoStop price: Charger Stopped!`);
                 } else {
