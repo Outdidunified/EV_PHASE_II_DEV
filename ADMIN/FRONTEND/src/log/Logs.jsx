@@ -20,7 +20,6 @@ const Logs = () => {
     useEffect(() => {
         if (!socketRef.current) {
             const newSocket = new WebSocket('ws://122.166.210.142:7002');
-            // const newSocket = new WebSocket('ws://122.166.210.142:7050');
 
             newSocket.addEventListener('open', (event) => {
                 console.log('WebSocket connection opened:', event);
