@@ -977,29 +977,21 @@ async function updateWallet(collection, id, amount, type) {
 
 
 async function autostop_price(firstMeterValues, lastMeterValues, autostopSettings, uniqueIdentifier, connectorId) {
-    const startEnergy = firstMeterValues || 0;
-    const lastEnergy = lastMeterValues || 0;
-
-    // Calculate the energy consumed in kWh
-    const result = lastEnergy - startEnergy;
-    // const calculatedUnit = parseFloat(result / 1000).toFixed(3);
-    const calculatedUnit = parseFloat(result).toFixed(3);
-    const unit = isNaN(calculatedUnit) ? 0 : calculatedUnit;
-
-
     // Calculate the session price
     try {
+        const startEnergy = firstMeterValues || 0;
+        const lastEnergy = lastMeterValues || 0;
+    
+        // Calculate the energy consumed in kWh
+        const result = lastEnergy - startEnergy;
+        // const calculatedUnit = parseFloat(result / 1000).toFixed(3);
+        const calculatedUnit = parseFloat(result).toFixed(3);
+        const unit = isNaN(calculatedUnit) ? 0 : calculatedUnit;
+        console.log(`ConsummedUnit:`, unit);
+
         const sessionPrice = await calculatePrice(unit, uniqueIdentifier);
         const formattedSessionPrice = isNaN(sessionPrice) || sessionPrice === 'NaN' ? 0 : parseFloat(sessionPrice).toFixed(2);
         console.log(`formattedPrice:`, formattedSessionPrice);
-
-        // Update commission to wallet
-        // const commissionUpdateResult = await UpdateCommissionToWallet(formattedSessionPrice, uniqueIdentifier);
-        // if(commissionUpdateResult){
-        //     console.log('Commission updated to wallet successfully');
-        // }else{
-        //     console.log('Commission failed to update');
-        // }
 
         // Check if the auto stop conditions are met
         if (autostopSettings.price_value && autostopSettings.isPriceChecked === true) {
@@ -1012,6 +1004,8 @@ async function autostop_price(firstMeterValues, lastMeterValues, autostopSetting
                     console.log(`Error: ${result}`);
                 }
             }
+        }else{
+            console.log(`Charger ${uniqueIdentifier} still price is calculating !`);
         }
     } catch (error) {
         console.log('Failed to calculate session price:', error);
