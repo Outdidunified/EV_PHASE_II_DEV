@@ -277,29 +277,31 @@ async function handleChargingSession(charger_id, connectorId,startTime, stopTime
                 console.log(`ChargerID ${charger_id}: Session/StopTimestamp not updated`);
                 logger.info(`ChargerID ${charger_id}: Session/StopTimestamp not updated`);
             }
+            return true;
         } else {
-            const newSession = {
-                charger_id: charger_id,
-                connector_id: connectorId,
-                connector_type: connectorTypeValue,
-                session_id: SessionID,
-                start_time: startTime !== null ? startTime : undefined,
-                stop_time: stopTime !== null ? stopTime : undefined,
-                unit_consummed: TotalUnitConsumed,
-                price: sessionPrice,
-                user: user,
-                created_date: new Date()
-            };
+            // const newSession = {
+            //     charger_id: charger_id,
+            //     connector_id: connectorId,
+            //     connector_type: connectorTypeValue,
+            //     session_id: SessionID,
+            //     start_time: startTime !== null ? startTime : undefined,
+            //     stop_time: stopTime !== null ? stopTime : undefined,
+            //     unit_consummed: TotalUnitConsumed,
+            //     price: sessionPrice,
+            //     user: user,
+            //     created_date: new Date()
+            // };
 
-            const result = await collection.insertOne(newSession);
+            // const result = await collection.insertOne(newSession);
 
-            if (result.acknowledged === true) {
-                console.log(`ChargerID ${charger_id}: Session/StartTimestamp inserted`);
-                logger.info(`ChargerID ${charger_id}: Session/StartTimestamp inserted`);
-            } else {
-                console.log(`ChargerID ${charger_id}: Session/StartTimestamp not inserted`);
-                logger.info(`ChargerID ${charger_id}: Session/StartTimestamp not inserted`);
-            }
+            // if (result.acknowledged === true) {
+            //     console.log(`ChargerID ${charger_id}: Session/StartTimestamp inserted`);
+            //     logger.info(`ChargerID ${charger_id}: Session/StartTimestamp inserted`);
+            // } else {
+            //     console.log(`ChargerID ${charger_id}: Session/StartTimestamp not inserted`);
+            //     logger.info(`ChargerID ${charger_id}: Session/StartTimestamp not inserted`);
+            // }
+            console.error(`ChargerID ${charger_id}: Session/StartTimestamp is current document exist but start/stop time not updated properly.`);
         }
     } else {
         // ChargerID is not in device_session_details table, insert a new document
@@ -331,6 +333,7 @@ async function handleChargingSession(charger_id, connectorId,startTime, stopTime
                 console.log(`ChargerID ${charger_id}: Please add the chargerID in the database!`);
                 logger.info(`ChargerID ${charger_id}: Please add the chargerID in the database!`);
             }
+            return true;
         } catch (error) {
             console.error(`Error querying device_session_details: ${error.message}`);
         }
