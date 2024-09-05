@@ -1036,7 +1036,8 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                         clearTimeout(autoStopTimer);
                     }
 
-                    if (sessionFlags.get(key) == 1) {
+                    if (sessionFlags.get(key) === 1) {
+                        sessionFlags.set(key, 0);
                         let unit;
                         let sessionPrice;
                         const meterValues = getMeterValues(key);
@@ -1079,7 +1080,6 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                         chargerStartTime.set(key, null);
                         chargerStopTime.set(key, null);
                         //StopTimestamp = null;
-                        sessionFlags.set(key, 0);
                     }
                 }
             });
