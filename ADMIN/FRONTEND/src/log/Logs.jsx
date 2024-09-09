@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import './styles.css';
 
 const Logs = () => {
     const [visibleTable, setVisibleTable] = useState('All');
-    //const [socket, setSocket] = useState(null);
     const [loading, setLoading] = useState(true);
     const socketRef = useRef(null);
 
     // States for different types of messages
     const [allData, setAllData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchInput, setSearchInput] = useState(''); // State for search input
+
     const [heartbeatData, setHeartbeatData] = useState([]);
     const [bootNotificationData, setBootNotificationData] = useState([]);
     const [statusNotificationData, setStatusNotificationData] = useState([]);
@@ -18,42 +21,7 @@ const Logs = () => {
     const [meterValuesData, setMeterValuesData] = useState([]);
     const [authorizationData, setAuthorizationData] = useState([]);
 
-    useEffect(() => {
-        if (!socketRef.current) {
-            const newSocket = new WebSocket('ws://122.166.210.142:7002');
-
-            newSocket.addEventListener('open', (event) => {
-                console.log('WebSocket connection opened:', event);
-            });
-
-            newSocket.addEventListener('message', async(response) => {
-                const parsedMessage = JSON.parse(response.data);
-                 console.log('parsedMessage', parsedMessage);
-                 await handleFrame(parsedMessage);
-            });
-
-            newSocket.addEventListener('close', (event) => {
-                console.log('WebSocket connection closed:', event);
-            });
-
-            newSocket.addEventListener('error', (event) => {
-                console.error('WebSocket error:', event);
-            });
-
-            socketRef.current = newSocket;
-            setLoading(false);
-        }
-
-        return () => {
-            if (socketRef.current) {
-                socketRef.current.close();
-                socketRef.current = null;
-            }
-        };
-    }, [socketRef]);
-
-    async function handleFrame(parsedMessage){
-        // Get current date and time
+    const handleFrame = useCallback(async (parsedMessage) => {
         const currentDateTime = new Date().toLocaleString('en-IN', {
             year: 'numeric',
             month: '2-digit',
@@ -64,16 +32,41 @@ const Logs = () => {
             hour12: true,
         });
 
-        // Include the timestamp in the parsed message
         const messageWithAllDataTimestamp = {
             DeviceID: parsedMessage.DeviceID,
             message: parsedMessage.message,
             dateTime: currentDateTime,
         };
 
-        setAllData((prevData) => [...prevData, messageWithAllDataTimestamp]);
+        setAllData((prevData) => {
+            // Add new data to allData
+            const updatedData = [...prevData, messageWithAllDataTimestamp];
+    
+            // Update filteredData based on search status
+            if (isSearching && searchInput) {
+                setFilteredData((prevFilteredData) => {
+                    // Check for existing entries with the same DeviceID and timestamp
+                    const existingEntries = prevFilteredData.filter(item =>
+                        item.DeviceID === messageWithAllDataTimestamp.DeviceID &&
+                        item.dateTime === messageWithAllDataTimestamp.dateTime
+                    );
+                    
+                    if (messageWithAllDataTimestamp.DeviceID.toUpperCase().includes(searchInput)) {
+                        // Append only if no existing entry with the same timestamp
+                        if (existingEntries.length === 0) {
+                            return [...prevFilteredData, messageWithAllDataTimestamp];
+                        }
+                    }
+                    return prevFilteredData;
+                });
+            } else {
+                // Show all data if not searching
+                setFilteredData(updatedData);
+            }
+    
+            return updatedData;
+        });
 
-        // Include the timestamp in the parsed message
         const messageWithTimestamp = {
             ...parsedMessage,
             dateTime: currentDateTime
@@ -103,47 +96,67 @@ const Logs = () => {
             default:
                 break;
         }
-    }
+    }, [isSearching, searchInput]);
 
-    // Search data 
+    useEffect(() => {
+        if (!socketRef.current) {
+            const newSocket = new WebSocket('ws://122.166.210.142:7002');
+
+            newSocket.addEventListener('open', (event) => {
+                console.log('WebSocket connection opened:', event);
+            });
+
+            newSocket.addEventListener('message', async(response) => {
+                const parsedMessage = JSON.parse(response.data);
+                console.log('parsedMessage', parsedMessage);
+                await handleFrame(parsedMessage);
+            });
+
+            newSocket.addEventListener('close', (event) => {
+                console.log('WebSocket connection closed:', event);
+            });
+
+            newSocket.addEventListener('error', (event) => {
+                console.error('WebSocket error:', event);
+            });
+
+            socketRef.current = newSocket;
+            setLoading(false);
+        }
+
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.close();
+                socketRef.current = null;
+            }
+        };
+    }, [socketRef, handleFrame]);
+
+    // Search data
     const handleSearchInputChange = (e) => {
-        const inputValue = e.target.value.toUpperCase();
-        const filteredData = allData.filter((item) =>
-            item.DeviceID.toUpperCase().includes(inputValue)
-        );
+        // const inputValue = e.target.value.toUpperCase();
+        const inputValue = e.target.value.toUpperCase().trim(); // Trim whitespace and convert to uppercase
+        setSearchInput(inputValue); // Update search input state
+        setIsSearching(inputValue !== ''); // Set search status
 
-        switch (visibleTable) {
-            case 'All':
-                setAllData(filteredData);
-                break;
-            case 'Heartbeat':
-                setHeartbeatData(filteredData);
-                break;
-            case 'BootNotification':
-                setBootNotificationData(filteredData);
-                break;
-            case 'StatusNotification':
-                setStatusNotificationData(filteredData);
-                break;
-            case 'Start/Stop':
-                setStartStopData(filteredData);
-                break;
-            case 'Meter/Values':
-                setMeterValuesData(filteredData);
-                break;
-            case 'Authorization':
-                setAuthorizationData(filteredData);
-                break;
-            default:
-                break;
+        if (inputValue === '') {
+            setFilteredData(allData); // Reset to all data if search input is cleared
+        } else {
+            const filtered = allData.filter((item) =>
+                item.DeviceID.toUpperCase().includes(inputValue)
+            );
+            setFilteredData(filtered);
         }
     };
 
-
-    // Handel visibility buttons
+    // Handle visibility buttons
     const handleTableVisibility = (table) => {
         setVisibleTable(table);
+        setSearchInput(''); // Clear search input
+        setIsSearching(false); // Reset search when changing table
+        setFilteredData([]); // Clear filtered data when table changes
     };
+
     const buttons = [
         { label: 'All', value: 'All' },
         { label: 'Heartbeat', value: 'Heartbeat' },
@@ -153,6 +166,14 @@ const Logs = () => {
         { label: 'Meter/Values', value: 'Meter/Values' },
         { label: 'Authorization', value: 'Authorization' }
     ];
+
+    const dataToShow = isSearching ? filteredData : allData;
+    const heartbeatDataToShow = isSearching ? filteredData : heartbeatData;
+    const bootNotificationDataToShow = isSearching ? filteredData : bootNotificationData;
+    const statusNotificationDataToShow = isSearching ? filteredData : statusNotificationData;
+    const startStopDataToShow = isSearching ? filteredData : startStopData;
+    const meterValuesDataToShow = isSearching ? filteredData : meterValuesData;
+    const authorizationDataToShow = isSearching ? filteredData : authorizationData;
 
     return (
         <div className='container-scroller'>
@@ -169,11 +190,11 @@ const Logs = () => {
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row">
                                                     <div className="col-4 col-xl-8">
-                                                    {/* <h4 className="card-title" style={{paddingTop:'10px'}}>EVSE Live Log</h4>  */}
+                                                        {/* <h4 className="card-title" style={{paddingTop:'10px'}}>EVSE Live Log</h4>  */}
                                                         {/* backgroundColor: "#28a745" */}
                                                         <div className="live-indicator" style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "red", color: "white", padding: "6px 10px", borderRadius: "15px",fontWeight: "bold", fontSize: "16px", cursor: "pointer",  width: "150px", height: "40px" }}>                                                            
                                                             <span className="live-dot" style={{ width: "12px", height: "12px", backgroundColor: "white", borderRadius: "50%", marginRight: "6px", animation: "pulse 0.2s infinite" }}></span><span className="live-text">EVSE Live Log</span>
-                                                        </div>
+                                                        </div> 
                                                     </div>
                                                     <div className="col-8 col-xl-4">
                                                         <div className="input-group">
@@ -182,7 +203,7 @@ const Logs = () => {
                                                                 <i className="icon-search"></i>
                                                                 </span>
                                                             </div>
-                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off" onChange={handleSearchInputChange}/>
+                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off"  value={searchInput} onChange={handleSearchInputChange}/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -224,14 +245,14 @@ const Logs = () => {
                                                                 <td colSpan="3" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                             </tr>
                                                         ) : (
-                                                            Array.isArray(allData) && allData.length > 0 ? (
-                                                                allData.slice().reverse().map((allItem, index) => (
+                                                            Array.isArray(dataToShow) && dataToShow.length > 0 ? (
+                                                                dataToShow.slice().reverse().map((allItem, index) => (
                                                                     <tr key={index}>
                                                                         <td>{allItem.dateTime || '-'}</td>
                                                                         <td>{allItem.DeviceID || '-'}</td>
                                                                         <td>
                                                                             {allItem.message ? (
-                                                                                <textarea value={JSON.stringify(allItem.message)} readOnly rows="5" cols="150" />
+                                                                                <textarea value={JSON.stringify(allItem.message)}  style={{ border: 'none', outline: 'none', background:'none' }} readOnly rows="6" cols="150" />
                                                                             ) : (
                                                                                 '-'
                                                                             )}
@@ -264,8 +285,8 @@ const Logs = () => {
                                                                 <td colSpan="2" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                             </tr>
                                                         ) : (
-                                                            Array.isArray(heartbeatData) && heartbeatData.length > 0 ? (
-                                                                heartbeatData.slice().reverse().map((heartbeatItem, index) => (
+                                                            Array.isArray(heartbeatDataToShow) && heartbeatDataToShow.length > 0 ? (
+                                                                heartbeatDataToShow.slice().reverse().map((heartbeatItem, index) => (
                                                                 <tr key={index}>
                                                                     <td>{heartbeatItem.dateTime || '-'}</td>
                                                                     <td>{heartbeatItem.DeviceID || '-'}</td>
@@ -300,8 +321,8 @@ const Logs = () => {
                                                                 <td colSpan="4" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                             </tr>
                                                         ) : (
-                                                            Array.isArray(bootNotificationData) && bootNotificationData.length > 0 ? (
-                                                                bootNotificationData.slice().reverse().map((bootNotificationItem, index) => {
+                                                            Array.isArray(bootNotificationDataToShow) && bootNotificationDataToShow.length > 0 ? (
+                                                                bootNotificationDataToShow.slice().reverse().map((bootNotificationItem, index) => {
                                                                     // Extract nested properties from the message array
                                                                     const chargePointVendor = bootNotificationItem.message[3]?.chargePointVendor || '-';
                                                                     const chargePointModel = bootNotificationItem.message[3]?.chargePointModel || '-';
@@ -345,8 +366,8 @@ const Logs = () => {
                                                                 <td colSpan="5" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                             </tr>
                                                         ) : (
-                                                            Array.isArray(statusNotificationData) && statusNotificationData.length > 0 ? (
-                                                                statusNotificationData.slice().reverse().map((statusNotificationItem, index) => {
+                                                            Array.isArray(statusNotificationDataToShow) && statusNotificationDataToShow.length > 0 ? (
+                                                                statusNotificationDataToShow.slice().reverse().map((statusNotificationItem, index) => {
                                                                     const getStatusStyle = (status) => {
                                                                         switch (status) {
                                                                         case 'Available':
@@ -407,8 +428,8 @@ const Logs = () => {
                                                                 <td colSpan="7" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                             </tr>
                                                         ) : (
-                                                            Array.isArray(startStopData) && startStopData.length > 0 ? (
-                                                                startStopData.slice().reverse().map((startStopItem, index) => {
+                                                            Array.isArray(startStopDataToShow) && startStopDataToShow.length > 0 ? (
+                                                                startStopDataToShow.slice().reverse().map((startStopItem, index) => {
                                                                     // Extract the type of transaction
                                                                     const transactionType = startStopItem.message[2];
 
@@ -462,8 +483,8 @@ const Logs = () => {
                                                                 <td colSpan="5" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                             </tr>
                                                         ) : (
-                                                            Array.isArray(meterValuesData) && meterValuesData.length > 0 ? (
-                                                                meterValuesData.slice().reverse().map((meterValuesItem, index) => {
+                                                            Array.isArray(meterValuesDataToShow) && meterValuesDataToShow.length > 0 ? (
+                                                                meterValuesDataToShow.slice().reverse().map((meterValuesItem, index) => {
                                                                     // Extract nested properties from the message array
                                                                     const connectorId = meterValuesItem.message[3]?.connectorId || '-';
                                                                     const transactionId = meterValuesItem.message[3]?.transactionId || '-';
@@ -536,8 +557,8 @@ const Logs = () => {
                                                                 <td colSpan="3" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
                                                             </tr>
                                                         ) : (
-                                                            Array.isArray(authorizationData) && authorizationData.length > 0 ? (
-                                                                authorizationData.slice().reverse().map((authorizationItem, index) => {
+                                                            Array.isArray(authorizationDataToShow) && authorizationDataToShow.length > 0 ? (
+                                                                authorizationDataToShow.slice().reverse().map((authorizationItem, index) => {
                                                                     // Extract nested properties from the message array
                                                                     const idTag = authorizationItem.message[3]?.idTag || '-';
                                                                     
