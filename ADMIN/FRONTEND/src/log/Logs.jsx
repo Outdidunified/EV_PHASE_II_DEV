@@ -230,7 +230,7 @@ const Logs = () => {
                                         </div>
                                         {/* All */}
                                         {visibleTable === 'All' && (
-                                            <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr>
@@ -271,7 +271,7 @@ const Logs = () => {
                                         )}
                                         {/* Heartbeat */}
                                         {visibleTable === 'Heartbeat' && (
-                                            <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -305,7 +305,7 @@ const Logs = () => {
 
                                         {/* BootNotification */}
                                         {visibleTable === 'BootNotification' && (
-                                            <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -349,7 +349,7 @@ const Logs = () => {
 
                                         {/* StatusNotification */}
                                         {visibleTable === 'StatusNotification' && (
-                                            <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -409,7 +409,7 @@ const Logs = () => {
 
                                         {/* Start/Stop */}
                                         {visibleTable === 'Start/Stop' && (
-                                            <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -466,7 +466,7 @@ const Logs = () => {
 
                                         {/* Meter/Values */}
                                         {visibleTable === 'Meter/Values' && (
-                                            <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -542,7 +542,7 @@ const Logs = () => {
 
                                         {/* Authorization */}
                                         {visibleTable === 'Authorization' && (
-                                            <div className="table-responsive" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
