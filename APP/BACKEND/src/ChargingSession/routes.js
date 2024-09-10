@@ -166,7 +166,7 @@ router.post('/UpdateAutoStopSettings', async function(req, res) {
             updateFields.autostop_time = parseInt(req.body.updateUserTimeVal);
         }
         if (req.body.updateUserUnitVal !== undefined) {
-            updateFields.autostop_unit = parseInt(req.body.updateUserUnitVal);
+            updateFields.autostop_unit = parseFloat(req.body.updateUserUnitVal);
         }
         if (req.body.updateUserPriceVal !== undefined) {
             updateFields.autostop_price = parseInt(req.body.updateUserPriceVal);
