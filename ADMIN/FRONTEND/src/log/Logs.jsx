@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import './styles.css';
+import Swal from 'sweetalert2';
 
 const Logs = () => {
     const [visibleTable, setVisibleTable] = useState('All');
@@ -104,6 +105,13 @@ const Logs = () => {
 
             newSocket.addEventListener('open', (event) => {
                 console.log('WebSocket connection opened:', event);
+                Swal.fire({
+                    // title: "Success",
+                    text: "WebSocket connection opened.",
+                    icon: "success",
+                    timer: 3000,
+                    timerProgressBar: true
+                });
             });
 
             newSocket.addEventListener('message', async(response) => {
@@ -114,10 +122,24 @@ const Logs = () => {
 
             newSocket.addEventListener('close', (event) => {
                 console.log('WebSocket connection closed:', event);
+                Swal.fire({
+                    // title: "Closed",
+                    text: "WebSocket connection closed.",
+                    icon: "error",
+                    timer: 3000,
+                    timerProgressBar: true
+                });
             });
 
             newSocket.addEventListener('error', (event) => {
                 console.error('WebSocket error:', event);
+                Swal.fire({
+                    // title: "Error",
+                    text: "WebSocket connection error. Please reload the web page.",
+                    icon: "error",
+                    timer: 3000,
+                    timerProgressBar: true
+                });
             });
 
             socketRef.current = newSocket;
@@ -391,7 +413,7 @@ const Logs = () => {
                                                                             <td>{statusNotificationItem.dateTime || '-'}</td> 
                                                                             <td>{statusNotificationItem.DeviceID || '-'}</td>
                                                                             <td>{connectorId}</td> 
-                                                                            <td style={getStatusStyle(status)}>{status}</td>  
+                                                                            <td style={getStatusStyle(status)}><b>{status}</b></td>  
                                                                             <td>{errorCode}</td>
                                                                         </tr>
                                                                     );
