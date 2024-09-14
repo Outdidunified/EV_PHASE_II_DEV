@@ -230,7 +230,6 @@ const Logs = () => {
             setFilteredData(filtered);
         }
     };
-    
 
     // Handle visibility buttons
     const handleTableVisibility = (table) => {

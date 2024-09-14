@@ -14,7 +14,6 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
     const [chargersLoading, setChargersLoading] = useState(true); // State to manage loading state
     const [unallocatedChargers, setUnallocatedChargers] = useState([]);
     const [clientsList, setClientsList] = useState([]);
-    console.log(commission)
     const navigate = useNavigate();
 
     const fetchClientsCalled = useRef(false); 
@@ -40,7 +39,6 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                 const response = await axios.post('/reselleradmin/FetchUnAllocatedChargerToAssgin', {
                     reseller_id: userInfo.data.reseller_id,
                 });
-                console.log(response.data);
                 setUnallocatedChargers(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching unallocated charger details:', error);
@@ -280,6 +278,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                                 className="form-control"
                                                                                 maxLength={5}
                                                                                 value={commission}
+                                                                                name="commission" // Add name attribute
                                                                                 onChange={handleCommissionChange}
                                                                                 required
                                                                             />
@@ -323,7 +322,8 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                                                         id={`charger-${chargerObj.charger_id}`}
                                                                                                         checked={selectedChargers.includes(chargerObj.charger_id)}
                                                                                                         onChange={(e) => handleChargerChange(chargerObj.charger_id, e.target.checked)}
-                                                                                                        required
+                                                                                                        name={`charger_${chargerObj.charger_id}`} // Add name attribute
+
                                                                                                     />
                                                                                                     <label className="form-check-label" htmlFor={`charger-${chargerObj.charger_id}`}>
                                                                                                         {chargerObj.charger_id}
