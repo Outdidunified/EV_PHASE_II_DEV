@@ -42,7 +42,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                 const response = await axios.post('/clientadmin/FetchUnAllocatedChargerToAssgin', {
                     client_id: userInfo.data.client_id,
                 });
-                console.log(response.data);
+                // console.log(response.data);
                 setUnallocatedChargers(response.data.data || []);
             } catch (error) {
                 console.error('Error fetching unallocated charger details:', error);
@@ -299,7 +299,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                                 <option disabled>No data found</option>
                                                                             ) : (
                                                                                 clientsList.map((clientObj) => (
-                                                                                    <option key={clientObj.client_id} value={clientObj.association_id}>
+                                                                                    <option key={clientObj.association_id} value={clientObj.association_id}>
                                                                                         {clientObj.association_name}
                                                                                     </option>
                                                                                 ))
@@ -321,6 +321,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                                 className="form-control"
                                                                                 maxLength={5}
                                                                                 value={commission}
+                                                                                name="commission" // Add name attribute
                                                                                 onChange={handleCommissionChange}
                                                                                 required
                                                                             />
@@ -364,7 +365,8 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
                                                                                                         id={`charger-${chargerObj.charger_id}`}
                                                                                                         checked={selectedChargers.includes(chargerObj.charger_id)}
                                                                                                         onChange={(e) => handleChargerChange(chargerObj.charger_id, e.target.checked)}
-                                                                                                        required
+                                                                                                        name={`charger_${chargerObj.charger_id}`} // Add name attribute
+                                                                                                      //  required
                                                                                                     />
                                                                                                     <label className="form-check-label" htmlFor={`charger-${chargerObj.charger_id}`}>
                                                                                                         {chargerObj.charger_id}
