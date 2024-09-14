@@ -12,7 +12,7 @@ const Logs = () => {
     const [allData, setAllData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
-    const [searchInput, setSearchInput] = useState(''); // State for search input
+    const [searchInput, setSearchInput] = useState('');
 
     const [heartbeatData, setHeartbeatData] = useState([]);
     const [bootNotificationData, setBootNotificationData] = useState([]);
@@ -31,48 +31,95 @@ const Logs = () => {
             second: '2-digit',
             hour12: true,
         });
-
+    
         const messageWithAllDataTimestamp = {
             DeviceID: parsedMessage.DeviceID,
             message: parsedMessage.message,
             dateTime: currentDateTime,
         };
-
-        setAllData((prevData) => {
-            // Add new data to allData
-            const updatedData = [...prevData, messageWithAllDataTimestamp];
     
-            // Update filteredData based on search status
+        setAllData((prevData) => {
+            const updatedData = [...prevData, messageWithAllDataTimestamp];
+            
             if (isSearching && searchInput) {
                 setFilteredData((prevFilteredData) => {
-                    // Check for existing entries with the same DeviceID and timestamp
                     const existingEntries = prevFilteredData.filter(item =>
                         item.DeviceID === messageWithAllDataTimestamp.DeviceID &&
                         item.dateTime === messageWithAllDataTimestamp.dateTime
                     );
-                    
-                    if (messageWithAllDataTimestamp.DeviceID.toUpperCase().includes(searchInput)) {
-                        // Append only if no existing entry with the same timestamp
-                        if (existingEntries.length === 0) {
-                            return [...prevFilteredData, messageWithAllDataTimestamp];
-                        }
+    
+                    let currentFilteredData = [];
+                    switch (visibleTable) {
+                        case 'Heartbeat':
+                            currentFilteredData = heartbeatData;
+                            break;
+                        case 'BootNotification':
+                            currentFilteredData = bootNotificationData;
+                            break;
+                        case 'StatusNotification':
+                            currentFilteredData = statusNotificationData;
+                            break;
+                        case 'Start/Stop':
+                            currentFilteredData = startStopData;
+                            break;
+                        case 'Meter/Values':
+                            currentFilteredData = meterValuesData;
+                            break;
+                        case 'Authorization':
+                            currentFilteredData = authorizationData;
+                            break;
+                        case 'All':
+                        default:
+                            currentFilteredData = updatedData;
+                            break;
+                    }
+    
+                    const filtered = currentFilteredData.filter(item =>
+                        item.DeviceID.toUpperCase().includes(searchInput)
+                    );
+    
+                    if (existingEntries.length === 0) {
+                        return [...prevFilteredData, ...filtered];
                     }
                     return prevFilteredData;
                 });
             } else {
-                // Show all data if not searching
-                setFilteredData(updatedData);
+                let visibleData = [];
+                switch (visibleTable) {
+                    case 'Heartbeat':
+                        visibleData = heartbeatData;
+                        break;
+                    case 'BootNotification':
+                        visibleData = bootNotificationData;
+                        break;
+                    case 'StatusNotification':
+                        visibleData = statusNotificationData;
+                        break;
+                    case 'Start/Stop':
+                        visibleData = startStopData;
+                        break;
+                    case 'Meter/Values':
+                        visibleData = meterValuesData;
+                        break;
+                    case 'Authorization':
+                        visibleData = authorizationData;
+                        break;
+                    case 'All':
+                    default:
+                        visibleData = updatedData;
+                        break;
+                }
+                setFilteredData(visibleData);
             }
-    
+            
             return updatedData;
         });
-
+    
         const messageWithTimestamp = {
             ...parsedMessage,
             dateTime: currentDateTime
         };
-
-        // Categorize and store messages based on their types
+    
         switch (parsedMessage.message[2]) {
             case 'Heartbeat':
                 setHeartbeatData(prevData => [...prevData, messageWithTimestamp]);
@@ -96,7 +143,13 @@ const Logs = () => {
             default:
                 break;
         }
-    }, [isSearching, searchInput]);
+    }, [
+        isSearching, searchInput, 
+        heartbeatData, bootNotificationData, 
+        statusNotificationData, startStopData, 
+        meterValuesData, authorizationData, visibleTable
+    ]);
+    
 
     useEffect(() => {
         if (!socketRef.current) {
@@ -106,7 +159,7 @@ const Logs = () => {
                 console.log('WebSocket connection opened:', event);
             });
 
-            newSocket.addEventListener('message', async(response) => {
+            newSocket.addEventListener('message', async (response) => {
                 const parsedMessage = JSON.parse(response.data);
                 console.log('parsedMessage', parsedMessage);
                 await handleFrame(parsedMessage);
@@ -132,17 +185,46 @@ const Logs = () => {
         };
     }, [socketRef, handleFrame]);
 
-    // Search data
+    // Search data with switch case based on the selected table (visibleTable)
     const handleSearchInputChange = (e) => {
-        // const inputValue = e.target.value.toUpperCase();
-        const inputValue = e.target.value.toUpperCase().trim(); // Trim whitespace and convert to uppercase
-        setSearchInput(inputValue); // Update search input state
-        setIsSearching(inputValue !== ''); // Set search status
-
+        const inputValue = e.target.value.toUpperCase().trim();
+        setSearchInput(inputValue);
+        setIsSearching(inputValue !== '');
+    
+        // Choose the dataset based on the active table (visibleTable)
+        let currentData = [];
+    
+        switch (visibleTable) {
+            case 'Heartbeat':
+                currentData = heartbeatData;
+                break;
+            case 'BootNotification':
+                currentData = bootNotificationData;
+                break;
+            case 'StatusNotification':
+                currentData = statusNotificationData;
+                break;
+            case 'Start/Stop':
+                currentData = startStopData;
+                break;
+            case 'Meter/Values':
+                currentData = meterValuesData;
+                break;
+            case 'Authorization':
+                currentData = authorizationData;
+                break;
+            case 'All':
+            default:
+                currentData = allData;
+                break;
+        }
+    
         if (inputValue === '') {
-            setFilteredData(allData); // Reset to all data if search input is cleared
+            // If the search input is cleared, reset to the current visible table's data
+            setFilteredData(currentData);
         } else {
-            const filtered = allData.filter((item) =>
+            // Filter the current visible table's data by DeviceID
+            const filtered = currentData.filter((item) =>
                 item.DeviceID.toUpperCase().includes(inputValue)
             );
             setFilteredData(filtered);
@@ -152,9 +234,34 @@ const Logs = () => {
     // Handle visibility buttons
     const handleTableVisibility = (table) => {
         setVisibleTable(table);
-        setSearchInput(''); // Clear search input
-        setIsSearching(false); // Reset search when changing table
-        setFilteredData([]); // Clear filtered data when table changes
+        setSearchInput('');
+        setIsSearching(false);
+        switch (table) {
+            case 'All':
+                setFilteredData(allData);
+                break;
+            case 'Heartbeat':
+                setFilteredData(heartbeatData);
+                break;
+            case 'BootNotification':
+                setFilteredData(bootNotificationData);
+                break;
+            case 'StatusNotification':
+                setFilteredData(statusNotificationData);
+                break;
+            case 'Start/Stop':
+                setFilteredData(startStopData);
+                break;
+            case 'Meter/Values':
+                setFilteredData(meterValuesData);
+                break;
+            case 'Authorization':
+                setFilteredData(authorizationData);
+                break;
+            default:
+                setFilteredData(allData);
+                break;
+        }
     };
 
     const buttons = [
@@ -391,7 +498,7 @@ const Logs = () => {
                                                                             <td>{statusNotificationItem.dateTime || '-'}</td> 
                                                                             <td>{statusNotificationItem.DeviceID || '-'}</td>
                                                                             <td>{connectorId}</td> 
-                                                                            <td style={getStatusStyle(status)}>{status}</td>  
+                                                                            <td style={getStatusStyle(status)}><b>{status}</b></td>  
                                                                             <td>{errorCode}</td>
                                                                         </tr>
                                                                     );
