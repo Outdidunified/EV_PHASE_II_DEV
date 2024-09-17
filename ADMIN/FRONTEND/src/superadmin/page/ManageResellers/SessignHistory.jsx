@@ -27,16 +27,29 @@ const SessionHistory = ({ userInfo, handleLogout }) => {
         localStorage.setItem('sessiondata', JSON.stringify(sessiondatass));
     }, [sessiondatass]);
 
+    // const handleSearchInputChange = (e) => {
+    //     const inputValue = e.target.value.toUpperCase();
+    //     if (Array.isArray(sessiondatass)) {
+    //         const filteredData = sessiondatass.filter((item) =>
+    //             item.user.toUpperCase().includes(inputValue) ||
+    //             item.charger_id.toUpperCase().includes(inputValue)
+    //         );
+    //         setPosts(filteredData);
+    //     }
+    // };
+
     const handleSearchInputChange = (e) => {
         const inputValue = e.target.value.toUpperCase();
         if (Array.isArray(sessiondatass)) {
-            const filteredData = sessiondatass.filter((item) =>
-                item.user.toUpperCase().includes(inputValue) ||
-                item.charger_id.toUpperCase().includes(inputValue)
-            );
+            const filteredData = sessiondatass.filter((item) => {
+                const user = item.user ? item.user.toUpperCase() : [];
+                const chargerId = item.charger_id ? item.charger_id.toUpperCase() : [];
+                return user.includes(inputValue) || chargerId.includes(inputValue);
+            });
             setPosts(filteredData);
         }
     };
+    
 
     const backManageReseller = (dataItem) => {
         navigate('/superadmin/AssignCharger', { state: { dataItem } });

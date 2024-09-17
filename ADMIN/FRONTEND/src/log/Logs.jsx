@@ -20,6 +20,9 @@ const Logs = () => {
     const [startStopData, setStartStopData] = useState([]);
     const [meterValuesData, setMeterValuesData] = useState([]);
     const [authorizationData, setAuthorizationData] = useState([]);
+    const [rawData, setRawData] = useState([]);
+
+console.log(rawData, 'raw data');
 
     const handleFrame = useCallback(async (parsedMessage) => {
         const currentDateTime = new Date().toLocaleString('en-IN', {
@@ -38,6 +41,8 @@ const Logs = () => {
             dateTime: currentDateTime,
         };
     
+        setRawData((prevData) => [...prevData, messageWithAllDataTimestamp]);
+
         setAllData((prevData) => {
             const updatedData = [...prevData, messageWithAllDataTimestamp];
             
@@ -161,8 +166,9 @@ const Logs = () => {
 
             newSocket.addEventListener('message', async (response) => {
                 const parsedMessage = JSON.parse(response.data);
-                console.log('parsedMessage', parsedMessage);
+                // console.log('parsedMessage', parsedMessage);
                 await handleFrame(parsedMessage);
+
             });
 
             newSocket.addEventListener('close', (event) => {
@@ -271,7 +277,8 @@ const Logs = () => {
         { label: 'StatusNotification', value: 'StatusNotification' },
         { label: 'Start/Stop', value: 'Start/Stop' },
         { label: 'Meter/Values', value: 'Meter/Values' },
-        { label: 'Authorization', value: 'Authorization' }
+        { label: 'Authorization', value: 'Authorization' },
+        { label: 'RawData', value: 'RawData' }
     ];
 
     const dataToShow = isSearching ? filteredData : allData;
@@ -288,22 +295,20 @@ const Logs = () => {
             <Header/>
             <div className="container-fluid page-body-wrapper">
                 <div style={{transition: 'width 0.25s ease, margin 0.25s ease', width: 'calc(100%)', minHeight: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column'}}>
-                    <div className="content-wrapper">
+                    <div className="content-wrapper" style={{padding:'15px 15px 15px 15px'}}>
                         <div className="row">
                             <div className="col-lg-12 grid-margin stretch-card">
                                 <div className="card">
                                     <div className="card-body">
-                                        <div className="row">
+                                        <div className="row" style={{height:'55px'}}>
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row">
-                                                    <div className="col-4 col-xl-8">
-                                                        {/* <h4 className="card-title" style={{paddingTop:'10px'}}>EVSE Live Log</h4>  */}
-                                                        {/* backgroundColor: "#28a745" */}
+                                                    <div className="col-5 col-xl-7">
                                                         <div className="live-indicator" style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "red", color: "white", padding: "6px 10px", borderRadius: "15px",fontWeight: "bold", fontSize: "16px", cursor: "pointer",  width: "150px", height: "40px" }}>                                                            
                                                             <span className="live-dot" style={{ width: "12px", height: "12px", backgroundColor: "white", borderRadius: "50%", marginRight: "6px", animation: "pulse 0.2s infinite" }}></span><span className="live-text">EVSE Live Log</span>
                                                         </div> 
                                                     </div>
-                                                    <div className="col-8 col-xl-4">
+                                                    {visibleTable !=='RawData'&&  (<div className="col-7 col-xl-5">
                                                         <div className="input-group">
                                                             <div className="input-group-prepend hover-cursor" id="navbar-search-icon">
                                                                 <span className="input-group-text" id="search">
@@ -312,14 +317,15 @@ const Logs = () => {
                                                             </div>
                                                             <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off"  value={searchInput} onChange={handleSearchInputChange}/>
                                                         </div>
-                                                    </div>
+                                                    </div>)}
+                                                    
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row justify-content-center">
-                                                    <div className="col-12 col-xl-12 text-center">
+                                                    <div className="col-12 col-xl-12 text-center" style={{paddingLeft: '0px', paddingRight: '0px'}}>
                                                        {buttons.map(button => (
                                                             <button
                                                                 key={button.value}
@@ -337,7 +343,7 @@ const Logs = () => {
                                         </div>
                                         {/* All */}
                                         {visibleTable === 'All' && (
-                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '590px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr>
@@ -359,7 +365,7 @@ const Logs = () => {
                                                                         <td>{allItem.DeviceID || '-'}</td>
                                                                         <td>
                                                                             {allItem.message ? (
-                                                                                <textarea value={JSON.stringify(allItem.message)}  style={{ border: 'none', outline: 'none', background:'none' }} readOnly rows="6" cols="150" />
+                                                                                <textarea value={JSON.stringify(allItem.message)}  style={{ border: 'none', outline: 'none', background:'none' }} readOnly rows="5" cols="150" />
                                                                             ) : (
                                                                                 '-'
                                                                             )}
@@ -378,7 +384,7 @@ const Logs = () => {
                                         )}
                                         {/* Heartbeat */}
                                         {visibleTable === 'Heartbeat' && (
-                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '590px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -412,7 +418,7 @@ const Logs = () => {
 
                                         {/* BootNotification */}
                                         {visibleTable === 'BootNotification' && (
-                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '590px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -456,7 +462,7 @@ const Logs = () => {
 
                                         {/* StatusNotification */}
                                         {visibleTable === 'StatusNotification' && (
-                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '590px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -516,7 +522,7 @@ const Logs = () => {
 
                                         {/* Start/Stop */}
                                         {visibleTable === 'Start/Stop' && (
-                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '590px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -573,7 +579,7 @@ const Logs = () => {
 
                                         {/* Meter/Values */}
                                         {visibleTable === 'Meter/Values' && (
-                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '590px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -649,7 +655,7 @@ const Logs = () => {
 
                                         {/* Authorization */}
                                         {visibleTable === 'Authorization' && (
-                                            <div className="table-responsive" style={{ maxHeight: '520px', overflowY: 'auto' }}>
+                                            <div className="table-responsive" style={{ maxHeight: '590px', overflowY: 'auto' }}>
                                                 <table className="table table-striped">
                                                     <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                         <tr> 
@@ -686,6 +692,44 @@ const Logs = () => {
                                                     </tbody>
                                                 </table>
                                             </div>    
+                                        )}
+
+                                        {/* RawData */}
+                                        {visibleTable === 'RawData' && (
+                                            <div className="table-responsive" style={{ maxHeight: '590px', overflowY: 'auto' }}>
+                                                <table className="table table-striped">
+                                                    <thead style={{ textAlign: 'center', position: 'sticky', tableLayout: 'fixed', top: 0, backgroundColor: 'white', zIndex: 1 }}>
+                                                        <tr>
+                                                            <th>RawData</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody style={{ textAlign: 'center' }}>
+                                                        {loading ? (
+                                                            <tr>
+                                                                <td colSpan="1" style={{ marginTop: '50px', textAlign: 'center' }}>Loading...</td>
+                                                            </tr>
+                                                        ) : (
+                                                            Array.isArray(rawData) && rawData.length > 0 ? (
+                                                                rawData.slice().reverse().map((rawDataItem, index) => (
+                                                                    <tr key={index}>
+                                                                        <td>
+                                                                            {rawDataItem ? (
+                                                                                <textarea value={JSON.stringify(rawDataItem, null)}  style={{ border: 'none', outline: 'none', background:'none' }} readOnly rows="2" cols="150" />
+                                                                            ) : (
+                                                                                '-'
+                                                                            )}
+                                                                        </td>
+                                                                    </tr>
+                                                                ))
+                                                            ) : (
+                                                                <tr>
+                                                                    <td colSpan="1" style={{ marginTop: '50px', textAlign: 'center' }}>No RawData found</td>
+                                                                </tr>
+                                                            )
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
