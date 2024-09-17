@@ -1098,7 +1098,8 @@ async function CreateFinanceDetails(req, res, next) {
         const result = await financeCollection.insertOne({
             finance_id: newFinanceId,
             client_id,
-            eb_charges: parseInt(eb_charges),
+            // eb_charges: parseInt(eb_charges),
+            eb_charges: eb_charges,
             app_charges,
             other_charges,
             parking_charges,
@@ -1161,7 +1162,8 @@ async function UpdateFinanceDetails(req, res, next) {
             {
                 $set: {
                     client_id,
-                    eb_charges: parseInt(eb_charges) || existingFinance.eb_charges,
+                    // eb_charges: parseInt(eb_charges) || existingFinance.eb_charges,
+                    eb_charges: eb_charges || existingFinance.eb_charges,
                     app_charges,
                     other_charges,
                     parking_charges,
