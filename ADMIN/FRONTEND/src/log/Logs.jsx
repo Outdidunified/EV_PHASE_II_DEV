@@ -22,7 +22,7 @@ const Logs = () => {
     const [authorizationData, setAuthorizationData] = useState([]);
     const [rawData, setRawData] = useState([]);
 
-console.log(rawData, 'raw data');
+    // console.log(rawData, 'raw data');
 
     const handleFrame = useCallback(async (parsedMessage) => {
         const currentDateTime = new Date().toLocaleString('en-IN', {
@@ -166,7 +166,7 @@ console.log(rawData, 'raw data');
 
             newSocket.addEventListener('message', async (response) => {
                 const parsedMessage = JSON.parse(response.data);
-                // console.log('parsedMessage', parsedMessage);
+                console.log('parsedMessage', parsedMessage);
                 await handleFrame(parsedMessage);
 
             });
