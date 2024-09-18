@@ -1159,10 +1159,37 @@ const insertSocketGunConfig = async (uniqueIdentifier, chargePointModel) => {
     }
 };
 
+async function getConnectorId(uniqueIdentifier, transactionId) {
+    try {
+        const db = await database.connectToDatabase();
+        const document = await db.collection('charger_details').findOne({ charger_id: uniqueIdentifier });
 
+        // Check if the document exists
+        if (!document) {
+            throw new Error('Charger not found');
+        }
 
+        // Find the key that matches the transactionId
+        const keyName = Object.keys(document).find(key => document[key] === transactionId);
 
+        if (!keyName) {
+            throw new Error('Transaction not found');
+        }
 
+        // Extract the last number from the key name
+        const lastNumber = keyName.match(/(\d+)$/);
+
+        if (!lastNumber) {
+            throw new Error('No number found in the key name');
+        }
+
+        return lastNumber[0]; // Return the last number as a string
+
+    } catch (error) {
+        console.error(`Get connector ID error in stop transaction: ${error}`);
+        throw error; // Re-throw the error for handling by the caller
+    }
+}
 
 module.exports = {  savePaymentDetails, 
                     getIpAndupdateUser, 
@@ -1184,5 +1211,6 @@ module.exports = {  savePaymentDetails,
                     autostop_unit,
                     autostop_price,
                     insertSocketGunConfig,
-                    NullTagIDInStatus
+                    NullTagIDInStatus,
+                    getConnectorId
                 };

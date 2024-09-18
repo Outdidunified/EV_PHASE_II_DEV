@@ -3,7 +3,8 @@ const { connectToDatabase } = require('./db');
 const {
     generateRandomTransactionId, SaveChargerStatus, updateTime, updateCurrentOrActiveUserToNull, handleChargingSession,
     getUsername, updateChargerDetails, checkChargerIdInDatabase, checkChargerTagId, checkAuthorization, calculateDifference,
-    UpdateInUse, getAutostop, captureMetervalues, autostop_unit, autostop_price, insertSocketGunConfig, NullTagIDInStatus
+    UpdateInUse, getAutostop, captureMetervalues, autostop_unit, autostop_price, insertSocketGunConfig, NullTagIDInStatus,
+    getConnectorId
 } = require('./functions');
 const Chargercontrollers = require("./src/ChargingSession/controllers.js");
 
@@ -982,8 +983,11 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             return errors;
                         }
                     
-                        const connectorId = requestData[3].connectorId; // Get the connector ID from the request
+                        //const connectorId = requestData[3].connectorId; // Get the connector ID from the request
                         const idTag = requestData[3].idTag;
+                        const transactionId = requestData[3].transactionId;
+
+                        const connectorId = await getConnectorId(uniqueIdentifier,transactionId);
                     
                         const timestamp = requestData[3].timestamp;
                         const sendTo = wsConnections.get(uniqueIdentifier);
