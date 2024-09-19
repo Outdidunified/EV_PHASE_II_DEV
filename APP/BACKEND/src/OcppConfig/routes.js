@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const database = require('../db');
+const database = require('../../db');
 const { wsConnections, OCPPResponseMap } = require('../../MapModules.js');
 const url = require('url');
-const {getIpAndupdateUser} = require('../OcppConfig/controllers.js');
 
 //Fetch all action options for OCPPConfig
 router.get('/GetAction', async(req, res) => {
@@ -111,3 +110,6 @@ router.get('/SendOCPPRequest', async(req, res) => {
         res.status(404).end('OCPP Request client not found for the specified device ID: ' + deviceIDToSendTo);
     }
 });
+
+// Export the router
+module.exports = router;
