@@ -14,14 +14,14 @@ router.get('/checkChargerID', async function(req, res) {
         const Collection = db.collection('device_session_details');
         const charger_table = db.collection('charger_details');
 
-        const checkChargerID = await charger_table.findOne({"ChargerID" : charger_id});
+        const checkChargerID = await charger_table.findOne({"charger_id" : charger_id});
 
         if(!checkChargerID){
             const errorMessage = 'Charger ID is not available !';
             return res.status(401).json({ message: errorMessage });
         }
 
-        const result = await Collection.find({ ChargerID: charger_id, StopTimestamp: { $ne: null } }).sort({ StopTimestamp: -1 }).toArray();
+        const result = await Collection.find({ charger_id: charger_id, stop_time: { $ne: null } }).sort({ stop_time: -1 }).toArray();
 
         if (!result || result.length === 0) {
             const errorMessage = 'ChargerSessionDetails - No record found !';
