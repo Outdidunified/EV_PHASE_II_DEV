@@ -29,7 +29,7 @@ async function searchCharger(req, res) {
         if(userDetails){
             // check user status true or false
             if(userDetails.status === true){
-                const socketGunConfig = await socketGunConfigCollection.findOne({ charger_id: ChargerID }); // fetch total connector id's
+                const socketGunConfig = await socketGunConfigCollection.findOne({ charger_id: { $regex: new RegExp(`^${ChargerID}$`, 'i') } }); // fetch total connector id's
                 //check assigned association id is null value in users 
                 if(userDetails.assigned_association === null){
                     //check charger is in public or private 1 or 2
