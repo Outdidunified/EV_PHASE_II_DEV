@@ -303,26 +303,27 @@ const Logs = () => {
                                         <div className="row" style={{height:'55px'}}>
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row">
-                                                    <div className="col-5 col-xl-7">
+                                                    <div className="col-12 col-sm-6 col-md-6 col-xl-6 mb-2 mb-sm-0">
                                                         <div className="live-indicator" style={{ display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "red", color: "white", padding: "6px 10px", borderRadius: "15px",fontWeight: "bold", fontSize: "16px", cursor: "pointer",  width: "150px", height: "40px" }}>                                                            
                                                             <span className="live-dot" style={{ width: "12px", height: "12px", backgroundColor: "white", borderRadius: "50%", marginRight: "6px", animation: "pulse 0.2s infinite" }}></span><span className="live-text">EVSE Live Log</span>
                                                         </div> 
                                                     </div>
-                                                    {visibleTable !=='RawData'&&  (<div className="col-7 col-xl-5">
-                                                        <div className="input-group">
-                                                            <div className="input-group-prepend hover-cursor" id="navbar-search-icon">
-                                                                <span className="input-group-text" id="search">
-                                                                <i className="icon-search"></i>
-                                                                </span>
+                                                    {visibleTable !=='RawData'&&  (
+                                                       <div className="col-12 col-sm-6 col-md-6 col-xl-6">
+                                                            <div className="input-group">
+                                                                <div className="input-group-prepend hover-cursor" id="navbar-search-icon">
+                                                                    <span className="input-group-text" id="search">
+                                                                    <i className="icon-search"></i>
+                                                                    </span>
+                                                                </div>
+                                                                <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off"  value={searchInput} onChange={handleSearchInputChange}/>
                                                             </div>
-                                                            <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off"  value={searchInput} onChange={handleSearchInputChange}/>
                                                         </div>
-                                                    </div>)}
-                                                    
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="row">
+                                        <div className="row" style={{ paddingTop:'50px'}}>
                                             <div className="col-md-12 grid-margin">
                                                 <div className="row justify-content-center">
                                                     <div className="col-12 col-xl-12 text-center" style={{paddingLeft: '0px', paddingRight: '0px'}}>
@@ -365,7 +366,7 @@ const Logs = () => {
                                                                         <td>{allItem.DeviceID || '-'}</td>
                                                                         <td>
                                                                             {allItem.message ? (
-                                                                                <textarea value={JSON.stringify(allItem.message)}  style={{ border: 'none', outline: 'none', background:'none' }} readOnly rows="5" cols="150" />
+                                                                                <textarea value={JSON.stringify(allItem.message)}  style={{ border: 'none', outline: 'none', background:'none', width: '100%' }} readOnly rows="5" cols="150" />
                                                                             ) : (
                                                                                 '-'
                                                                             )}
@@ -714,7 +715,7 @@ const Logs = () => {
                                                                     <tr key={index}>
                                                                         <td>
                                                                             {rawDataItem ? (
-                                                                                <textarea value={JSON.stringify(rawDataItem, null)}  style={{ border: 'none', outline: 'none', background:'none' }} readOnly rows="2" cols="150" />
+                                                                                <textarea value={JSON.stringify(rawDataItem, null)}  style={{ border: 'none', outline: 'none', background:'none', width: '100%' }} readOnly rows="4" cols="200" />
                                                                             ) : (
                                                                                 '-'
                                                                             )}
