@@ -3,6 +3,7 @@ const router = express.Router();
 const database = require('../../db');
 const { wsConnections, OCPPResponseMap } = require('../../MapModules.js');
 const url = require('url');
+const logger = require('../../logger');
 
 //Fetch all action options for OCPPConfig
 router.get('/GetAction', async(req, res) => {
