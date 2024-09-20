@@ -312,11 +312,11 @@ const Logs = () => {
                                                        <div className="col-12 col-sm-6 col-md-6 col-xl-6">
                                                             <div className="input-group">
                                                                 <div className="input-group-prepend hover-cursor" id="navbar-search-icon">
-                                                                    <span className="input-group-text" id="search">
-                                                                    <i className="icon-search"></i>
+                                                                    <span className="input-group-text searchIconCss" id="search">
+                                                                    <i className="icon-search" style={{color:'white'}}></i>
                                                                     </span>
                                                                 </div>
-                                                                <input type="text" className="form-control" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off"  value={searchInput} onChange={handleSearchInputChange}/>
+                                                                <input type="text" className="form-control searchInputCss" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off"  value={searchInput} onChange={handleSearchInputChange}/>
                                                             </div>
                                                         </div>
                                                     )}

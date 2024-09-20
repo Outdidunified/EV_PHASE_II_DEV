@@ -15,4 +15,13 @@
     }
   }
 
-  
+  .searchIconCss{
+    border-radius: 10px 0 0 0; 
+    border-color:#57B657 !important;
+    background-color:#57B657;
+  }
+
+  .searchInputCss{
+    border-radius: 0 0 10px 0;
+    border-color:#57B657;
+  }

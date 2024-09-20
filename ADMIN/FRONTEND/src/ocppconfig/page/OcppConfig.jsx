@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const OcppConfigs = () => { // Component name starts with an uppercase letter
+const OcppConfig = () => { 
     const [chargerId, setChargerId] = useState("");
     const [commandsLibrary, setCommandsLibrary] = useState([]);
     const [selectedCommand, setSelectedCommand] = useState("");
@@ -143,9 +143,9 @@ const OcppConfigs = () => { // Component name starts with an uppercase letter
                                                     </div>
                                                     <div className="col-12 col-sm-6 col-md-6 col-xl-6">
                                                         <div className="input-group">
-                                                            <input type="text" className="form-control" style={{borderRadius:'10px 0 0 10px'}} placeholder="Charger ID" aria-label="search" aria-describedby="search" autoComplete="off" value={chargerId} onChange={handleChargerIdChange} required/>
+                                                            <input type="text" className="form-control" style={{borderRadius: '10px 0 0 0', borderColor:'#57B657'}} placeholder="Charger ID" aria-label="search" aria-describedby="search" autoComplete="off" value={chargerId} onChange={handleChargerIdChange} required/>
                                                             <div className="input-group-prepend">
-                                                                <button type="submit" className="btn btn-outline-info" style={{borderRadius:'0 10px 10px 0'}} onClick={onSendCommand}>SEND</button>
+                                                                <button type="submit" className="btn btn-success" style={{borderRadius:'0 0 10px 0'}} onClick={onSendCommand}>SEND</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -206,4 +206,4 @@ const OcppConfigs = () => { // Component name starts with an uppercase letter
     );
 };
 
-export default OcppConfigs;
+export default OcppConfig;
