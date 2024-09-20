@@ -15,6 +15,7 @@ const wallet = require('./src/Wallet/routes.js');
 const sessionhistory = require('./src/SessionHistory/routes.js');
 const profile = require('./src/Profile/routes.js');
 const OcppConfig = require('./src/OcppConfig/routes.js');
+const SessionLog = require('./src/SessionLog/route.js');
 
 app.use(express.json());
 
@@ -29,6 +30,7 @@ app.use('/wallet', wallet);
 app.use('/session', sessionhistory);
 app.use('/profile', profile);
 app.use('/OcppConfig', OcppConfig);
+app.use('/sessionlog', SessionLog);
 
 // Create an HTTP server using Express app
 const httpServer = http.createServer(app);

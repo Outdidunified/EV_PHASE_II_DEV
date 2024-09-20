@@ -5,6 +5,7 @@ import ResellerAdminApp from './adminApps/ResellerAdminApp';
 import ClientAdminApp from './adminApps/ClientAdminApp';
 import AssociationAdminApp from './adminApps/AssociationAdminApp';
 import Log from './log/Logs';
+import OcppConfig from './ocppconfig/page/ocppConfigs';
 const App = () => {
   
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/clientadmin/*" element={<ClientAdminApp />} />
         <Route path="/associationadmin/*" element={<AssociationAdminApp />} />
         <Route path="/log/*" element={<Log />} />
+        <Route path="/ocppconfig/*" element={<OcppConfig />} />
         <Route path="/" element={<Navigate to="/superadmin" />} />
       </Routes>
     </Router>

@@ -1,5 +1,4 @@
 const database = require('../../db');
-const logger = require('../../logger');
 
 //SESSION HISTORY
 async function getChargingSessionDetails(req, res) {
@@ -23,7 +22,12 @@ async function getChargingSessionDetails(req, res) {
             return res.status(404).json({ message: errorMessage });
         }
 
-        return res.status(200).json({ value: result });
+        // Calculate the sum of unit_consummed
+        const totalUnitConsumed = result.reduce((sum, session) => {
+            return sum + (session.unit_consummed || 0);  // If unit_consummed is missing or null, use 0
+        }, 0);
+        
+        return res.status(200).json({ value: result, totalUnitConsumed });
     } catch (error) {
         console.error('Error fetching charging session details:', error);
         return res.status(500).send({ message: 'Internal Server Error' });
