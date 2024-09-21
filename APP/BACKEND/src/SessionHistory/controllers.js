@@ -21,13 +21,8 @@ async function getChargingSessionDetails(req, res) {
             const errorMessage = 'ChargingSessionDetails - No record found!';
             return res.status(404).json({ message: errorMessage });
         }
-
-        // Calculate the sum of unit_consummed
-        const totalUnitConsumed = result.reduce((sum, session) => {
-            return sum + (session.unit_consummed || 0);  // If unit_consummed is missing or null, use 0
-        }, 0);
         
-        return res.status(200).json({ value: result, totalUnitConsumed });
+        return res.status(200).json({ value: result });
     } catch (error) {
         console.error('Error fetching charging session details:', error);
         return res.status(500).send({ message: 'Internal Server Error' });

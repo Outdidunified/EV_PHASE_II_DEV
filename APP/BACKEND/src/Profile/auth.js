@@ -86,10 +86,24 @@ const registerUser = async (req, res, next) => {
             ]
         });
 
-        if (existingUser) {
+        if (existingUser && existingUser.status === true) {
             const errorMessage = 'Username or email already registered';
             console.log(errorMessage)
             return res.status(403).json({ message: errorMessage });
+        }
+
+        if (existingUser && existingUser.status === false) {
+            await usersCollection.updateOne(
+                { user_id: existingUser.user_id },
+                { 
+                    $set: {  // Use $set to update specific fields
+                        status: true,
+                        modified_by: username,
+                        modified_date: new Date()
+                    }
+                }
+            );
+            return res.status(200).json({ message: 'User Registered successfully' });
         }
 
         // Hash the password
@@ -113,7 +127,7 @@ const registerUser = async (req, res, next) => {
             password: parseInt(password),
             phone_no: parseInt(phone_no),
             email_id: email_id,
-            wallet_bal: 0.00,
+            wallet_bal: 100.00,
             autostop_price: null,
             autostop_price_is_checked: null,
             autostop_time: null,
