@@ -217,8 +217,8 @@ const EditFinance = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">EB Charges</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">EB Charges</label>
+                                                                    <div className="col-sm-12">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">₹</span>
@@ -238,8 +238,8 @@ const EditFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">App Charges</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">App Charges</label>
+                                                                    <div className="col-sm-12">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -259,8 +259,8 @@ const EditFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Other Charges</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Other Charges</label>
+                                                                    <div className="col-sm-12">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -280,8 +280,8 @@ const EditFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Parking Charges</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Parking Charges</label>
+                                                                    <div className="col-sm-12">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -301,8 +301,8 @@ const EditFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Rent Charges</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Rent Charges</label>
+                                                                    <div className="col-sm-12">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -322,8 +322,8 @@ const EditFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Open A EB Charges</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Open A EB Charges</label>
+                                                                    <div className="col-sm-12">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -343,8 +343,8 @@ const EditFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Open Other Charges</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Open Other Charges</label>
+                                                                    <div className="col-sm-12">
                                                                         <div className="input-group">
                                                                             <div className="input-group-prepend">
                                                                                 <span className="input-group-text">%</span>
@@ -365,8 +365,8 @@ const EditFinance = ({ userInfo, handleLogout }) => {
                                                             
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Status</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Status</label>
+                                                                    <div className="col-sm-12">
                                                                         <select className="form-control" value={status} onChange={handleStatusChange} required>
                                                                             <option value="true">Active</option>
                                                                             <option value="false">DeActive</option>
