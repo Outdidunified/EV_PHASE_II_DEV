@@ -67,14 +67,14 @@ router.post('/FetchUserProfile',controllers.FetchUserProfile, async (req, res ) 
 router.post('/UpdateUserProfile',controllers.UpdateUserProfile, async (req, res) => {
     try {
         res.status(200).json({ status: 'Success',message: 'User profile updated successfully' });
-    } catch (error) {x
+    } catch (error) {
         console.error('Error in UpdateUserProfile route:', error);
         res.status(500).json({ status: 'Failed', message: 'Failed to update user profile' });
     }
 });
 // Route to DeleteAccount
-router.post('DeleteAccount', controllers.DeActivateUser, (req, res) => {
-    res.status(200).json({ status: 'Success' ,  message: 'User deactivated successfully' });
+router.post('/DeleteAccount', controllers.DeActivateUser, (req, res) => {
+    res.status(200).json({ status: 'Success' ,  message: 'User deleted successfully' });
 });
 
 
