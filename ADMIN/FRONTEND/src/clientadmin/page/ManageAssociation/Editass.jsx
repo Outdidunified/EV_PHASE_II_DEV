@@ -219,39 +219,41 @@ const Editass = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-12 col-form-label">Association Wallet</label>
                                                                     <div className="col-sm-12">
-                                                                        <input
-                                                                            type="text"
+                                                                        <input type="text"
                                                                             className="form-control"
                                                                             value={association_wallet}
                                                                             onChange={(e) => {
                                                                                 let value = e.target.value;
-                                                                                
+
                                                                                 // Allow only numbers and a single decimal point
                                                                                 value = value.replace(/[^0-9.]/g, '');
-                                                                                
+
                                                                                 const parts = value.split('.');
-                                                                                
+
                                                                                 // Ensure there's only one decimal point and limit to two decimal places
                                                                                 if (parts.length > 2) {
                                                                                     value = parts[0] + '.' + parts[1];
                                                                                 } else if (parts.length === 2 && parts[1].length > 2) {
                                                                                     value = parts[0] + '.' + parts[1].slice(0, 2);
                                                                                 }
-                                                                                
+
                                                                                 // Limit the length to 8 characters
                                                                                 if (value.length > 8) {
                                                                                     value = value.slice(0, 8);
                                                                                 }
-                                                                                
+
                                                                                 // Convert to float and validate range
                                                                                 const numericValue = parseFloat(value);
-                                                                                if (numericValue < 1 || numericValue > 99999) {
-                                                                                    setErrorMessage('Please enter a wallet between 1.00 ₹ and 99999.00 ₹.');
-                                                                                } else {
+
+                                                                                // If the value is within the range 1.00 to 99,999.00, set the value
+                                                                                if (!isNaN(numericValue) && numericValue >= 1 && numericValue < 100000) {
+                                                                                    setAssociationWallet(value);
                                                                                     setErrorMessage(''); // Clear error if within range
+                                                                                } else {
+                                                                                    // If outside range, clear the input field and show an error message
+                                                                                    setAssociationWallet('');
+                                                                                    setErrorMessage('Please enter a wallet amount between 1.00 ₹ and 99999.00 ₹.');
                                                                                 }
-                                                                                
-                                                                                setAssociationWallet(value);
                                                                             }}
                                                                             required
                                                                         />
