@@ -483,10 +483,10 @@ async function FetchAllocatedChargerByClientToAssociation(req) {
 //UpdateDevice 
 async function UpdateDevice(req, res, next) {
     try {
-        const { modified_by, charger_id, charger_accessibility , wifi_username, wifi_password,lat, long} = req.body;
+        const { modified_by, charger_id, charger_accessibility , wifi_username, wifi_password,lat, long, landmark} = req.body;
         // Validate the input
-        if (!modified_by || !charger_id || !charger_accessibility || !wifi_username || !wifi_password || !lat || !long) {
-            return res.status(400).json({ message: 'Username, chargerID, charger_accessibility , wifi_username, wifi_password,lat, long}and Status (boolean) are required' });
+        if (!modified_by || !charger_id || !charger_accessibility || !wifi_username || !wifi_password || !lat || !long || !landmark) {
+            return res.status(400).json({ message: 'All the fields are required' });
         }
 
         const db = await database.connectToDatabase();
@@ -508,8 +508,9 @@ async function UpdateDevice(req, res, next) {
                     wifi_password: wifi_password,
                     lat: lat,
                     long: long,
+                    landmark: landmark,
                     modified_by: modified_by,
-                    modified_date: new Date()
+                    modified_date: new Date(),
                 }
             }
         );
