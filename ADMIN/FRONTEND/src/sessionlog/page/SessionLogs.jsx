@@ -113,7 +113,7 @@ const SessionLogs = () => {
                                                     </div>
                                                     <div className="col-8 col-xl-4">
                                                         <div className="input-group">
-                                                            <input type="text" className="form-control searchInputCss" placeholder="Search now" aria-label="search" aria-describedby="search" value={chargerId} onChange={(e) => setChargerId(e.target.value)} autoComplete="off" required/>
+                                                            <input type="text" className="form-control searchInputCss" placeholder="Charger ID" aria-label="search" aria-describedby="search" value={chargerId} onChange={(e) => setChargerId(e.target.value)} autoComplete="off" required/>
                                                             <div className="input-group-append">
                                                                 <button className="btn btn-success" style={{borderRadius:'0 0 10px 0'}} type="button" onClick={handleSearch}>SEND</button>
                                                             </div>
@@ -153,7 +153,7 @@ const SessionLogs = () => {
                                                 </div>
                                             </form>
                                         </div><hr/>
-                                        <div className="table-responsive" style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                                        <div className="table-responsive" style={{ overflowY: 'auto' }}>
                                             <table className="table table-striped">
                                                 <thead style={{ textAlign: 'center', tableLayout: 'fixed', position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 }}>
                                                     <tr> 

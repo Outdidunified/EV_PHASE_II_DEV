@@ -22,14 +22,31 @@ const ManageTagID = ({ userInfo, handleLogout }) => {
             const res = await axios.post('/associationadmin/FetchAllTagIDs', {
                 association_id: userInfo.data.association_id
             });
-                setData(res.data.data);
-                setLoading(false);
+    
+            if (res.data && res.data.status === 'Success') {
+                if (typeof res.data.data === 'string' && res.data.data === 'No tags found') {
+                    // If the response indicates no tags were found
+                    setError(res.data.data);
+                    setData([]); // Clear the data since no tags were found
+                } else if (Array.isArray(res.data.data)) {
+                    // If the data is an array of tag IDs, set it directly
+                    setData(res.data.data);
+                    setError(null); // Clear any previous errors
+                } else {
+                    setError('Unexpected response format.');
+                }
+            } else {
+                setError('Error fetching data. Please try again.');
+            }
+    
+            setLoading(false);
         } catch (err) {
             console.error('Error fetching data:', err);
             setError('Error fetching data. Please try again.');
             setLoading(false);
         }
     }, [userInfo.data.association_id]);
+    
     
 
     useEffect(() => {

@@ -297,7 +297,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                         </div>
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}
-                                                        <div style={{textAlign:'center'}}>
+                                                        <div style={{textAlign:'center', padding:'15px'}}>
                                                         <button type="submit" className="btn btn-primary" disabled={!isFormChanged()}>Update</button>
                                                         </div>
                                                     </form>
