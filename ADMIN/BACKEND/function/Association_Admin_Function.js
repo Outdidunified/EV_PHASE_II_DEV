@@ -658,7 +658,8 @@ async function AddUserToAssociation(req, res) {
                         { phone_no: parseInt(phone_no) }
                     ]
                 },
-                {role_id: 5}
+                {role_id: 5},
+                {status: true}
             ]
         });
 
