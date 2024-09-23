@@ -1039,6 +1039,14 @@ async function UpdateTagID(req, res) {
             return res.status(404).json({ message: 'Tag ID not found' });
         }
 
+        // Check for duplicate tag_id if the tag_id is being updated
+        if (tag_id) {
+            const duplicateTag = await tagsCollection.findOne({ tag_id: tag_id, id: { $ne: id } });
+            if (duplicateTag) {
+                return res.status(400).json({ message: 'Tag ID already exists' });
+            }
+        }
+
         // Update the tag_id details
         const updateData = {};
         if (tag_id) updateData.tag_id = tag_id;
