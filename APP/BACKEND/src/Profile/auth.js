@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
 const database = require('../../db');
+const EmailController = require("../Emailer/controller.js")
 
 const authenticate = async (req) => {
     try {
@@ -158,5 +158,157 @@ const registerUser = async (req, res, next) => {
     }
 };
 
+// initiate forget password - generate otp and send through mail
+const intiateForgetPassword = async (req) => {
+    try{
+        const {email_id} = req.body;
 
-module.exports = { authenticate, registerUser };
+        // Check if email is missing
+        if (!email_id) {
+            return { error: true, status: 401, message: 'Email ID is required' };
+        }
+
+        const db = await database.connectToDatabase();
+        const usersCollection = db.collection('users');
+
+        const checkEmailID = await usersCollection.findOne({ email_id: email_id});
+
+        if(!checkEmailID){
+            console.error(`Email ID is not found`);
+            return { error: true, status: 401, message: 'Email ID is not found' };
+        }
+
+        let otp = await generateOTP();
+        console.log('Generated OTP:', otp);
+
+        if(otp){
+            const updateresult = await usersCollection.updateOne(
+                { user_id: checkEmailID.user_id },
+                { 
+                    $set: {
+                        otp: parseInt(otp),
+                        otp_generated_at: new Date(),
+                        modified_date: new Date(),
+                        modified_by: email_id
+                    }
+                }
+            );
+
+            if (updateresult.modifiedCount === 1) {
+                const EmailResult = await EmailController.EmailConfig(email_id, otp);
+                
+                if(EmailResult === true){
+                    return { error: false, status: 200, message: 'Email sent successfully' };
+                }else{
+                    return { error: true, status: 401, message: 'Email is not sent, Please try again !' };
+                }
+            }else{
+                console.error(`OTP is not updated to database`);
+                return { error: true, status: 401, message: 'Something went wrong, Please try again !' };
+            }
+
+        }else{
+            console.error(`OTP is not generated`);
+            return { error: true, status: 401, message: 'OTP is not generated, Please try again !' };
+        }
+
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
+
+// Generate a random number between 100000 and 999999
+async function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000);
+}
+
+// authenticate the otp, reset password
+async function authenticateOTP(req){
+    try{
+        const {email_id, otp} = req.body;
+
+        // Check if otp & email id is missing
+        if (!otp) {
+            return { error: true, status: 401, message: 'OTP is required' };
+        }else if(!email_id){
+            return { error: true, status: 401, message: 'Email ID is required' };
+        }
+
+        const db = await database.connectToDatabase();
+        const usersCollection = db.collection('users');
+
+        const checkEmailID_OTP = await usersCollection.findOne({ email_id: email_id, otp: parseInt(otp)});
+
+        if(!checkEmailID_OTP){
+            console.error(`Email ID / OTP is not found`);
+            return { error: true, status: 401, message: 'Email ID / OTP is not found' };
+        }else{
+            let generated_otp = checkEmailID_OTP.otp;
+
+            if(generated_otp === parseInt(otp)){
+                const resetotp = await usersCollection.updateOne(
+                    {email_id: email_id},
+                    {
+                        $set: {
+                            otp: null,
+                            otp_generated_at: null,
+                            modified_date: new Date(),
+                            modified_by: email_id
+                        }
+                    }
+                );
+                if (resetotp.modifiedCount === 1) {
+                    return { error: false, status: 200, message: 'OTP is authenticated successfully.' };
+                }else{
+                    console.error(`Entered OTP is correct, But database updation is not working please try again`);
+                    return { error: true, status: 401, message: 'Something went wrong, Please try again !' }; 
+                }
+            }else{
+                console.error(`Entered OTP is wrong, Please enter valid OTP !`);
+                return { error: true, status: 401, message: 'Entered OTP is wrong, Please enter valid OTP !' }; 
+            }
+        }
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
+
+async function resetPassword(req){
+    try{
+        const {email_id, NewPassword} = req.body;
+
+        // Check if NewPassword & email id is missing
+        if (!NewPassword) {
+            return { error: true, status: 401, message: 'New password is required' };
+        }else if(!email_id){
+            return { error: true, status: 401, message: 'Email ID is required' };
+        }
+
+        const db = await database.connectToDatabase();
+        const usersCollection = db.collection('users');
+
+        const updateNewPassword = await usersCollection.updateOne(
+            {email_id: email_id},
+            {
+                $set: {
+                    otp: parseInt(NewPassword),
+                    modified_date: new Date(),
+                    modified_by: email_id
+                }
+            }
+        );
+        if (updateNewPassword.modifiedCount === 1) {
+            return { error: false, status: 200, message: 'Password is changed successfully.' };
+        }else{
+            console.error(`Password is not updated, please try again`);
+            return { error: true, status: 401, message: 'Something went wrong, Please try again !' }; 
+        }
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
+
+module.exports = { authenticate, registerUser, intiateForgetPassword, authenticateOTP, resetPassword };
