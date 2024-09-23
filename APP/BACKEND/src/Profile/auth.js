@@ -92,23 +92,25 @@ const registerUser = async (req, res, next) => {
             return res.status(403).json({ message: errorMessage });
         }
 
-        if (existingUser.email_id === email_id && existingUser.status === false) {
-            await usersCollection.updateOne(
-                { user_id: existingUser.user_id },
-                { 
-                    $set: {
-                        //username: username,
-                        password: parseInt(password),
-                        phone_no: parseInt(phone_no),
-                        //email_id: email_id,
-                        // wallet_bal: 100.00,
-                        status: true,
-                        modified_by: username,
-                        modified_date: new Date()
+        if(existingUser){
+            if (existingUser.email_id === email_id && existingUser.status === false) {
+                await usersCollection.updateOne(
+                    { user_id: existingUser.user_id },
+                    { 
+                        $set: {
+                            //username: username,
+                            password: parseInt(password),
+                            phone_no: parseInt(phone_no),
+                            //email_id: email_id,
+                            // wallet_bal: 100.00,
+                            status: true,
+                            modified_by: username,
+                            modified_date: new Date()
+                        }
                     }
-                }
-            );
-            return res.status(200).json({ message: 'User Registered successfully' });
+                );
+                return res.status(200).json({ message: 'User Registered successfully' });
+            }
         }
 
         // Hash the password
