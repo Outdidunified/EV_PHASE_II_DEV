@@ -92,15 +92,15 @@ const registerUser = async (req, res, next) => {
             return res.status(403).json({ message: errorMessage });
         }
 
-        if (existingUser && existingUser.status === false) {
+        if (existingUser.email_id === email_id && existingUser.status === false) {
             await usersCollection.updateOne(
                 { user_id: existingUser.user_id },
                 { 
                     $set: {
-                        username: username,
+                        //username: username,
                         password: parseInt(password),
                         phone_no: parseInt(phone_no),
-                        email_id: email_id,
+                        //email_id: email_id,
                         // wallet_bal: 100.00,
                         status: true,
                         modified_by: username,
