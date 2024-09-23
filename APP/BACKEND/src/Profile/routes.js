@@ -89,7 +89,7 @@ router.post('/initiateForgetPassword', async (req, res) => {
             return res.status(result.status).json({ message: result.message });
         }
 
-        res.status(200).json({ status: 'Success', data: result.user });
+        res.status(200).json({ status: 'Success', data: result.message });
     } catch (error) {
         console.error('Error in CheckLoginCredentials route:', error);
         res.status(500).json({ status: 'Failed', message: 'Failed to authenticate user' });
@@ -105,7 +105,7 @@ router.post('/authenticateOTP', async (req, res) => {
             return res.status(result.status).json({ message: result.message });
         }
 
-        res.status(200).json({ status: 'Success', data: result.user });
+        res.status(200).json({ status: 'Success', data: result.message });
     } catch (error) {
         console.error('Error in authenticate OTP route:', error);
         res.status(500).json({ status: 'Failed', message: 'Failed to authenticate OTP' });
@@ -121,7 +121,7 @@ router.post('/resetPassword', async (req, res) => {
             return res.status(result.status).json({ message: result.message });
         }
 
-        res.status(200).json({ status: 'Success', data: result.user });
+        res.status(200).json({ status: 'Success', data: result.message });
     } catch (error) {
         console.error('Error in reset password route:', error);
         res.status(500).json({ status: 'Failed', message: 'Failed to Reset Password' });
@@ -137,7 +137,7 @@ router.post('/fetchRFID', async (req, res) => {
             return res.status(result.status).json({ message: result.message });
         }
 
-        res.status(200).json({ status: 'Success', data: result.user });
+        res.status(200).json({ status: 'Success', data: result.message });
     } catch (error) {
         console.error('Error in fetch RFID route:', error);
         res.status(500).json({ status: 'Failed', message: 'Failed to fetch RFID details' });
