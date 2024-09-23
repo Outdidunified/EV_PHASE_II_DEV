@@ -220,16 +220,16 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">User Name</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">User Name</label>
+                                                                    <div className="col-sm-12">
                                                                         <input type="text" className="form-control" value={username} maxLength={25} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setUsername(sanitizedValue);}} readOnly required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Phone Number</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Phone Number</label>
+                                                                    <div className="col-sm-12">
                                                                         <input type="text" className="form-control" value={phone_no} maxLength={10} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPhoneNo(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
@@ -238,16 +238,16 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Email ID</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Email ID</label>
+                                                                    <div className="col-sm-12">
                                                                         <input type="email" className="form-control" value={email_id} onChange={(e) => setEmailId(e.target.value)} readOnly required />
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Password</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Password</label>
+                                                                    <div className="col-sm-12">
                                                                         <input type="text" className="form-control" value={passwords} maxLength={4} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^0-9]/g, ''); setPassword(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
@@ -257,8 +257,8 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                             {dataItem.role_id === 5 && 
                                                                 <div className="col-md-6">
                                                                     <div className="form-group row">
-                                                                        <label className="col-sm-3 col-form-label">Wallet</label>
-                                                                        <div className="col-sm-9">
+                                                                        <label className="col-sm-12 col-form-label">Wallet</label>
+                                                                        <div className="col-sm-12">
                                                                             <input type="text" className="form-control" value={wallet_bal}
                                                                                 onChange={(e) => {
                                                                                     let value = e.target.value;
@@ -297,8 +297,8 @@ const EditUserList = ({ userInfo, handleLogout }) => {
                                                             }
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Status</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label">Status</label>
+                                                                    <div className="col-sm-12">
                                                                         <select className="form-control" value={selectStatus} onChange={handleStatusChange} required>
                                                                             <option value="true">Active</option>
                                                                             <option value="false">Deactive</option>

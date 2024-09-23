@@ -96,7 +96,12 @@ const registerUser = async (req, res, next) => {
             await usersCollection.updateOne(
                 { user_id: existingUser.user_id },
                 { 
-                    $set: {  // Use $set to update specific fields
+                    $set: {
+                        username: username,
+                        password: parseInt(password),
+                        phone_no: parseInt(phone_no),
+                        email_id: email_id,
+                        wallet_bal: 100.00,
                         status: true,
                         modified_by: username,
                         modified_date: new Date()

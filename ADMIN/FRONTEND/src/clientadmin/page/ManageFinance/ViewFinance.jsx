@@ -119,7 +119,7 @@ const ViewFinance = ({ userInfo, handleLogout }) => {
                                                             <hr></hr>
                                                         </div>
                                                     </div>
-                                                    <div className="row col-12 col-xl-12">
+                                                    <div className="row col-12 col-xl-12 viewDataCss">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>EB Charges: <span style={{fontWeight:'normal'}}>{newfinance.eb_charges ? `₹ ${newfinance.eb_charges}` : '-'}</span></div>
@@ -136,7 +136,7 @@ const ViewFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="row col-12 col-xl-12">
+                                                    <div className="row col-12 col-xl-12 viewDataCss">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Parking Charges: <span style={{fontWeight:'normal'}}>{newfinance.parking_charges ?  newfinance.parking_charges +' %' : '-'}</span></div>
@@ -153,7 +153,7 @@ const ViewFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="row col-12 col-xl-12">
+                                                    <div className="row col-12 col-xl-12 viewDataCss">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Open Other Charges: <span style={{fontWeight:'normal'}}>{newfinance.open_other_charges ?  newfinance.open_other_charges +' %' : '-'}</span></div>
@@ -170,7 +170,7 @@ const ViewFinance = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="row col-12 col-xl-12">
+                                                    <div className="row col-12 col-xl-12 viewDataCss">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Modified By: <span style={{fontWeight:'normal'}}>{newfinance.modified_by ? newfinance.modified_by : '-'}</span></div>
