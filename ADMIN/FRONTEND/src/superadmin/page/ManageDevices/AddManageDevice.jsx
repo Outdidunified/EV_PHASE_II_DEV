@@ -196,16 +196,16 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Charger ID</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label labelInput">Charger ID</label>
+                                                                    <div className="col-sm-12">
                                                                         <input type="text" className="form-control" placeholder="Charger ID" value={charger_id} maxLength={14} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, ''); setChargerID(sanitizedValue);}} required/>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Vendor</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label labelInput">Vendor</label>
+                                                                    <div className="col-sm-12">
                                                                         <input type="text" className="form-control" placeholder="Vendor" value={vendor} min={1} maxLength={20} onChange={(e) => {const value = e.target.value; let sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setVendor(sanitizedValue); }} required/>
                                                                     </div>
                                                                 </div>
@@ -214,8 +214,8 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Charger Model</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label labelInput">Charger Model</label>
+                                                                    <div className="col-sm-12">
                                                                         <select className="form-control" value={charger_model} onChange={handleModel} required>
                                                                             <option value="">Select model</option>
                                                                             <option value="3.5">3.5 KW</option>
@@ -228,8 +228,8 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Charger Type</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label labelInput">Charger Type</label>
+                                                                    <div className="col-sm-12">
                                                                         <select className="form-control" value={selectChargerType} onChange={handleChargerType} required>
                                                                             <option value="">Select type</option>
                                                                             <option value="AC">AC</option>
@@ -242,8 +242,8 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Max Current</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label labelInput">Max Current</label>
+                                                                    <div className="col-sm-12">
                                                                         <input type="tel" className="form-control" placeholder="Max Current" value={maxCurrent} 
                                                                         onChange={(e) => {
                                                                             let value = e.target.value;
@@ -269,8 +269,8 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-3 col-form-label">Max Power</label>
-                                                                    <div className="col-sm-9">
+                                                                    <label className="col-sm-12 col-form-label labelInput">Max Power</label>
+                                                                    <div className="col-sm-12">
                                                                         <input type="tel" className="form-control" placeholder="Max Power" value={maxPower} 
                                                                         onChange={(e) => {
                                                                             let value = e.target.value;

@@ -9,8 +9,8 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
     const location = useLocation();
     const [newUser, setNewUser] = useState({
         charger_id: '', charger_model: '', charger_type: '', model: '', type: '', vendor: '', gun_connector: '', max_current:'', max_power:'', socket_count:'', current_active_user:'',
-        superadmin_commission: '', reseller_commission: '', client_commission: '',  ip: '', lat: '', long: '', short_description: '', charger_accessibility: '', unit_price: '', assigned_user: '', wifi_password: '',
-        status: '', created_by:'', created_date:'', modified_by:'', modified_date:'', _id: '',
+        superadmin_commission: '', reseller_commission: '', client_commission: '',  ip: '', lat: '', long: '', landmark: '', short_description: '', charger_accessibility: '', unit_price: '', 
+        assigned_user: '', wifi_password: '', status: '', created_by:'', created_date:'', modified_by:'', modified_date:'', _id: '',
     });
 
     useEffect(() => {
@@ -34,6 +34,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                 ip: dataItem.ip || '',
                 lat: dataItem.lat || '',
                 long: dataItem.long || '',
+                landmark: dataItem.landmark || '',
                 short_description: dataItem.short_description || '',
                 charger_accessibility: dataItem.charger_accessibility || '',
                 unit_price: dataItem.unit_price || '',
@@ -273,6 +274,11 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Modified Date: <span style={{fontWeight:'normal'}}>{newUser.modified_date ? formatTimestamp(newUser.modified_date) : '-'}</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Land Mark: <span style={{fontWeight: 'normal'}}>{newUser.landmark ? newUser.landmark : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">

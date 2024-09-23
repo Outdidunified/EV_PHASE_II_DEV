@@ -271,8 +271,6 @@ async function FetchUser() {
     }
 }
 
-
-
 //FetchSpecificUserRoleForSelection
 async function FetchSpecificUserRoleForSelection() {
     try {
@@ -1128,6 +1126,169 @@ async function AssignChargerToReseller(req, res) {
     }
 }
 
+// fetch Output Type details
+async function fetchOutputType(req){
+    try{   
+        let id;
+        let fetchResult;
+
+        // Check if req and req.body exist
+        if (req && req.body) {
+            // Destructure id from req.body if it exists
+            ({ id } = req.body);
+        }
+
+        const db = await database.connectToDatabase();
+        const OutputTypeCollection = db.collection('output-type_config');
+
+        if(id){
+            fetchResult = await OutputTypeCollection.findOne({ id: id});
+
+        }else{
+            fetchResult = await OutputTypeCollection.find().toArray();
+        }
+        
+        if(!fetchResult){
+            console.error(`No details found`);
+            return { error: true, status: 401, message: 'No details found' };
+        }
+
+        return { error: false, status: 200, message: fetchResult };
+
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
+
+// update Output Type details
+async function updateOutputType(req){
+    try{   
+        const { id, output_type_name, modified_by} = req.body;
+
+        if(!id || !output_type_name || !modified_by){
+            console.error(`All fields are required`);
+            return { error: true, status: 401, message: 'All fields are required' };
+        }
+
+        const db = await database.connectToDatabase();
+        const OutputTypeCollection = db.collection('output-type_config');
+
+        // Check if the output type with the same name exists, excluding the current record being updated
+        const existingType = await OutputTypeCollection.findOne({
+            output_type_name: output_type_name,
+            id: { $ne: id } // Exclude the current record
+        });
+
+        if (existingType) {
+            return { error: true, status: 400, message: 'Output type with this name already exists' };
+        }
+
+        const updateResult = await OutputTypeCollection.updateOne(
+            {id: id},
+            {
+                $set: {
+                    output_type_name: output_type_name,
+                    modified_by: modified_by,
+                    modified_date: new Date()
+                }
+            }
+        );
+
+        // Check if the update was successful
+        if (updateResult.matchedCount === 0) {
+            return { error: true, status: 404, message: 'Output type not found' };
+        }
+
+        if (updateResult.modifiedCount === 1) {
+            return { error: false, status: 200, message: 'Updated successfully' };
+        }else{
+            console.error(`Updation Failed, Please try again`);
+            return { error: true, status: 500, message: 'Failed to update output type' };
+        }
+
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
+
+async function DeActivateOutputType(req) {
+    try{
+        const { id, modified_by, status } = req.body;
+        if(!id || !modified_by || status === undefined){
+            console.error(`All fields are required`);
+            return { error: true, status: 401, message: 'All fields are required' };
+        }
+
+        const db = await database.connectToDatabase();
+        const OutputTypeCollection = db.collection('output-type_config');
+
+        const updateResult = await OutputTypeCollection.updateOne(
+            {id: id},
+            {
+                $set: {
+                    status: status,
+                    modified_by: modified_by,
+                    modified_date: new Date(),
+                }
+            }
+        );
+
+        if (updateResult.modifiedCount === 1) {
+            return { error: false, status: 200, message: 'De-Activated/Activated successfully' };
+        }else{
+            console.error(`De-Activated Failed, Please try again`);
+            return { error: true, status: 401, message: 'Something went wrong, Please try again !' }; 
+        }
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
+
+async function createOutputType(req) {
+    try{
+        const { output_type ,output_type_name, created_by } = req.body;
+
+        if( !output_type || !output_type_name || !created_by){
+            console.error(`All fields are required`);
+            return { error: true, status: 401, message: 'All fields are required' };
+        }
+
+        const db = await database.connectToDatabase();
+        const OutputTypeCollection = db.collection('output-type_config');
+
+        const existingType = await OutputTypeCollection.findOne({ output_type: output_type , output_type_name: output_type_name });
+        if (existingType) {
+            return { error: true, status: 400, message: 'Output type already exists' };
+        }
+
+        // Fetch the highest current ID and increment by 1
+        const lastId = await OutputTypeCollection.find().sort({ id: -1 }).limit(1).toArray();
+        const newId = lastId.length > 0 ? lastId[0].id + 1 : 1;
+
+        const insertResult = await OutputTypeCollection.insertOne({ 
+            id: newId,
+            output_type: output_type,
+            output_type_name: output_type_name, 
+            created_by: created_by,
+            created_date: new Date(),
+            status: true
+        });
+
+        // Check if the insert was successful
+        if (insertResult.acknowledged === true) {
+            return { error: false, status: 200, message: 'Output type created successfully'};
+        } else {
+            return { error: true, status: 500, message: 'Failed to create output type' };
+        }
+
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
 
 module.exports = { 
     //USER_ROLE 
@@ -1162,5 +1323,9 @@ module.exports = {
     AssignChargerToReseller,
     FetchResellersToAssgin,
     FetchUnAllocatedChargerToAssgin,
-
+    // output type config
+    createOutputType,
+    fetchOutputType,
+    updateOutputType,
+    DeActivateOutputType,
 };
