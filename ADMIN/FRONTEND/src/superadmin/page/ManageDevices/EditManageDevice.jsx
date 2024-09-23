@@ -191,7 +191,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-12 col-form-label">Charger ID</label>
+                                                                    <label className="col-sm-12 col-form-label labelInput">Charger ID</label>
                                                                     <div className="col-sm-12">
                                                                         <input type="text" className="form-control" placeholder="Charger ID" value={charger_id}  onChange={(e) => setChargerID(e.target.value)} readOnly required/>
                                                                     </div>
@@ -199,7 +199,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-12 col-form-label">Vendor</label>
+                                                                    <label className="col-sm-12 col-form-label labelInput">Vendor</label>
                                                                     <div className="col-sm-12">
                                                                         <input type="text" className="form-control" placeholder="Vendor" value={vendor} maxLength={20} onChange={(e) => {const value = e.target.value; let sanitizedValue = value.replace(/[^a-zA-Z0-9 ]/g, ''); setVendor(sanitizedValue); }} required/>
                                                                     </div>
@@ -209,7 +209,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-12 col-form-label">Charger Model</label>
+                                                                    <label className="col-sm-12 col-form-label labelInput">Charger Model</label>
                                                                     <div className="col-sm-12">
                                                                         <select className="form-control" value={charger_model} onChange={handleModel} required>
                                                                             <option value="">Select model</option>
@@ -223,7 +223,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-12 col-form-label">Charger Type</label>
+                                                                    <label className="col-sm-12 col-form-label labelInput">Charger Type</label>
                                                                     <div className="col-sm-12">
                                                                         <select className="form-control" value={charger_type} onChange={handleChargerType} required >
                                                                             <option value="AC">AC</option>
@@ -236,7 +236,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                         <div className="row">
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-12 col-form-label">Max Current</label>
+                                                                    <label className="col-sm-12 col-form-label labelInput">Max Current</label>
                                                                     <div className="col-sm-12">
                                                                         <input 
                                                                             type="tel" 
@@ -269,7 +269,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                             <div className="col-md-6">
                                                                 <div className="form-group row">
-                                                                    <label className="col-sm-12 col-form-label">Max Power</label>
+                                                                    <label className="col-sm-12 col-form-label labelInput">Max Power</label>
                                                                     <div className="col-sm-12">
                                                                         <input type="tel" className="form-control" placeholder="Max Power" value={max_power} 
                                                                         onChange={(e) => {
