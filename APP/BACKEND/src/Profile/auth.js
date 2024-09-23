@@ -101,7 +101,7 @@ const registerUser = async (req, res, next) => {
                         password: parseInt(password),
                         phone_no: parseInt(phone_no),
                         email_id: email_id,
-                        wallet_bal: 100.00,
+                        // wallet_bal: 100.00,
                         status: true,
                         modified_by: username,
                         modified_date: new Date()
@@ -311,4 +311,48 @@ async function resetPassword(req){
     }
 }
 
-module.exports = { authenticate, registerUser, intiateForgetPassword, authenticateOTP, resetPassword };
+// fetch tag id details for the specific user
+async function fetchRFID(req){
+    try{
+        const { email_id } = req.body;
+
+         // Check if email id is missing
+         if (!email_id) {
+            return { error: true, status: 401, message: 'Email ID is required' };
+        }
+
+        const db = await database.connectToDatabase();
+        const usersCollection = db.collection('users');
+        const tagIdCollection = db.collection('tag_id');
+
+        const checkEmailID = await usersCollection.findOne({ email_id: email_id});
+
+        if(!checkEmailID){
+            console.error(`Email ID is not found`);
+            return { error: true, status: 401, message: 'Email ID is not found' };
+        }
+
+        const RFID = checkEmailID.tag_id;
+
+        // Check if RFID is null or undefined before querying
+        if (!RFID) {
+            console.error(`RFID is null`);
+            return { error: true, status: 401, message: 'RFID is not assigned yet' };
+        }
+
+        const fetchTagID = await tagIdCollection.findOne({ id: RFID});
+
+        if(!fetchTagID){
+            console.error(`Tag ID is not found`);
+            return { error: true, status: 401, message: 'RFID is not found' };
+        }else{
+            return { error: false, status: 200, message: fetchTagID };
+        }
+
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
+
+module.exports = { authenticate, registerUser, intiateForgetPassword, authenticateOTP, resetPassword, fetchRFID };

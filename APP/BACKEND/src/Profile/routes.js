@@ -128,5 +128,21 @@ router.post('/resetPassword', async (req, res) => {
     }
 });
 
+// Route to fetch RFID
+router.post('/fetchRFID', async (req, res) => {
+    try {
+        const result = await Auth.fetchRFID(req);
+
+        if (result.error) {
+            return res.status(result.status).json({ message: result.message });
+        }
+
+        res.status(200).json({ status: 'Success', data: result.user });
+    } catch (error) {
+        console.error('Error in fetch RFID route:', error);
+        res.status(500).json({ status: 'Failed', message: 'Failed to fetch RFID details' });
+    }
+});
+
 // Export the router
 module.exports = router;
