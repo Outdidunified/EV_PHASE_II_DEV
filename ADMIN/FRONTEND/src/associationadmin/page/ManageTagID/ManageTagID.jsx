@@ -46,8 +46,6 @@ const ManageTagID = ({ userInfo, handleLogout }) => {
             setLoading(false);
         }
     }, [userInfo.data.association_id]);
-    
-    
 
     useEffect(() => {
         if (!fetchUserRoleCalled.current) {

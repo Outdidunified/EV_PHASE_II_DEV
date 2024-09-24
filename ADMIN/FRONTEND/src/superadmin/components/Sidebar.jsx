@@ -39,7 +39,7 @@ const Sidebar = () => {
         </li>
         <li className={location.pathname === '/superadmin/OutputTypeConfig'  ? 'nav-item active' : 'nav-item'}>
           <Link className="nav-link" to="/superadmin/OutputTypeConfig">
-            <i className="icon-head menu-icon mdi mdi-account-multiple"></i>
+            <i className="icon-head menu-icon mdi mdi-ev-station"></i>
             <span className="menu-title">Output Type Config</span>
           </Link>
         </li>
