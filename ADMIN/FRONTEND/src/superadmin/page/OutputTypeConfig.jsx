@@ -83,7 +83,7 @@ const OutputTypeConfig = ({ userInfo, handleLogout }) => {
     };
     const closeAddModal = () => {
         setOutputTypeConfig(''); 
-        setOutputType();
+        setOutputType('');
         setShowAddForm(false); // Close the form
         setTheadsticky('sticky');
         setTheadfixed('fixed');

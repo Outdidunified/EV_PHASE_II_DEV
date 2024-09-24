@@ -595,12 +595,12 @@ async function FetchCharger() {
 //CreateCharger
 async function CreateCharger(req, res) {
     try {
-        const { charger_id, charger_model,charger_type, max_current, max_power, created_by, vendor } = req.body;
+        const { charger_id, charger_model,charger_type, max_current, max_power, created_by, vendor, connectors } = req.body;
 
         // Validate the input
         if (!charger_id ||!charger_model || !charger_type || !max_current ||
-            !max_power ||  !created_by || !vendor) {
-            return res.status(400).json({ message: 'Charger ID, charger_model, charger_type, Max Current, Max Power and Created By are required' });
+            !max_power ||  !created_by || !vendor || !connectors) {
+            return res.status(400).json({ message: 'Charger ID, charger_model, charger_type, Max Current, Max Power, connectors and Created By are required' });
         }
 
         const db = await database.connectToDatabase();
@@ -613,7 +613,7 @@ async function CreateCharger(req, res) {
         }
 
         // Insert the new device
-        await devicesCollection.insertOne({
+        const insertResult = await devicesCollection.insertOne({
             charger_id,
             model: null,
             type: null,
@@ -648,7 +648,16 @@ async function CreateCharger(req, res) {
             status: true
         });
 
-        return res.status(200).json({ status: 'Success', message: 'Charger created successfully' });
+        if(insertResult.acknowledged){
+            const insertSocketResult = await insertSocketGunConfig(charger_id, connectors);
+            if(insertSocketResult){
+                return res.status(200).json({ status: 'Success', message: 'Charger created successfully' });
+            }else{
+                return res.status(200).json({ status: 'Success', message: 'Charger created successfully, but connectors details not inserted' });
+            }
+        }else{
+            return res.status(400).json({ status: 'Failed', message: 'Charger creation failed' });
+        }
 
     } catch (error) {
         console.error(error);
@@ -656,6 +665,154 @@ async function CreateCharger(req, res) {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
+// insert socket configurations
+const insertSocketGunConfig = async (chargerID, connectors) => {
+    try {
+        const connectorTypes = {};
+        let currentConnectorIndex = 1;
+        let socketCount = 0;
+        let gunCount = 0;
+
+        // Loop through the connectors array and assign the connector type and increment the counters
+        connectors.forEach((connector) => {
+            const { connector_id, connector_type, type_name } = connector;
+
+            // 1 for Socket, 2 for Gun
+            if (connector_type === 'Socket') {
+                connectorTypes[`connector_${connector_id}_type`] = 1;
+                socketCount++;
+            } else if (connector_type === 'Gun') {
+                connectorTypes[`connector_${connector_id}_type`] = 2;
+                gunCount++;
+            }
+
+            // Add the type_name as connector_X_type_name
+            connectorTypes[`connector_${connector_id}_type_name`] = type_name;
+
+            currentConnectorIndex++;
+        });
+
+        console.log("Final ConnectorTypes:", connectorTypes);
+        console.log(`Socket Count: ${socketCount}, Gun Count: ${gunCount}`);
+
+        const socketGunConfig = {
+            charger_id: chargerID,
+            ...connectorTypes,
+            created_date: new Date(),
+            modified_date: null,
+            socket_count: socketCount,
+            gun_connector: gunCount
+        };
+
+        const db = await database.connectToDatabase();
+        const existingConfig = await db.collection('socket_gun_config').findOne({ charger_id: chargerID });
+
+        if (existingConfig) {
+            await db.collection('socket_gun_config').updateOne(
+                { charger_id: chargerID },
+                {
+                    $set: {
+                        ...connectorTypes,
+                        modified_date: new Date(),
+                        socket_count: socketCount,
+                        gun_connector: gunCount
+                    }
+                }
+            );
+            console.log(`ChargerID: ${chargerID} - Socket/Gun configuration updated successfully.`);
+        } else {
+            await db.collection('socket_gun_config').insertOne(socketGunConfig);
+            console.log(`ChargerID: ${chargerID} - Socket/Gun configuration inserted successfully.`);
+        }
+
+        const chargerDetails = {
+            charger_id: chargerID,
+            created_date: new Date(),
+        };
+
+        // Dynamically create the projection fields based on connector IDs
+        const totalConnectors = connectors.length;
+        let projection = { charger_id: 1 };
+        for (let i = 1; i <= totalConnectors; i++) {
+            projection[`current_or_active_user_for_connector_${i}`] = 1;
+            projection[`tag_id_for_connector_${i}`] = 1;
+            projection[`transaction_id_for_connector_${i}`] = 1;
+            projection[`transaction_id_for_connector_${i}_in_use`] = 1;
+        }
+
+        const existingChargerDetails = await db.collection('charger_details').findOne(
+            { charger_id: chargerID },
+            { projection }
+        );
+
+        if (!existingChargerDetails) {
+            // If no existing charger details, insert new details
+            for (let i = 1; i <= totalConnectors; i++) {
+                chargerDetails[`tag_id_for_connector_${i}`] = null;
+                chargerDetails[`tag_id_for_connector_${i}_in_use`] = null;
+                chargerDetails[`transaction_id_for_connector_${i}`] = null;
+                chargerDetails[`current_or_active_user_for_connector_${i}`] = null;
+            }
+
+            chargerDetails['socket_count'] = socketCount;
+            chargerDetails['gun_connector'] = gunCount;
+
+            const result = await db.collection('charger_details').insertOne(chargerDetails);
+            if (result.insertedId) {
+                console.log(`ChargerID: ${chargerID} - Charger details inserted successfully.`);
+                return true;
+            } else {
+                console.log(`ChargerID: ${chargerID} - Charger details insertion failed.`);
+                return false;
+            }
+        } else {
+            // Initialize missing fields in existingChargerDetails
+            const updateFields = {};
+            for (let i = 1; i <= totalConnectors; i++) {
+                if (!existingChargerDetails.hasOwnProperty(`tag_id_for_connector_${i}`) || existingChargerDetails[`tag_id_for_connector_${i}`] === null) {
+                    updateFields[`tag_id_for_connector_${i}`] = null;
+                }
+
+                if (!existingChargerDetails.hasOwnProperty(`tag_id_for_connector_${i}_in_use`) || existingChargerDetails[`tag_id_for_connector_${i}_in_use`] === null) {
+                    updateFields[`tag_id_for_connector_${i}_in_use`] = null;
+                }
+
+                if (!existingChargerDetails.hasOwnProperty(`transaction_id_for_connector_${i}`) || existingChargerDetails[`transaction_id_for_connector_${i}`] === null) {
+                    updateFields[`transaction_id_for_connector_${i}`] = null;
+                }
+
+                if (!existingChargerDetails.hasOwnProperty(`current_or_active_user_for_connector_${i}`) || existingChargerDetails[`current_or_active_user_for_connector_${i}`] === null) {
+                    updateFields[`current_or_active_user_for_connector_${i}`] = null;
+                }
+            }
+
+            updateFields['socket_count'] = socketCount;
+            updateFields['gun_connector'] = gunCount;
+
+            if (Object.keys(updateFields).length > 0) {
+                const result = await db.collection('charger_details').updateOne(
+                    { charger_id: chargerID },
+                    { $set: updateFields }
+                );
+                if (result.modifiedCount > 0) {
+                    console.log(`ChargerID: ${chargerID} - Charger details updated successfully.`);
+                    return true;
+                } else {
+                    console.log(`ChargerID: ${chargerID} - Charger details update failed.`);
+                    return false;
+                }
+            } else {
+                console.log(`ChargerID: ${chargerID} - No fields to update.`);
+                return false;
+            }
+        }
+    } catch (error) {
+        console.error(`Error processing ChargerID: ${chargerID} - ${error.message}`);
+        return false;
+    }
+};
+
 // UpdateCharger
 async function UpdateCharger(req, res) {
     try {
@@ -1213,6 +1370,7 @@ async function updateOutputType(req){
     }
 }
 
+// De activate Output Type details
 async function DeActivateOutputType(req) {
     try{
         const { id, modified_by, status } = req.body;
@@ -1247,6 +1405,7 @@ async function DeActivateOutputType(req) {
     }
 }
 
+// create Output type details
 async function createOutputType(req) {
     try{
         const { output_type ,output_type_name, created_by } = req.body;
@@ -1290,6 +1449,41 @@ async function createOutputType(req) {
     }
 }
 
+// fetch connector type name
+async function fetchConnectorTypeName(req){
+    try{
+        const {connector_type} = req.body;
+
+        if(!connector_type){
+            console.error(`All fields are required`);
+            return { error: true, status: 401, message: 'All fields are required' };
+        }
+
+        const db = await database.connectToDatabase();
+        const OutputTypeCollection = db.collection('output-type_config');
+
+        const fetchResults = await OutputTypeCollection.find({
+            output_type: connector_type 
+        }).toArray();
+
+        if(!fetchResults || fetchResults.length === 0){
+            console.error(`No details found for provided connector types`);
+            return { error: true, status: 401, message: 'No details were found' };
+        }
+
+        // Map results to an array of output_type_names
+        const outputTypeNames = fetchResults.map(result => ({
+            output_type_name: result.output_type_name
+        }));
+
+        return { error: false, status: 200, message: outputTypeNames };
+
+    }catch(error){
+        console.error(error);
+        return { error: true, status: 500, message: 'Internal Server Error' };
+    }
+}
+
 module.exports = { 
     //USER_ROLE 
     CreateUserRole,
@@ -1312,6 +1506,7 @@ module.exports = {
     CreateCharger,
     UpdateCharger,
     DeActivateOrActivateCharger,
+    fetchConnectorTypeName,
     //MANAGE RESELLER
     FetchResellers,
     FetchAssignedClients,
