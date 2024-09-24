@@ -295,7 +295,7 @@ async function resetPassword(req){
             {email_id: email_id},
             {
                 $set: {
-                    otp: parseInt(NewPassword),
+                    password: parseInt(NewPassword),
                     modified_date: new Date(),
                     modified_by: email_id
                 }
