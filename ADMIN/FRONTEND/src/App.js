@@ -5,7 +5,7 @@ import ResellerAdminApp from './adminApps/ResellerAdminApp';
 import ClientAdminApp from './adminApps/ClientAdminApp';
 import AssociationAdminApp from './adminApps/AssociationAdminApp';
 import Log from './log/Logs';
-import OcppConfig from './ocppconfig/page/OcppConfig';
+import OcppConfig from './ocppConfig/page/OcppConfig';
 import SessionLog from './sessionlog/page/SessionLogs';
 const App = () => {
   
