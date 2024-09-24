@@ -340,4 +340,20 @@ router.post('/createOutputType', async (req, res) => {
     }
 });
 
+// Route to fetch connector type name
+router.post('/fetchConnectorTypeName', async (req, res) => {
+    try{
+        const result = await functions.fetchConnectorTypeName(req);
+
+        if (result.error) {
+            return res.status(result.status).json({ message: result.message });
+        }
+
+        res.status(200).json({ status: 'Success', data: result.message });
+    }catch(error){
+        console.error('Error in fetch connector type name route:', error);
+        res.status(500).json({ status: 'Failed', message: 'Failed to fetch connector type name' });
+    }
+});
+
 module.exports = router;
