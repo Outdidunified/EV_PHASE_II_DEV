@@ -17,7 +17,6 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [selectChargerType, setSelectedChargerType] = useState('');
     const [connectors, setConnectors] = useState([{ connector_id: 1, connector_type: '', type_name: '', typeOptions: [] }]);
-    console.log(connectors)
     const [data, setData] = useState([]);
     const fetchDataCalled = useRef(false);
     const [errorMessageCurrent, setErrorMessageCurrent] = useState('');
@@ -348,7 +347,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                         <label className="col-form-label labelInput">Connector Type</label>
                                                                         <select className="form-control" value={connector.connector_type} 
                                                                             onChange={(e) => handleConnectorType(index, 'connector_type', e.target.value)} required>
-                                                                            <option value="">Select type</option>
+                                                                            <option value="" disabled>Select type</option>
                                                                             <option value="Gun">Gun</option>
                                                                             <option value="Socket">Socket</option>
                                                                         </select>
@@ -402,9 +401,7 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                 )}
                                                             </div>
                                                         ))}
-                                                        {/* <button type="button" className="btn btn-outline-primary" style={{margin:'15px'}} onClick={addConnector}>Add Connector</button> */}
                                                         {/* Connectors section end */}
-
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                         <br></br>
                                                         <div style={{ textAlign: 'center' }}>

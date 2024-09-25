@@ -316,7 +316,7 @@ const Logs = () => {
                                                                     <i className="icon-search" style={{color:'white'}}></i>
                                                                     </span>
                                                                 </div>
-                                                                <input type="text" className="form-control searchInputCss" placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off"  value={searchInput} onChange={handleSearchInputChange}/>
+                                                                <input type="text" className="form-control searchInputCss" style={{borderRadius: "0 0 10px 0"}} placeholder="Search now" aria-label="search" aria-describedby="search" autoComplete="off"  value={searchInput} onChange={handleSearchInputChange}/>
                                                             </div>
                                                         </div>
                                                     )}

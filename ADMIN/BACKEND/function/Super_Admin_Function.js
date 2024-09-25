@@ -568,29 +568,223 @@ async function FetchCharger() {
     try {
         const db = await database.connectToDatabase();
         const devicesCollection = db.collection("charger_details");
-        const financeCollection = db.collection("finance_details");
+        const configCollection = db.collection("socket_gun_config");
 
         // Fetch all chargers where assigned_reseller_id is null
         const chargers = await devicesCollection.find({ assigned_reseller_id: null }).toArray();
 
-        // Fetch the eb_charges from finance_details (assuming there's only one relevant finance document)
-        //const financeDetails = await financeCollection.findOne();
+        const results = [];
 
-        // if (!financeDetails) {
-        //     throw new Error('No finance details found');
-        // }
+        for (let charger of chargers) {
+            const chargerID = charger.charger_id;
 
-        // Append the eb_charges to each charger
-        const chargersWithUnitPrice = chargers.map(charger => ({
-            ...charger,
-            //unit_price: financeDetails.eb_charges
-        }));
-        return chargersWithUnitPrice; // Return the chargers with appended unit_price
+            // Fetch corresponding socket/gun configuration
+            const config = await configCollection.findOne({ charger_id: chargerID });
+
+            let connectorDetails = []; // Initialize as an array
+
+            if (config) {
+                // Loop over connector configurations dynamically
+                let connectorIndex = 1;
+                while (config[`connector_${connectorIndex}_type`] !== undefined) {
+                    // Map connector types: 1 -> "Socket", 2 -> "Gun"
+                    let connectorTypeValue;
+                    if (config[`connector_${connectorIndex}_type`] === 1) {
+                        connectorTypeValue = "Socket";
+                    } else if (config[`connector_${connectorIndex}_type`] === 2) {
+                        connectorTypeValue = "Gun";
+                    }
+
+                    // Push connector details to the array
+                    connectorDetails.push({
+                        connector_type: connectorTypeValue || config[`connector_${connectorIndex}_type`],
+                        connector_type_name: config[`connector_${connectorIndex}_type_name`]
+                    });
+
+                    connectorIndex++; // Move to the next connector
+                }
+            }
+
+            // If there are no connector details, the charger will have an empty connector_details array
+            results.push({
+                ...charger,
+                connector_details: connectorDetails.length > 0 ? connectorDetails : null
+            });
+        }
+
+        return results;
     } catch (error) {
         console.error(`Error fetching chargers: ${error}`);
-        throw new Error('Failed to fetch chargers');
+        throw new Error('Failed to fetch chargers with connector details');
     }
 }
+
+// insert / update socket configurations
+const insertORupdateSocketGunConfig = async (chargerID, connectors) => {
+    try {
+        const connectorTypes = {};
+        let socketCount = 0;
+        let gunCount = 0;
+
+        // Loop through the connectors array and assign the connector type and increment the counters
+        connectors.forEach((connector) => {
+            const { connector_id, connector_type, type_name } = connector;
+
+            // Map incoming connector_type to database values (1 for Socket, 2 for Gun)
+            if (connector_type === 'Socket') {
+                connectorTypes[`connector_${connector_id}_type`] = 1;
+                socketCount++;
+            } else if (connector_type === 'Gun') {
+                connectorTypes[`connector_${connector_id}_type`] = 2;
+                gunCount++;
+            }
+
+            // Add the type_name as connector_X_type_name
+            connectorTypes[`connector_${connector_id}_type_name`] = type_name;
+        });
+
+        const db = await database.connectToDatabase();
+        const configCollection = db.collection('socket_gun_config');
+        const existingConfig = await configCollection.findOne({ charger_id: chargerID });
+
+        if (existingConfig) {
+            // Prepare fields to update and unset
+            let updateFields = {};
+            let unsetFields = {};
+
+            // Iterate through existing connector fields to find which ones to remove
+            Object.keys(existingConfig).forEach((field) => {
+                const match = field.match(/connector_(\d+)_type/);
+                if (match) {
+                    const connectorIndex = match[1];
+                    const connectorExists = connectors.some(connector => connector.connector_id == connectorIndex);
+
+                    if (!connectorExists) {
+                        // Mark for deletion if the connector does not exist in the new input
+                        unsetFields[`connector_${connectorIndex}_type`] = "";
+                        unsetFields[`connector_${connectorIndex}_type_name`] = "";
+                    }
+                }
+            });
+
+            // Update fields that are in the new connectors array
+            updateFields = {
+                ...connectorTypes,
+                modified_date: new Date(),
+                socket_count: socketCount,
+                gun_connector: gunCount
+            };
+
+            // Perform the update operation
+            await configCollection.updateOne(
+                { charger_id: chargerID },
+                {
+                    $set: updateFields,
+                    $unset: unsetFields // This will remove unwanted fields
+                }
+            );
+
+        } else {
+            // If no existing config, insert a new one
+            const socketGunConfig = {
+                charger_id: chargerID,
+                ...connectorTypes,
+                created_date: new Date(),
+                modified_date: null,
+                socket_count: socketCount,
+                gun_connector: gunCount
+            };
+
+            await configCollection.insertOne(socketGunConfig);
+        }
+
+        // Update or insert charger details in the `charger_details` collection as needed
+        const chargerDetails = {
+            charger_id: chargerID,
+            created_date: new Date(),
+        };
+
+        const chargerDetailsCollection = db.collection('charger_details');
+        const existingChargerDetails = await chargerDetailsCollection.findOne({ charger_id: chargerID });
+
+        // Logic to unset unwanted fields in charger_details
+        let unsetChargerFields = {};
+
+        // Iterate through existing fields to find which ones to unset
+        Object.keys(existingChargerDetails || {}).forEach((field) => {
+            const match = field.match(/tag_id_for_connector_(\d+)/);
+            if (match) {
+                const connectorIndex = match[1];
+                const connectorExists = connectors.some(connector => connector.connector_id == connectorIndex);
+
+                if (!connectorExists) {
+                    // Mark for deletion if the connector does not exist in the new input
+                    unsetChargerFields[`tag_id_for_connector_${connectorIndex}`] = "";
+                    unsetChargerFields[`tag_id_for_connector_${connectorIndex}_in_use`] = "";
+                    unsetChargerFields[`transaction_id_for_connector_${connectorIndex}`] = "";
+                    unsetChargerFields[`current_or_active_user_for_connector_${connectorIndex}`] = "";
+                }
+            }
+        });
+
+        // Initialize missing fields in existingChargerDetails
+        const updateFields = {};
+        const totalConnectors = connectors.length;
+
+        for (let i = 1; i <= totalConnectors; i++) {
+            if (!existingChargerDetails || !existingChargerDetails.hasOwnProperty(`tag_id_for_connector_${i}`) || existingChargerDetails[`tag_id_for_connector_${i}`] === null) {
+                updateFields[`tag_id_for_connector_${i}`] = null;
+            }
+
+            if (!existingChargerDetails || !existingChargerDetails.hasOwnProperty(`tag_id_for_connector_${i}_in_use`) || existingChargerDetails[`tag_id_for_connector_${i}_in_use`] === null) {
+                updateFields[`tag_id_for_connector_${i}_in_use`] = null;
+            }
+
+            if (!existingChargerDetails || !existingChargerDetails.hasOwnProperty(`transaction_id_for_connector_${i}`) || existingChargerDetails[`transaction_id_for_connector_${i}`] === null) {
+                updateFields[`transaction_id_for_connector_${i}`] = null;
+            }
+
+            if (!existingChargerDetails || !existingChargerDetails.hasOwnProperty(`current_or_active_user_for_connector_${i}`) || existingChargerDetails[`current_or_active_user_for_connector_${i}`] === null) {
+                updateFields[`current_or_active_user_for_connector_${i}`] = null;
+            }
+        }
+
+        updateFields['socket_count'] = socketCount;
+        updateFields['gun_connector'] = gunCount;
+
+        if (existingChargerDetails) {
+            if (Object.keys(updateFields).length > 0 || Object.keys(unsetChargerFields).length > 0) {
+                await chargerDetailsCollection.updateOne(
+                    { charger_id: chargerID },
+                    {
+                        $set: updateFields,
+                        $unset: unsetChargerFields // This will remove unwanted fields
+                    }
+                );
+            }
+        } else {
+            // If no existing charger details, insert new details
+            for (let i = 1; i <= totalConnectors; i++) {
+                chargerDetails[`tag_id_for_connector_${i}`] = null;
+                chargerDetails[`tag_id_for_connector_${i}_in_use`] = null;
+                chargerDetails[`transaction_id_for_connector_${i}`] = null;
+                chargerDetails[`current_or_active_user_for_connector_${i}`] = null;
+            }
+
+            chargerDetails['socket_count'] = socketCount;
+            chargerDetails['gun_connector'] = gunCount;
+
+            await chargerDetailsCollection.insertOne(chargerDetails);
+        }
+
+        // Return true if the operation was successful
+        return true;
+
+    } catch (error) {
+        console.error(`Error processing ChargerID: ${chargerID} - ${error.message}`);
+        return false; // Return false in case of error
+    }
+};
 
 //CreateCharger
 async function CreateCharger(req, res) {
@@ -649,7 +843,7 @@ async function CreateCharger(req, res) {
         });
 
         if(insertResult.acknowledged){
-            const insertSocketResult = await insertSocketGunConfig(charger_id, connectors);
+            const insertSocketResult = await insertORupdateSocketGunConfig(charger_id, connectors);
             if(insertSocketResult){
                 return res.status(200).json({ status: 'Success', message: 'Charger created successfully' });
             }else{
@@ -666,162 +860,13 @@ async function CreateCharger(req, res) {
     }
 }
 
-// insert socket configurations
-const insertSocketGunConfig = async (chargerID, connectors) => {
-    try {
-        const connectorTypes = {};
-        let currentConnectorIndex = 1;
-        let socketCount = 0;
-        let gunCount = 0;
-
-        // Loop through the connectors array and assign the connector type and increment the counters
-        connectors.forEach((connector) => {
-            const { connector_id, connector_type, type_name } = connector;
-
-            // 1 for Socket, 2 for Gun
-            if (connector_type === 'Socket') {
-                connectorTypes[`connector_${connector_id}_type`] = 1;
-                socketCount++;
-            } else if (connector_type === 'Gun') {
-                connectorTypes[`connector_${connector_id}_type`] = 2;
-                gunCount++;
-            }
-
-            // Add the type_name as connector_X_type_name
-            connectorTypes[`connector_${connector_id}_type_name`] = type_name;
-
-            currentConnectorIndex++;
-        });
-
-        console.log("Final ConnectorTypes:", connectorTypes);
-        console.log(`Socket Count: ${socketCount}, Gun Count: ${gunCount}`);
-
-        const socketGunConfig = {
-            charger_id: chargerID,
-            ...connectorTypes,
-            created_date: new Date(),
-            modified_date: null,
-            socket_count: socketCount,
-            gun_connector: gunCount
-        };
-
-        const db = await database.connectToDatabase();
-        const existingConfig = await db.collection('socket_gun_config').findOne({ charger_id: chargerID });
-
-        if (existingConfig) {
-            await db.collection('socket_gun_config').updateOne(
-                { charger_id: chargerID },
-                {
-                    $set: {
-                        ...connectorTypes,
-                        modified_date: new Date(),
-                        socket_count: socketCount,
-                        gun_connector: gunCount
-                    }
-                }
-            );
-            console.log(`ChargerID: ${chargerID} - Socket/Gun configuration updated successfully.`);
-        } else {
-            await db.collection('socket_gun_config').insertOne(socketGunConfig);
-            console.log(`ChargerID: ${chargerID} - Socket/Gun configuration inserted successfully.`);
-        }
-
-        const chargerDetails = {
-            charger_id: chargerID,
-            created_date: new Date(),
-        };
-
-        // Dynamically create the projection fields based on connector IDs
-        const totalConnectors = connectors.length;
-        let projection = { charger_id: 1 };
-        for (let i = 1; i <= totalConnectors; i++) {
-            projection[`current_or_active_user_for_connector_${i}`] = 1;
-            projection[`tag_id_for_connector_${i}`] = 1;
-            projection[`transaction_id_for_connector_${i}`] = 1;
-            projection[`transaction_id_for_connector_${i}_in_use`] = 1;
-        }
-
-        const existingChargerDetails = await db.collection('charger_details').findOne(
-            { charger_id: chargerID },
-            { projection }
-        );
-
-        if (!existingChargerDetails) {
-            // If no existing charger details, insert new details
-            for (let i = 1; i <= totalConnectors; i++) {
-                chargerDetails[`tag_id_for_connector_${i}`] = null;
-                chargerDetails[`tag_id_for_connector_${i}_in_use`] = null;
-                chargerDetails[`transaction_id_for_connector_${i}`] = null;
-                chargerDetails[`current_or_active_user_for_connector_${i}`] = null;
-            }
-
-            chargerDetails['socket_count'] = socketCount;
-            chargerDetails['gun_connector'] = gunCount;
-
-            const result = await db.collection('charger_details').insertOne(chargerDetails);
-            if (result.insertedId) {
-                console.log(`ChargerID: ${chargerID} - Charger details inserted successfully.`);
-                return true;
-            } else {
-                console.log(`ChargerID: ${chargerID} - Charger details insertion failed.`);
-                return false;
-            }
-        } else {
-            // Initialize missing fields in existingChargerDetails
-            const updateFields = {};
-            for (let i = 1; i <= totalConnectors; i++) {
-                if (!existingChargerDetails.hasOwnProperty(`tag_id_for_connector_${i}`) || existingChargerDetails[`tag_id_for_connector_${i}`] === null) {
-                    updateFields[`tag_id_for_connector_${i}`] = null;
-                }
-
-                if (!existingChargerDetails.hasOwnProperty(`tag_id_for_connector_${i}_in_use`) || existingChargerDetails[`tag_id_for_connector_${i}_in_use`] === null) {
-                    updateFields[`tag_id_for_connector_${i}_in_use`] = null;
-                }
-
-                if (!existingChargerDetails.hasOwnProperty(`transaction_id_for_connector_${i}`) || existingChargerDetails[`transaction_id_for_connector_${i}`] === null) {
-                    updateFields[`transaction_id_for_connector_${i}`] = null;
-                }
-
-                if (!existingChargerDetails.hasOwnProperty(`current_or_active_user_for_connector_${i}`) || existingChargerDetails[`current_or_active_user_for_connector_${i}`] === null) {
-                    updateFields[`current_or_active_user_for_connector_${i}`] = null;
-                }
-            }
-
-            updateFields['socket_count'] = socketCount;
-            updateFields['gun_connector'] = gunCount;
-
-            if (Object.keys(updateFields).length > 0) {
-                const result = await db.collection('charger_details').updateOne(
-                    { charger_id: chargerID },
-                    { $set: updateFields }
-                );
-                if (result.modifiedCount > 0) {
-                    console.log(`ChargerID: ${chargerID} - Charger details updated successfully.`);
-                    return true;
-                } else {
-                    console.log(`ChargerID: ${chargerID} - Charger details update failed.`);
-                    return false;
-                }
-            } else {
-                console.log(`ChargerID: ${chargerID} - No fields to update.`);
-                return false;
-            }
-        }
-    } catch (error) {
-        console.error(`Error processing ChargerID: ${chargerID} - ${error.message}`);
-        return false;
-    }
-};
-
-// UpdateCharger
 async function UpdateCharger(req, res) {
     try {
-        const { charger_id, charger_model, charger_type, vendor, max_current, max_power, modified_by } = req.body;
+        const { charger_id, charger_model, charger_type, vendor, max_current, max_power, modified_by, connectors } = req.body;
 
         // Validate the input - ensure charger_id and other required fields are provided
-        if (!charger_id || !vendor  || !max_current ||  !charger_model  || !charger_type||
-            !max_power  || !modified_by) {
-            return res.status(400).json({ message: 'Charger ID,charger_model, charger_type, Vendor, Max Current, Max Power and Created By are required' });
+        if (!charger_id || !vendor || !max_current || !charger_model || !charger_type || !max_power || !modified_by) {
+            return res.status(400).json({ message: 'Charger ID, charger_model, charger_type, Vendor, Max Current, Max Power and Created By are required' });
         }
 
         const db = await database.connectToDatabase();
@@ -852,16 +897,23 @@ async function UpdateCharger(req, res) {
 
         if (updateResult.modifiedCount === 0) {
             return res.status(500).json({ message: 'Failed to update charger' });
-        }
+        }        
+        
+        //update the socket/gun configuration
+        const success = await insertORupdateSocketGunConfig(charger_id, connectors);
 
-        return res.status(200).json({ status: 'Success', message: 'Charger updated successfully' });
+        if (success) {
+            return res.status(200).json({ status: 'Success', message: 'Charger and connectors updated successfully' });
+        } else {
+            return res.status(500).json({ message: 'Failed to update charger connectors' });
+        }
 
     } catch (error) {
         console.error(error);
-        logger.error(`Error updating charger: ${error}`);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
 //DeActivateOrActivate 
 async function DeActivateOrActivateCharger(req, res, next) {
     try {
