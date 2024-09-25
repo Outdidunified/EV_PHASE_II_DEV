@@ -564,31 +564,71 @@ async function UpdateUserProfile(req, res,next) {
 
 //CHARGER Function
 //FetchCharger(Which are un-allocated to reseller)
+// async function FetchCharger() {
+//     try {
+//         const db = await database.connectToDatabase();
+//         const devicesCollection = db.collection("charger_details");
+
+//         // Fetch all chargers where assigned_reseller_id is null
+//         const chargers = await devicesCollection.find({ assigned_reseller_id: null }).toArray();
+
+//         return chargers; // Return the chargers with appended unit_price
+//     } catch (error) {
+//         console.error(`Error fetching chargers: ${error}`);
+//         throw new Error('Failed to fetch chargers');
+//     }
+// }
+
 async function FetchCharger() {
     try {
         const db = await database.connectToDatabase();
         const devicesCollection = db.collection("charger_details");
-        const financeCollection = db.collection("finance_details");
+        const configCollection = db.collection("socket_gun_config");
 
         // Fetch all chargers where assigned_reseller_id is null
         const chargers = await devicesCollection.find({ assigned_reseller_id: null }).toArray();
 
-        // Fetch the eb_charges from finance_details (assuming there's only one relevant finance document)
-        //const financeDetails = await financeCollection.findOne();
+        const results = [];
 
-        // if (!financeDetails) {
-        //     throw new Error('No finance details found');
-        // }
+        for (let charger of chargers) {
+            const chargerID = charger.charger_id;
 
-        // Append the eb_charges to each charger
-        const chargersWithUnitPrice = chargers.map(charger => ({
-            ...charger,
-            //unit_price: financeDetails.eb_charges
-        }));
-        return chargersWithUnitPrice; // Return the chargers with appended unit_price
+            // Fetch corresponding socket/gun configuration
+            const config = await configCollection.findOne({ charger_id: chargerID });
+
+            let connectorDetails = {};
+
+            if (config) {
+                // Loop over connector configurations dynamically
+                let connectorIndex = 1;
+                while (config[`connector_${connectorIndex}_type`] !== undefined) {
+                    // Map connector types: 1 -> "Socket", 2 -> "Gun"
+                    let connectorTypeValue;
+                    if (config[`connector_${connectorIndex}_type`] === 1) {
+                        connectorTypeValue = "Socket";
+                    } else if (config[`connector_${connectorIndex}_type`] === 2) {
+                        connectorTypeValue = "Gun";
+                    }
+
+                    // Assign connector type and type name
+                    connectorDetails[`connector_${connectorIndex}_type`] = connectorTypeValue || config[`connector_${connectorIndex}_type`];
+                    connectorDetails[`connector_${connectorIndex}_type_name`] = config[`connector_${connectorIndex}_type_name`];
+                    
+                    connectorIndex++; // Move to the next connector
+                }
+            }
+
+            // If there are no connector details, the charger will have a null connector_details field
+            results.push({
+                ...charger,
+                connector_details: Object.keys(connectorDetails).length > 0 ? connectorDetails : null
+            });
+        }
+
+        return results;
     } catch (error) {
         console.error(`Error fetching chargers: ${error}`);
-        throw new Error('Failed to fetch chargers');
+        throw new Error('Failed to fetch chargers with connector details');
     }
 }
 
