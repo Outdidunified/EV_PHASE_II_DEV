@@ -14,7 +14,7 @@ const authenticate = async (req) => {
 
         // Query to get user by email with the role
         const userWithRole = await usersCollection.aggregate([
-            { $match: { email_id: email_id, status: true } }, // Check user status
+            { $match: { email_id: email_id, status: true, role_id: 5 } }, // Check user status
             {
                 $lookup: {
                     from: 'user_roles',
