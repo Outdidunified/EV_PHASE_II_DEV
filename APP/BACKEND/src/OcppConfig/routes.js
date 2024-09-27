@@ -38,6 +38,15 @@ router.get('/SendOCPPRequest', async(req, res) => {
     const payload = JSON.parse(queryParams.req);
     const action = queryParams.actionBtn;
 
+    const db = await database.connectToDatabase();
+    const collection = db.collection('charger_details');
+
+    const result = await collection.findOne({charger_id: id});
+
+    if(!result){
+        res.status(404).json({message: "Device ID not found !"});
+    }
+
     const deviceIDToSendTo = id; // Specify the device ID you want to send the message to
     const wsToSendTo = wsConnections.get(deviceIDToSendTo);
     let ReqMsg = "";
