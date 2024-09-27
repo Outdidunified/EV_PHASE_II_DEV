@@ -21,7 +21,6 @@ const Logs = () => {
     const [meterValuesData, setMeterValuesData] = useState([]);
     const [authorizationData, setAuthorizationData] = useState([]);
     const [rawData, setRawData] = useState([]);
-    console.log(startStopData, 'Start stop');
     // console.log(rawData, 'raw data');
 
     const handleFrame = useCallback(async (parsedMessage) => {
@@ -196,10 +195,10 @@ const Logs = () => {
         const inputValue = e.target.value.toUpperCase().trim();
         setSearchInput(inputValue);
         setIsSearching(inputValue !== '');
-    
+
         // Choose the dataset based on the active table (visibleTable)
         let currentData = [];
-    
+        
         switch (visibleTable) {
             case 'Heartbeat':
                 currentData = heartbeatData;
@@ -224,7 +223,8 @@ const Logs = () => {
                 currentData = allData;
                 break;
         }
-    
+
+        // Apply filtering based on the DeviceID
         if (inputValue === '') {
             // If the search input is cleared, reset to the current visible table's data
             setFilteredData(currentData);
