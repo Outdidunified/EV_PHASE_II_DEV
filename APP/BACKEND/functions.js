@@ -629,7 +629,7 @@ async function checkAuthorization(charger_id, idTag) {
         // Dynamically determine the number of connectors based on the chargePointModel
         // const connectors = chargerDetails.model.split('- ')[1];
         // const totalConnectors = Math.ceil(connectors.length / 2);
-        const totalConnectors = chargerDetails.gun_connector + chargerDetails.socketCount;
+        const totalConnectors = chargerDetails.gun_connector + chargerDetails.socket_count;
 
         // Dynamically create the projection fields based on the number of connectors
         let projection = { charger_id: 1 };
@@ -677,7 +677,7 @@ async function checkAuthorization(charger_id, idTag) {
                     //fetch wallet balance to check min balance
                     userDetails = await userCollection.findOne({tag_id: tagIdDetails.id});
                     if(userDetails.wallet_bal >= 100){
-                        if(userDetails.assigned_association === tagIdDetails.association_id){
+                        if(chargerDetails.assigned_association_id === tagIdDetails.association_id){
                             expiryDate = new Date(tagIdDetails.tag_id_expiry_date);
                         }else{
                             if(chargerDetails.charger_accessibility === 1){
