@@ -866,9 +866,9 @@ async function AssignTagIdToUser(req, res, next) {
         const tagIdCollection = db.collection("tag_id");
 
         // Check if the user exists
-        const existingUser = await usersCollection.findOne({ user_id: user_id });
+        const existingUser = await usersCollection.findOne({ user_id: user_id, status: true });
         if (!existingUser) {
-            return res.status(404).json({ message: 'User with this ID does not exist' });
+            return res.status(404).json({ message: 'User with this details does not exist/Deactivated' });
         }
 
         // Check if the tag ID exists and is active
