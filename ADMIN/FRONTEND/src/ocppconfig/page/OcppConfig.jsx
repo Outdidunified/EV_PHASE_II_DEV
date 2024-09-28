@@ -29,7 +29,10 @@ const OcppConfig = () => {
         try {
             const response = await axios.get('http://192.168.1.32:4444/OcppConfig/GetAction');
             // console.log("Data", response.data);
-            setCommandsLibrary(response.data);
+            // setCommandsLibrary(response.data);
+            const sortedData = response.data.sort((a, b) => a.action.localeCompare(b.action));
+
+            setCommandsLibrary(sortedData);
         } catch (error) {
             console.error('Error fetching action payload:', error);
         }
