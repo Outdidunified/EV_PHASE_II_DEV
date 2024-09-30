@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import '../../../utilities/User_Model/ImageProvider.dart'; // Ensure you have this import
 
+
 class EditUserModal extends StatefulWidget {
   final String username;
   final String email;
@@ -59,6 +60,8 @@ class _EditUserModalState extends State<EditUserModal> {
   String? _validatePhoneNumber(String value) {
     if (value.isEmpty) {
       return 'Phone number is required';
+    } else if (value.length != 10) {
+      return 'Phone number must be exactly 10 digits';
     }
     return null;
   }
@@ -66,6 +69,17 @@ class _EditUserModalState extends State<EditUserModal> {
   String? _validateOldPassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Enter your old password';
+    } else if (value.length != 4) {
+      return 'Password must be exactly 4 digits';
+    }
+    return null;
+  }
+
+  String? _validateNewPassword(String? value) {
+    if (value != null && value.isNotEmpty) {
+      if (value.length != 4 || !RegExp(r'^\d{4}$').hasMatch(value)) {
+        return 'New password must be exactly 4 digits';
+      }
     }
     return null;
   }
@@ -73,7 +87,8 @@ class _EditUserModalState extends State<EditUserModal> {
   bool get isFormValid {
     final phoneValid = _validatePhoneNumber(_phoneController.text) == null;
     final oldPasswordValid = _validateOldPassword(_oldPasswordController.text) == null;
-    return phoneValid && oldPasswordValid;
+    final newPasswordValid = _validateNewPassword(_newPasswordController.text) == null;
+    return phoneValid && oldPasswordValid && newPasswordValid;
   }
 
   Future<void> fetchUserDetails() async {
@@ -149,12 +164,12 @@ class _EditUserModalState extends State<EditUserModal> {
           ),
         );
         Navigator.pop(context, 'refresh');
-      } else if (response.statusCode == 400) {
+      } else if (response.statusCode == 401 || response.statusCode == 400 || response.statusCode == 500) {
         final responseData = jsonDecode(response.body);
         final errorMessage = responseData['error_message'] ?? "Failed to update! No changes are made";
         _showAlertBanner(errorMessage);
       } else {
-        final errorMessage = "Check your credentials";
+        final errorMessage = " No Changes !! Check your credentials";
         _showAlertBanner(errorMessage);
       }
     } catch (e) {
@@ -279,23 +294,23 @@ class _EditUserModalState extends State<EditUserModal> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+                              SizedBox(height: 20,),
                               Text(
-                                _usernameController.text, // Display the username
+                                _usernameController.text, // Display the current username
                                 style: const TextStyle(
-                                  color: Colors.white,
                                   fontSize: 20,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                _emailController.text, // Display the email
+                                widget.email, // Display the current email
                                 style: const TextStyle(
-                                  color: Colors.grey,
                                   fontSize: 16,
+                                  color: Colors.grey,
                                 ),
                               ),
-                              const SizedBox(height: 10),
                             ],
                           ),
                         ),
@@ -306,7 +321,9 @@ class _EditUserModalState extends State<EditUserModal> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          // Current Password Field
+
+
+                          const SizedBox(height: 10),
                           TextFormField(
                             controller: _oldPasswordController,
                             decoration: InputDecoration(
@@ -330,18 +347,19 @@ class _EditUserModalState extends State<EditUserModal> {
                                 },
                               ),
                             ),
-                            obscureText: _isOldPasswordObscured, // Hide text when obscureText is true
+                            obscureText: _isOldPasswordObscured,
                             style: const TextStyle(color: Colors.white),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly, // Only allow digits
-                              LengthLimitingTextInputFormatter(4), // Limit length to 4 digits
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(4),
                             ],
                             validator: _validateOldPassword,
                           ),
-                          const SizedBox(height: 16),
 
-                          // New Password Field
+
+
+                          const SizedBox(height: 10),
                           TextFormField(
                             controller: _newPasswordController,
                             decoration: InputDecoration(
@@ -364,18 +382,20 @@ class _EditUserModalState extends State<EditUserModal> {
                                   });
                                 },
                               ),
+                              errorText: _validateNewPassword(_newPasswordController.text),
                             ),
-                            obscureText: _isNewPasswordObscured, // Hide text when obscureText is true
+                            obscureText: _isNewPasswordObscured,
                             style: const TextStyle(color: Colors.white),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly, // Only allow digits
-                              LengthLimitingTextInputFormatter(4), // Limit length to 4 digits
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(4),
                             ],
+                            validator: _validateNewPassword,
                           ),
-                          const SizedBox(height: 20),
 
-                          // Phone Number Field (No eye icon)
+
+                          const SizedBox(height: 10),
                           IntlPhoneField(
                             controller: _phoneController,
                             decoration: InputDecoration(
@@ -396,7 +416,8 @@ class _EditUserModalState extends State<EditUserModal> {
                             ],
                           ),
 
-                          const SizedBox(height: 16),
+
+                          const SizedBox(height: 20),
                           CustomGradientButton(
                             buttonText: 'Save Changes',
                             isEnabled: isFormValid,
@@ -415,6 +436,7 @@ class _EditUserModalState extends State<EditUserModal> {
     );
   }
 }
+
 
 class CustomGradientButton extends StatelessWidget {
   final String buttonText;
@@ -456,6 +478,7 @@ class CustomGradientButton extends StatelessWidget {
     );
   }
 }
+
 
 class CustomGradientDivider extends StatelessWidget {
   @override
