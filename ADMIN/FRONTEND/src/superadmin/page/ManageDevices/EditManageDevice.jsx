@@ -45,8 +45,8 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
     const [max_power, setMaxPower] = useState(dataItem?.max_power || '');
     const [connectors, setConnectors] = useState(
         (dataItem && dataItem.connector_details && dataItem.connector_details.length > 0) 
-            ? dataItem.connector_details.map(item => ({
-                connector_id: item.connector_id || 1,
+            ? dataItem.connector_details.map((item, index)=> ({
+                connector_id: index + 1,
                 connector_type: item.connector_type || '',
                 type_name: item.connector_type_name || '',
                 typeOptions: [],
