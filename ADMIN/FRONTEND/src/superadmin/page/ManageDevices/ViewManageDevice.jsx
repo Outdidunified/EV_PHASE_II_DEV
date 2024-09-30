@@ -292,7 +292,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                     {newUser.connector_details && newUser.connector_details.length > 0 ? (
                                                     <div className="row col-12 col-xl-12 viewDataCss">
                                                         {newUser.connector_details.map((connector, index) => (
-                                                        <div className="col-md-4" key={index}>
+                                                        <div className="col-md-4" style={{paddingBottom:'15px'}} key={index}>
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>
                                                                     Connector {index + 1}: <span style={{ fontWeight: 'bold' }}>
