@@ -1515,7 +1515,8 @@ async function fetchConnectorTypeName(req){
         const OutputTypeCollection = db.collection('output-type_config');
 
         const fetchResults = await OutputTypeCollection.find({
-            output_type: connector_type 
+            output_type: connector_type ,
+            status: true
         }).toArray();
 
         if(!fetchResults || fetchResults.length === 0){
