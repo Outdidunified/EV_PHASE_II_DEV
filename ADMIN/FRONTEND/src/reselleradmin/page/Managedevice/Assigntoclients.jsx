@@ -15,6 +15,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
     const [unallocatedChargers, setUnallocatedChargers] = useState([]);
     const [clientsList, setClientsList] = useState([]);
     const navigate = useNavigate();
+    const [selectedModel, setSelectedModel] = useState('');
 
     const fetchClientsCalled = useRef(false); 
     const fetchUnallocatedChargersCalled = useRef(false); 
@@ -207,6 +208,14 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
         navigate('/reselleradmin/Allocateddevice');
     };
 
+    // Charger selection and model filtering
+    const handleModelChange = (model) => {
+        setSelectedModel(model);
+    };
+
+    // Filter chargers based on the selected model
+    const filteredChargers = selectedModel ? unallocatedChargers.filter(charger => charger.charger_model === selectedModel) : unallocatedChargers;
+
     return (
         <div className='container-scroller'>
             {/* Header */}
@@ -224,7 +233,22 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                     </div>
                                     <div className="col-12 col-xl-4">
                                         <div className="justify-content-end d-flex"> 
-                                            <button type="button" className="btn btn-success" onClick={goBack}style={{ marginRight: '10px' }}>Back</button>
+                                            <div className="dropdown">
+                                                <button className="btn btn-outline-warning btn-icon-text dropdown-toggle" type="button" style={{ marginRight: '10px' }} id="dropdownMenuIconButton1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i className="ti-file btn-icon-prepend"></i>Select Charger Model
+                                                </button>
+                                                <div className="dropdown-menu" aria-labelledby="dropdownMenuIconButton1">
+                                                    <h6 className="dropdown-header">Select Charger Model</h6>
+                                                    {unallocatedChargers.length === 0 ? (
+                                                        <p disabled style={{ paddingLeft: '50px' }}>No data found</p>
+                                                    ) : (
+                                                        Array.from(new Set(unallocatedChargers.map(item => item.charger_model))).map((uniqueModel, index) => (
+                                                            <p key={index} className="dropdown-item" onClick={() => handleModelChange(uniqueModel)}>{uniqueModel} KW</p>
+                                                        ))
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <button type="button" className="btn btn-success" onClick={goBack} style={{ marginRight: '10px' }}>Back</button>
                                         </div>
                                     </div>
                                 </div>
@@ -312,8 +336,8 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                                     )}
                                                                                 </button>
                                                                                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton" style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                                                                    {unallocatedChargers.length > 0 ? (
-                                                                                        unallocatedChargers.map((chargerObj) => (
+                                                                                    {filteredChargers.length > 0 ? (
+                                                                                        filteredChargers.map((chargerObj) => (
                                                                                             <div key={chargerObj.charger_id} className="dropdown-item">
                                                                                                 <div className="form-check">
                                                                                                     <input
@@ -322,8 +346,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
                                                                                                         id={`charger-${chargerObj.charger_id}`}
                                                                                                         checked={selectedChargers.includes(chargerObj.charger_id)}
                                                                                                         onChange={(e) => handleChargerChange(chargerObj.charger_id, e.target.checked)}
-                                                                                                        name={`charger_${chargerObj.charger_id}`} // Add name attribute
-
+                                                                                                        name={`charger_${chargerObj.charger_id}`} 
                                                                                                     />
                                                                                                     <label className="form-check-label" htmlFor={`charger-${chargerObj.charger_id}`}>
                                                                                                         {chargerObj.charger_id}
