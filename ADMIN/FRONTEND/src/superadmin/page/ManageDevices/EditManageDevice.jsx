@@ -45,14 +45,15 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
     const [max_power, setMaxPower] = useState(dataItem?.max_power || '');
     const [connectors, setConnectors] = useState(
         (dataItem && dataItem.connector_details && dataItem.connector_details.length > 0) 
-            ? dataItem.connector_details.map(item => ({
-                connector_id: item.connector_id || 1,
+            ? dataItem.connector_details.map((item, index)=> ({
+                connector_id: index + 1,
                 connector_type: item.connector_type || '',
                 type_name: item.connector_type_name || '',
                 typeOptions: [],
             }))
             : [{ connector_id: 1, connector_type: '', type_name: '', typeOptions: [] }]
     );    
+
     const fetchConnectorsCalled = useRef(false);
 
     // Error messages
@@ -61,6 +62,8 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
     const [errorMessagePower, setErrorMessagePower] = useState('');
 
     // Initial values setup
+    
+    // Initial values setup
     const [initialValues, setInitialValues] = useState({
         charger_id: dataItem?.charger_id || '',
         charger_model: dataItem?.charger_model || '',
@@ -68,8 +71,45 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
         vendor: dataItem?.vendor || '',
         max_current: dataItem?.max_current || '',
         max_power: dataItem?.max_power || '',
-        connectors:dataItem?.connectors || '',
+        connectors: dataItem?.connector_details || (dataItem && dataItem.connector_details && dataItem.connector_details.length > 0) 
+        ? dataItem.connector_details.map((item, index)=> ({
+            connector_id: index + 1,
+            connector_type: item.connector_type || '',
+            type_name: item.connector_type_name || '',
+            typeOptions: [],
+        }))
+        : [{ connector_id: 1, connector_type: '', type_name: '', typeOptions: [] }],
     });
+
+    // State to track form modification
+    const [isFormModified, setIsFormModified] = useState(false);
+
+    // Effect to check if form values have changed
+    useEffect(() => {
+        const checkFormChanged = () => {
+            const areConnectorsChanged = connectors.some((connector, index) => {
+                const initialConnector = initialValues.connectors[index];
+                if (!initialConnector) return true; // New connector added
+                return (
+                    connector.connector_type !== initialConnector.connector_type ||
+                    connector.type_name !== initialConnector.type_name
+                );
+            });
+    
+            return (
+                charger_id !== initialValues.charger_id ||
+                charger_model !== initialValues.charger_model ||
+                charger_type !== initialValues.charger_type ||
+                vendor !== initialValues.vendor ||
+                max_current !== initialValues.max_current ||
+                max_power !== initialValues.max_power ||
+                areConnectorsChanged // Check if connectors have changed
+            );
+        };
+    
+        setIsFormModified(checkFormChanged());
+    }, [charger_id, charger_model, charger_type, vendor, max_current, max_power, connectors, initialValues]);
+    
 
     // Update initialValues when dataItem changes
     useEffect(() => {
@@ -80,10 +120,17 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
             vendor: dataItem?.vendor || '',
             max_current: dataItem?.max_current || '',
             max_power: dataItem?.max_power || '',
-            connectors:dataItem?.connectors || '',
+            connectors:dataItem?.connectors || (dataItem && dataItem.connector_details && dataItem.connector_details.length > 0) 
+            ? dataItem.connector_details.map((item, index)=> ({
+                connector_id: index + 1,
+                connector_type: item.connector_type || '',
+                type_name: item.connector_type_name || '',
+                typeOptions: [],
+            }))
+            : [{ connector_id: 1, connector_type: '', type_name: '', typeOptions: [] }],
         });
     }, [dataItem]);
-
+    
     // Clear error messages
     useEffect(() => {
         const timeout = setTimeout(() => {
@@ -236,19 +283,6 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                 icon: "error"
             });
         }
-    };
-
-    // Check if form values have changed
-    const isFormChanged = () => {
-        return (
-            charger_id !== initialValues.charger_id ||
-            charger_model !== initialValues.charger_model ||
-            charger_type !== initialValues.charger_type ||
-            vendor !== initialValues.vendor ||
-            max_current !== initialValues.max_current ||
-            max_power !== initialValues.max_power ||
-            connectors !==initialValues.connectors
-        );
     };
 
     return (
@@ -464,7 +498,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                         {/* Connectors section end */}
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                         <div style={{textAlign:'center', padding:'15px'}}>
-                                                            <button type="submit" className="btn btn-primary" disabled={!isFormChanged()}>Update</button>
+                                                            <button type="submit" className="btn btn-primary" disabled={!isFormModified}>Update</button>
                                                         </div>
                                                     </form>
                                                 </div>

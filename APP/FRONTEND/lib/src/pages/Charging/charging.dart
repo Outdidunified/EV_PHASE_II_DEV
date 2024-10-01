@@ -64,7 +64,8 @@ class Charging extends StatefulWidget {
   final int? connector_id;
   final int? userId;
   final int? connector_type;
-  
+  final String email;
+
 
 
   const Charging({
@@ -73,7 +74,7 @@ class Charging extends StatefulWidget {
     required this.username,
     required this.connector_id,
     required this.userId,
-    required this.connector_type,
+    required this.connector_type, required this.email,
   }) : super(key: key);
 
   @override
@@ -84,6 +85,7 @@ class _ChargingPageState extends State<Charging> with SingleTickerProviderStateM
   String activeTab = 'home';
   late WebSocketChannel channel;
   late AnimationController _controller;
+  bool showMeterValuesContainer = false; // Declare this in your state class
 
   String chargerStatus = '';
   String TagIDStatus = '';
@@ -96,6 +98,7 @@ class _ChargingPageState extends State<Charging> with SingleTickerProviderStateM
   bool isErrorVisible = false;
   bool isThresholdVisible = false;
   bool isBatteryScreenVisible = false;
+  bool showVoltageCurrentContainer = false;
   bool showAlertLoading = false;
   List<Map<String, dynamic>> history = [];
   String voltage = '';
@@ -104,14 +107,21 @@ class _ChargingPageState extends State<Charging> with SingleTickerProviderStateM
   String energy = '';
   String frequency = '';
   String temperature = '';
-    //widget temperture and controller
+
+
+
+  // State for voltage and current of three phases
+  String voltageV1 = '';
+  String voltageV2 = '';
+  String voltageV3 = '';
+  String currentA1 = '';
+  String currentA2 = '';
+  String currentA3 = '';
+
 
   late double _currentTemperature;
 
   final ScrollController _scrollController = ScrollController();
-
-
-
   bool isStartButtonEnabled = true; // Initial state
   bool isStopButtonEnabled = false;
   bool charging = false;
@@ -124,6 +134,7 @@ class _ChargingPageState extends State<Charging> with SingleTickerProviderStateM
       this.errorCode = errorCode;
     });
   }
+
 bool _isStopLoading = false;
   bool showSuccessAlert = false;
   bool showErrorAlert = false;
@@ -271,6 +282,10 @@ Widget _buildLoadingIndicator() {
   Future<void> updateSessionPriceToUser(int? connectorId) async {
     try {
       handleAlertLoadingStart(context);
+
+    // Introduce a 3-second delay before sending the request
+    await Future.delayed(const Duration(seconds: 5));
+
       var url = Uri.parse('http://122.166.210.142:9098/charging/getUpdatedCharingDetails');
       var body = {
         'chargerID': chargerID,
@@ -308,7 +323,7 @@ Widget _buildLoadingIndicator() {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => HomePage(username: username,userId: widget.userId, email: '',),
+                builder: (context) => HomePage(username: username,userId: widget.userId, email: widget.email,),
               ),
             );
           }
@@ -533,6 +548,49 @@ void RcdMsg(Map<String, dynamic> parsedMessage) async {
 
   if (message.length < 4 || message[3] == null) return;
 
+  if (message[2] == 'MeterValues') {
+    final meterValues = message[3]['meterValue'] ?? [];
+    if (meterValues.isNotEmpty) {
+      final sampledValue = meterValues[0]['sampledValue'] ?? [];
+      // Reset all values initially
+      voltageV1 = '';
+      voltageV2 = '';
+      voltageV3 = '';
+      currentA1 = '';
+      currentA2 = '';
+      currentA3 = '';
+
+      for (var value in sampledValue) {
+        switch (value['unit']) {
+          case 'V1':
+            voltageV1 = value['value'];
+            break;
+          case 'V2':
+            voltageV2 = value['value'];
+            break;
+          case 'V3':
+            voltageV3 = value['value'];
+            break;
+          case 'A1':
+            currentA1 = value['value'];
+            break;
+          case 'A2':
+            currentA2 = value['value'];
+            break;
+          case 'A3':
+            currentA3 = value['value'];
+            break;
+        }
+      }
+
+  // Determine whether to show meter values container
+      setState(() {
+        showMeterValuesContainer = voltageV1.isNotEmpty || currentA1.isNotEmpty;
+        showVoltageCurrentContainer = voltageV1.isNotEmpty || currentA1.isNotEmpty;
+      });
+    }
+  }
+
   String chargerStatus = '';
   String currentTime = '';
   String vendorErrorCode = '';
@@ -556,6 +614,7 @@ void RcdMsg(Map<String, dynamic> parsedMessage) async {
           });
           stopTimeout();
           setIsStarted(false);
+          isStartButtonEnabled = true;
         } else if (TagIDStatus == 'Invalid') {
           setState(() {
             TagIDStatus = 'Invalid';
@@ -673,7 +732,9 @@ void RcdMsg(Map<String, dynamic> parsedMessage) async {
 
       case 'MeterValues':
         final meterValues = message[3]['meterValue'] ?? [];
+        print(meterValues);
         final sampledValue = meterValues.isNotEmpty ? meterValues[0]['sampledValue'] : [];
+
 
         Map<String, dynamic> formattedJson = convertToFormattedJson(sampledValue);
         currentTime = formatTimestamp(DateTime.now());
@@ -755,6 +816,7 @@ void RcdMsg(Map<String, dynamic> parsedMessage) async {
   void initializeWebSocket() {
     channel = WebSocketChannel.connect(
       Uri.parse('ws://122.166.210.142:8566'),
+      // Uri.parse('ws://122.166.210.142:7002'),
     );
 
     channel.stream.listen(
@@ -788,7 +850,7 @@ void RcdMsg(Map<String, dynamic> parsedMessage) async {
   void dispose() {
     _controller.dispose();
     channel.sink.close();
-     _scrollController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
   
@@ -806,23 +868,34 @@ void RcdMsg(Map<String, dynamic> parsedMessage) async {
     });
   }
 
-  void toggleBatteryScreen() {
-    print("Charging $charging");
+void toggleBatteryScreen() {
+  print("Charging $charging");
 
-    if (charging) {
-      setState(() {
-        isBatteryScreenVisible = !isBatteryScreenVisible;
-        isStartButtonEnabled = !isStartButtonEnabled;
-        isStopButtonEnabled = !isStopButtonEnabled;
-      });
-    } else {
-      setState(() {
+  if (charging) {
+    setState(() {
+      // Show the battery screen and hide the meter values container
+      if (!isBatteryScreenVisible) {
+        isBatteryScreenVisible = true;
+        showMeterValuesContainer = false;
+      } else {
+        // Show the meter values container and hide the battery screen
+        showMeterValuesContainer = true;
         isBatteryScreenVisible = false;
-        // isStartButtonEnabled = false;
-        isStopButtonEnabled = false;
-      });
-    }
+      }
+      
+      isStartButtonEnabled = !isStartButtonEnabled;
+      isStopButtonEnabled = !isStopButtonEnabled;
+    });
+  } else {
+    setState(() {
+      // Ensure both are hidden when not charging
+      isBatteryScreenVisible = false;
+      showMeterValuesContainer = false;
+      isStopButtonEnabled = false;
+    });
   }
+}
+
 
   void toggleThresholdVisibility() {
     setState(() {
@@ -966,7 +1039,7 @@ Widget _buildAnimatedTempColorCircle() {
           borderRadius: BorderRadius.circular(15),
         ),
         child: Container(
-          width: 200,
+          width: 225,
           height: 102, // Adjusted to make the card background more visible
           padding: const EdgeInsets.all(16.0), // Add padding inside the card
           decoration: BoxDecoration(
@@ -986,12 +1059,13 @@ Widget _buildAnimatedTempColorCircle() {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${_currentTemperature.toInt()} °C',
+                    // '${_currentTemperature.toInt()} °C' ,
+                    '33.5 °C',
                     style: const TextStyle(color: Colors.white, fontSize: 24),
                   ),
                 ],
               ),
-              const SizedBox(width: 16), // Add some space between the circle and the text
+              const SizedBox(width: 20), // Add some space between the circle and the text
               Container(
                 width: 90,
                 height: 90, // Adjusted to fit the card
@@ -1018,8 +1092,9 @@ Widget _buildAnimatedTempColorCircle() {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            '${_currentTemperature.toInt()}',
-                            style: TextStyle(color: _getTemperatureColor(), fontSize: 20),
+                            // '${_currentTemperature.toInt()}',
+                            '33.5 ',
+                            style: TextStyle(color: _getTemperatureColor(), fontSize: 15),
                           ),
                           Text(
                             '°C',
@@ -1320,7 +1395,7 @@ Widget _buildAnimatedTempColorCircle() {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => HomePage(username: username,userId: widget.userId, email: '',),
+        builder: (context) => HomePage(username: username,userId: widget.userId, email: widget.email),
       ),
     );
     endChargingSession(chargerID, widget.connector_id);
@@ -1368,7 +1443,7 @@ Widget build(BuildContext context) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(username: username, userId: widget.userId, email: '',),
+          builder: (context) => HomePage(username: username, userId: widget.userId, email: widget.email),
         ),
       );
       return false; // Return false to prevent the default back behavior
@@ -1828,6 +1903,420 @@ Widget build(BuildContext context) {
                             ),
                           ),
                         ),
+                      if (showMeterValuesContainer) // Check if the meter values container should be shown
+                        Padding(
+                          padding: const EdgeInsets.only(top: 15, bottom: 15, left: 20),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            controller: _scrollController,
+                            child: Row(
+                              children: [
+                                Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 8.0),
+                                          child: Container(
+                                            height: 190,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade900,
+                                              borderRadius: BorderRadius.circular(15.0),
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 10,
+                                                  offset: Offset(4, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            padding: const EdgeInsets.all(8),
+                                            margin: const EdgeInsets.only(bottom: 16.0, left: 10),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                SizedBox(
+                                                  width: 120, // Reduced width
+                                                  height: 180, // Reduced height
+                                                  child: Card(
+                                                    color: Colors.black,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Text(
+                                                            currentA1.isNotEmpty ? currentA1 : '0',
+                                                            style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 20, // Adjusted font size
+                                                            ),
+                                                          ),
+                                                          const Text(
+                                                            'Current 1',
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 16, // Adjusted font size
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 150, // Reduced width
+                                                      height: 85, // Reduced height
+                                                      child: Card(
+                                                        color: Colors.black,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(1.0),
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Text(
+                                                                currentA2.isNotEmpty ? currentA2 : '0',
+                                                                style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 20, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                              const Text(
+                                                                'Current 2',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 16, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 150, // Reduced width
+                                                      height: 85, // Reduced height
+                                                      child: Card(
+                                                        color: Colors.black,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(1.0),
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Text(
+                                                                currentA3.isNotEmpty ? currentA3 : '0',
+                                                                style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 20, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                              const Text(
+                                                                'Current 3',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 16, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      child: GestureDetector(
+                                        onTap: _scrollToNext,
+                                        child: FadeTransition(
+                                          opacity: _controller,
+                                          child: Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Colors.white.withOpacity(0.5),
+                                            size: 50, // Reduced icon size
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 20),
+                                Stack(
+                                  alignment: Alignment.centerLeft,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 8.0),
+                                          child: Container(
+                                            height: 190,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade900,
+                                              borderRadius: BorderRadius.circular(15.0),
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 10,
+                                                  offset: Offset(4, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            padding: const EdgeInsets.all(8),
+                                            margin: const EdgeInsets.only(bottom: 16.0, left: 10),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                SizedBox(
+                                                  width: 120, // Reduced width
+                                                  height: 180, // Reduced height
+                                                  child: Card(
+                                                    color: Colors.black,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Text(
+                                                            voltageV1.isNotEmpty ? voltageV1 : '0',                                                          style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 20, // Adjusted font size
+                                                            ),
+                                                          ),
+                                                          const Text(
+                                                            'Voltage 1',
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 16, // Adjusted font size
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 150, // Reduced width
+                                                      height: 85, // Reduced height
+                                                      child: Card(
+                                                        color: Colors.black,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(1.0),
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Text(
+                                                                voltageV2.isNotEmpty ? voltageV2: '0',
+                                                                style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 20, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                              const Text(
+                                                                'Voltage 2',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 16, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 150, // Reduced width
+                                                      height: 85, // Reduced height
+                                                      child: Card(
+                                                        color: Colors.black,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(1.0),
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Text(
+                                                                voltageV3.isNotEmpty ? voltageV3 : '0',
+                                                                style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 20, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                              const Text(
+                                                                'Voltage 3',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 16, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      child: GestureDetector(
+                                        onTap: _scrollToPrevious,
+                                        child: FadeTransition(
+                                          opacity: _controller,
+                                          child: Icon(
+                                            Icons.arrow_back_ios,
+                                            color: Colors.white.withOpacity(0.5),
+                                            size: 50, // Reduced icon size
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 20),
+                                Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 8.0),
+                                          child: Container(
+                                            height: 190,
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade900,
+                                              borderRadius: BorderRadius.circular(15.0),
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 10,
+                                                  offset: Offset(4, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            padding: const EdgeInsets.all(8),
+                                            margin: const EdgeInsets.only(bottom: 16.0, left: 10),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                SizedBox(
+                                                  width: 120, // Reduced width
+                                                  height: 180, // Reduced height
+                                                  child: Card(
+                                                    color: Colors.black,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Text(
+                                                            energy.isNotEmpty ? energy : '0',
+                                                            style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 20, // Adjusted font size
+                                                            ),
+                                                          ),
+                                                          const Text(
+                                                            'Energy',
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 16, // Adjusted font size
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 150, // Reduced width
+                                                      height: 85, // Reduced height
+                                                      child: Card(
+                                                        color: Colors.black,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(1.0),
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Text(
+                                                                frequency.isNotEmpty ? frequency : '0',
+                                                                style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 20, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                              const Text(
+                                                                'Frequency',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 16, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 150, // Reduced width
+                                                      height: 85, // Reduced height
+                                                      child: Card(
+                                                        color: Colors.black,
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.all(1.0),
+                                                          child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            children: [
+                                                              Text(
+                                                                power.isNotEmpty ? power : '0',
+                                                                style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 20, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                              const Text(
+                                                                'Power',
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 16, // Adjusted font size
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -1895,7 +2384,6 @@ class _BatteryChargeScreenState extends State<BatteryChargeScreen> with SingleTi
   @override
   void dispose() {
     _animationController.dispose();
-   
     super.dispose();
   }
 
@@ -2488,7 +2976,10 @@ class ChargingCompleteModal extends StatelessWidget {
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.grey.shade600,
-                  child: const Icon(Icons.attach_money, color: Colors.white, size: 24),
+                  child: const Text(
+                    '\u20B9', // Indian Rupee symbol
+                    style: TextStyle(color: Colors.white, fontSize: 24), // Customize size as needed
+                  ),
                 ),
                 title: const Text(
                   'Charging Price',
@@ -2537,7 +3028,8 @@ class LoadingOverlay extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: Colors.black.withOpacity(0.75), // Transparent black background
+      // color: Colors.black.withOpacity(0.75), // Transparent black background
+      color: Colors.black.withOpacity(0.90), // Transparent black background
       child: Center(
         child: _AnimatedChargingIcon(), // Use the animated charging icon
       ),
@@ -2555,6 +3047,7 @@ class LoadingOverlay extends StatelessWidget {
     );
   }
 }
+
 class _AnimatedChargingIcon extends StatefulWidget {
   @override
   __AnimatedChargingIconState createState() => __AnimatedChargingIconState();
@@ -2563,10 +3056,8 @@ class _AnimatedChargingIcon extends StatefulWidget {
 class __AnimatedChargingIconState extends State<_AnimatedChargingIcon>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _rotationAnimation;
+  late Animation<double> _slideAnimation;
   late Animation<double> _opacityAnimation;
-  late Animation<double> _circleScaleAnimation;
 
   @override
   void initState() {
@@ -2574,44 +3065,31 @@ class __AnimatedChargingIconState extends State<_AnimatedChargingIcon>
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    )..repeat();
+    )..forward(); // Start the animation
 
-    _scaleAnimation = TweenSequence([
-      TweenSequenceItem(tween: Tween<double>(begin: 0.8, end: 1.2), weight: 70),
-      TweenSequenceItem(tween: Tween<double>(begin: 1.2, end: 0.0), weight: 30),
-    ]).animate(
+    // Slide animation for moving the bolt icon vertically downwards
+    _slideAnimation = Tween<double>(begin: -130.0, end: 60.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,
       ),
     );
 
-    _rotationAnimation = Tween<double>(begin: 0.0, end: 2 * 3.14159).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.linear,
-      ),
-    );
-
-    _opacityAnimation = TweenSequence([
-      TweenSequenceItem(tween: Tween<double>(begin: 0.5, end: 1.0), weight: 70),
-      TweenSequenceItem(tween: Tween<double>(begin: 1.0, end: 0.0), weight: 30),
-    ]).animate(
+    // Opacity animation for smooth fading in and out
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: Curves.easeInOut,
       ),
     );
 
-    _circleScaleAnimation = TweenSequence([
-      TweenSequenceItem(tween: Tween<double>(begin: 0.9, end: 1.1), weight: 70),
-      TweenSequenceItem(tween: Tween<double>(begin: 1.1, end: 0.0), weight: 30),
-    ]).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        // Reset the animation to start from the top when it reaches the bottom
+        _controller.reset();
+        _controller.forward();
+      }
+    });
   }
 
   @override
@@ -2625,40 +3103,18 @@ class __AnimatedChargingIconState extends State<_AnimatedChargingIcon>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            Transform.scale(
-              scale: _circleScaleAnimation.value,
-              child: Container(
-                width: 250, // Adjust the circle size as needed
-                height: 250,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.green.withOpacity(0.7),
-                    width: 4.0, // Border thickness
-                  ),
-                ),
-              ),
-            ),
-            Transform.rotate(
-              angle: _rotationAnimation.value,
-              child: Transform.scale(
-                scale: _scaleAnimation.value,
-                child: Opacity(
-                  opacity: _opacityAnimation.value,
-                  child: child,
-                ),
-              ),
-            ),
-          ],
+        return Transform.translate(
+          offset: Offset(0, _slideAnimation.value), // Move vertically
+          child: Opacity(
+            opacity: _opacityAnimation.value,
+            child: child,
+          ),
         );
       },
       child: Icon(
-        Icons.bolt, // Charging icon
+        Icons.bolt_sharp, // Charging icon
         color: Colors.green, // Set the icon color
-        size: 170, // Adjust the size as needed
+        size: 200, // Adjust the size as needed
       ),
     );
   }

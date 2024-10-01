@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../Auth/Log_In/login.dart';
@@ -34,7 +32,6 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     // fetchUserDetails();
     email = widget.email;
-    print(email);
     final userImageProvider = Provider.of<UserImageProvider>(context, listen: false);
     userImageProvider.loadImage(); // Load user image when the profile page is initialized
   }
@@ -112,10 +109,10 @@ class _ProfilePageState extends State<ProfilePage> {
       enableDrag: false,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.9, // Set height to 70% of the screen
+          height: MediaQuery.of(context).size.height * 0.97, // Set height to 70% of the screen
           child: Padding(
             padding: MediaQuery.of(context).viewInsets,
-            child: AccountPage(username: widget.username), // Ensure this is the correct widget name
+            child: AccountPage(username: widget.username,userId: widget.userId,email:widget.email), // Ensure this is the correct widget name
           ),
         );
       },
@@ -176,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             width: 200, // Increase the width of the container
                             decoration: BoxDecoration(
                               border: Border.all(
-                                width: 2,
+                                width: 0,
 
                               ),
                               borderRadius: BorderRadius.circular(20),

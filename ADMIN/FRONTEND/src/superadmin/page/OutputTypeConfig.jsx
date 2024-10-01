@@ -355,9 +355,13 @@ const OutputTypeConfig = ({ userInfo, handleLogout }) => {
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{color:'black', width:'150px'}}>Type Name</span>
                                                                     </div>
-                                                                    <input type="text" className="form-control" placeholder="Output Type Name" value={add_OutputTypeConfig} onChange={(e) => {const value = e.target.value; const sanitizedValue = value; setOutputTypeConfig(sanitizedValue);}} required/>
+                                                                    <input type="text" className="form-control" placeholder="Output Type Name" maxLength={12} value={add_OutputTypeConfig}
+                                                                        onChange={(e) => {
+                                                                            const value = e.target.value;
+                                                                            // Use a regex to allow only letters and numbers
+                                                                            const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, ''); setOutputTypeConfig(sanitizedValue); }}
+                                                                    required/>                                                                </div>
                                                                 </div>
-                                                            </div>
                                                             <div style={{textAlign:'center'}}>
                                                                 <button type="submit" className="btn btn-primary mr-2" style={{marginTop:'10px'}}>Add</button>
                                                             </div>
@@ -386,8 +390,14 @@ const OutputTypeConfig = ({ userInfo, handleLogout }) => {
                                                                     <div className="input-group-prepend">
                                                                         <span className="input-group-text" style={{ color: 'black', width: '180px' }}>Type Name</span>
                                                                     </div>
-                                                                    <input type="text" className="form-control" placeholder="Output Type Name" style={{ width:'200px'}} 
-                                                                        value={output_type_name} onChange={(e) => setEditOutputTypeConfig(e.target.value)}required/>
+                                                                    <input type="text" className="form-control" placeholder="Output Type Name" maxLength={12} style={{ width: '200px' }} value={output_type_name}
+                                                                        onChange={(e) => {
+                                                                            const value = e.target.value;
+                                                                            // Use a regex to allow only letters and numbers
+                                                                            const sanitizedValue = value.replace(/[^a-zA-Z0-9]/g, '');
+                                                                            setEditOutputTypeConfig(sanitizedValue);
+                                                                        }}
+                                                                    required/>
                                                                 </div>
                                                             </div>
                                                             <div style={{textAlign:'center'}}>
