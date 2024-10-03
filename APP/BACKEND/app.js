@@ -4,7 +4,8 @@ const http = require('http');
 const dotenv = require('dotenv');
 const logger = require('./logger');
 const cors = require('cors');
-app.use(cors());
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -17,7 +18,22 @@ const profile = require('./src/Profile/routes.js');
 const OcppConfig = require('./src/OcppConfig/routes.js');
 const SessionLog = require('./src/SessionLog/route.js');
 
+// Middleware: Secure HTTP Headers with Helmet
+app.use(helmet());
+
+// Middleware: Enable CORS
+app.use(cors());
+
+// Middleware: JSON Parsing
 app.use(express.json());
+
+// Rate Limiting to avoid DoS attacks
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.',
+});
+app.use(limiter);
 
 app.use((req, res, next) => {
     console.log(`${req.method} request for '${req.url}'`);
