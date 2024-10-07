@@ -25,16 +25,16 @@ const Sidebar = () => {
             <span className="menu-title">Manage Reseller</span>
           </Link>
         </li>
-        <li className={location.pathname === '/superadmin/ManageUserRole' ? 'nav-item active' : 'nav-item'}>
-          <Link className="nav-link" to="/superadmin/ManageUserRole">
-            <i className="icon-head menu-icon mdi mdi-account"></i>
-            <span className="menu-title">Manage User Roles</span>
-          </Link>
-        </li>
         <li className={location.pathname === '/superadmin/ManageUsers' || location.pathname === '/superadmin/ViewUserList'  || location.pathname === '/superadmin/EditUserList' ? 'nav-item active' : 'nav-item'}>
           <Link className="nav-link" to="/superadmin/ManageUsers">
             <i className="icon-head menu-icon mdi mdi-account-multiple"></i>
             <span className="menu-title">Manage Users</span>
+          </Link>
+        </li>
+        <li className={location.pathname === '/superadmin/ManageUserRole' ? 'nav-item active' : 'nav-item'}>
+          <Link className="nav-link" to="/superadmin/ManageUserRole">
+            <i className="icon-head menu-icon mdi mdi-account"></i>
+            <span className="menu-title">Manage User Roles</span>
           </Link>
         </li>
         <li className={location.pathname === '/superadmin/OutputTypeConfig'  ? 'nav-item active' : 'nav-item'}>

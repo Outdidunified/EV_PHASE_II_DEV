@@ -71,9 +71,32 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     };
 
     // Function to remove a connector
+    // const removeConnector = (index) => {
+    //     const updatedConnectors = connectors.filter((_, idx) => idx !== index);
+    //     setConnectors(updatedConnectors);
+    // };
+
     const removeConnector = (index) => {
-        const updatedConnectors = connectors.filter((_, idx) => idx !== index);
-        setConnectors(updatedConnectors);
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you really want to remove this connector?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, remove it!",
+            cancelButtonText: "No, keep it"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const updatedConnectors = connectors.filter((_, idx) => idx !== index);
+                setConnectors(updatedConnectors);
+                Swal.fire({
+                    // title:"Removed!",
+                    title:"The connector has been removed.",
+                    icon:"success"
+                });
+            }
+        });
     };
 
     // Function to update the connector data dynamically
