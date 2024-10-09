@@ -241,7 +241,7 @@ const AssigntoAssociation = ({ userInfo, handleLogout }) => {
     }, [reloadPage]);
 
     const goBack = () => {
-        navigate('/clientadmin/Allocateddevice');
+        navigate('/clientadmin/Unallocateddevice');
     };
 
     // Charger selection and model filtering
