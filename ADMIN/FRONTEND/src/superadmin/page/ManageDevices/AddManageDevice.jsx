@@ -71,11 +71,6 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
     };
 
     // Function to remove a connector
-    // const removeConnector = (index) => {
-    //     const updatedConnectors = connectors.filter((_, idx) => idx !== index);
-    //     setConnectors(updatedConnectors);
-    // };
-
     const removeConnector = (index) => {
         Swal.fire({
             title: "Are you sure?",
@@ -399,13 +394,15 @@ const AddManageDevice = ({ userInfo, handleLogout }) => {
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-md-2" style={{paddingTop:'40px'}}>
-                                                                    <div className="form-group">
-                                                                        <div style={{ textAlign: 'center' }}>
-                                                                            <button type="submit" className="btn btn-outline-danger" onClick={() => removeConnector(index)} disabled={connectors.length === 1}> <i className="mdi mdi-delete"></i></button>
+                                                                {index === connectors.length - 1 && (
+                                                                    <div className="col-md-2" style={{paddingTop:'40px'}}>
+                                                                        <div className="form-group">
+                                                                            <div style={{ textAlign: 'center' }}>
+                                                                                <button type="submit" className="btn btn-outline-danger" onClick={() => removeConnector(index)} disabled={connectors.length === 1}> <i className="mdi mdi-delete"></i></button>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
+                                                                )}
                                                                 {/* Only show the "Add Connector" button in the last row */}
                                                                 {index === connectors.length - 1 && (
                                                                     <div className="col-md-2" style={{ paddingTop: '40px' }}>

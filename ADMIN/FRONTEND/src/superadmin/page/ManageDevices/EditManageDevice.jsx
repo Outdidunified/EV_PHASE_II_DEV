@@ -487,20 +487,22 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-md-2" style={{ paddingTop: '40px' }}>
-                                                                    <div className="form-group">
-                                                                        <div style={{ textAlign: 'center' }}>
-                                                                            <button 
-                                                                                type="button" // Changed to button to avoid submitting the form
-                                                                                className="btn btn-outline-danger" 
-                                                                                onClick={() => handleRemoveConnector(index)} 
-                                                                                disabled={connectors.length === 1} // Prevent removal if there's only one connector
-                                                                            >
-                                                                                <i className="mdi mdi-delete"></i>
-                                                                            </button>
+                                                                {index === connectors.length - 1 && (
+                                                                    <div className="col-md-2" style={{ paddingTop: '40px' }}>
+                                                                        <div className="form-group">
+                                                                            <div style={{ textAlign: 'center' }}>
+                                                                                <button 
+                                                                                    type="button" // Changed to button to avoid submitting the form
+                                                                                    className="btn btn-outline-danger" 
+                                                                                    onClick={() => handleRemoveConnector(index)} 
+                                                                                    disabled={connectors.length === 1} // Prevent removal if there's only one connector
+                                                                                >
+                                                                                    <i className="mdi mdi-delete"></i>
+                                                                                </button>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
+                                                                )}
                                                                 {/* Only show the "Add Connector" button in the last row */}
                                                                 {index === connectors.length - 1 && (
                                                                     <div className="col-md-2" style={{ paddingTop: '40px' }}>
@@ -522,13 +524,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
 
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}
                                                         <div style={{textAlign: 'center', padding: '15px'}}>
-                                                            <button 
-                                                                type="submit" 
-                                                                className="btn btn-primary" 
-                                                                disabled={!isFormModified}
-                                                            >
-                                                                Update
-                                                            </button>
+                                                            <button type="submit" className="btn btn-primary" disabled={!isFormModified}>Update</button>
                                                         </div>
                                                     </form>
                                                 </div>
