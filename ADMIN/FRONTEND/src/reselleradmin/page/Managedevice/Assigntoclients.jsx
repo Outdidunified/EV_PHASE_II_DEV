@@ -205,7 +205,7 @@ const Assigntoclients = ({ userInfo, handleLogout }) => {
 
     // back allocated device 
     const goBack = () => {
-        navigate('/reselleradmin/Allocateddevice');
+        navigate('/reselleradmin/Unallocateddevice');
     };
 
     // Charger selection and model filtering

@@ -103,7 +103,8 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                 vendor !== initialValues.vendor ||
                 max_current !== initialValues.max_current ||
                 max_power !== initialValues.max_power ||
-                areConnectorsChanged // Check if connectors have changed
+                connectors.length !== initialValues.connectors.length || // Check if the number of connectors has changed
+                areConnectorsChanged // Check if connector details have changed
             );
         };
     
@@ -120,14 +121,14 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
             vendor: dataItem?.vendor || '',
             max_current: dataItem?.max_current || '',
             max_power: dataItem?.max_power || '',
-            connectors:dataItem?.connectors || (dataItem && dataItem.connector_details && dataItem.connector_details.length > 0) 
-            ? dataItem.connector_details.map((item, index)=> ({
-                connector_id: index + 1,
-                connector_type: item.connector_type || '',
-                type_name: item.connector_type_name || '',
-                typeOptions: [],
-            }))
-            : [{ connector_id: 1, connector_type: '', type_name: '', typeOptions: [] }],
+            connectors: dataItem?.connectors || (dataItem && dataItem.connector_details && dataItem.connector_details.length > 0) 
+                ? dataItem.connector_details.map((item, index) => ({
+                    connector_id: index + 1,
+                    connector_type: item.connector_type || '',
+                    type_name: item.connector_type_name || '',
+                    typeOptions: [],
+                }))
+                : [{ connector_id: 1, connector_type: '', type_name: '', typeOptions: [] }],
         });
     }, [dataItem]);
     
@@ -148,33 +149,29 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
     };
 
     // Function to remove a connector
-    // const removeConnector = (index) => {
-    //     const updatedConnectors = connectors.filter((_, idx) => idx !== index);
-    //     setConnectors(updatedConnectors);
-    // };
-
-    const removeConnector = (index) => {
-    Swal.fire({
-        title: "Are you sure?",
-        text: "Do you really want to remove this connector?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, remove it!",
-        cancelButtonText: "No, keep it"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const updatedConnectors = connectors.filter((_, idx) => idx !== index);
-            setConnectors(updatedConnectors);
-            Swal.fire({
-                // title:"Removed!",
-                title:"The connector has been removed.",
-                icon:"success"
-            });
-        }
-    });
-};
+    const handleRemoveConnector = (index) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you really want to remove this connector?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, remove it!",
+            cancelButtonText: "No, keep it"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const updatedConnectors = connectors.filter((_, idx) => idx !== index);
+                setConnectors(updatedConnectors);
+                setIsFormModified(true);
+                Swal.fire({
+                    // title:"Removed!",
+                    title:"The connector has been removed.",
+                    icon:"success"
+                });
+            }
+        });
+    };
 
     // Function to fetch the type name options from the backend and update the connectors
     const updateConnectors = useCallback(async (updatedConnector) => {
@@ -490,26 +487,32 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-md-2" style={{ paddingTop: '40px' }}>
-                                                                    <div className="form-group">
-                                                                        <div style={{ textAlign: 'center' }}>
-                                                                            <button 
-                                                                                type="button" // Changed to button to avoid submitting the form
-                                                                                className="btn btn-outline-danger" 
-                                                                                onClick={() => removeConnector(index)} 
-                                                                                disabled={connectors.length === 1} // Prevent removal if there's only one connector
-                                                                            >
-                                                                                <i className="mdi mdi-delete"></i>
-                                                                            </button>
+                                                                {index === connectors.length - 1 && (
+                                                                    <div className="col-md-2" style={{ paddingTop: '40px' }}>
+                                                                        <div className="form-group">
+                                                                            <div style={{ textAlign: 'center' }}>
+                                                                                <button 
+                                                                                    type="button" // Changed to button to avoid submitting the form
+                                                                                    className="btn btn-outline-danger" 
+                                                                                    onClick={() => handleRemoveConnector(index)} 
+                                                                                    disabled={connectors.length === 1} // Prevent removal if there's only one connector
+                                                                                >
+                                                                                    <i className="mdi mdi-delete"></i>
+                                                                                </button>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
+                                                                )}
                                                                 {/* Only show the "Add Connector" button in the last row */}
                                                                 {index === connectors.length - 1 && (
                                                                     <div className="col-md-2" style={{ paddingTop: '40px' }}>
                                                                         <div className="form-group">
                                                                             <div style={{ textAlign: 'center' }}>
-                                                                                <button type="submit" className="btn btn-outline-primary" onClick={addConnector}>
+                                                                                <button 
+                                                                                    type="button" 
+                                                                                    className="btn btn-outline-primary" 
+                                                                                    onClick={addConnector}
+                                                                                >
                                                                                     <i className="mdi mdi-plus"></i>
                                                                                 </button>
                                                                             </div>
@@ -518,9 +521,9 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 )}
                                                             </div>
                                                         ))}
-                                                        {/* Connectors section end */}
+
                                                         {errorMessage && <div className="text-danger">{errorMessage}</div>}
-                                                        <div style={{textAlign:'center', padding:'15px'}}>
+                                                        <div style={{textAlign: 'center', padding: '15px'}}>
                                                             <button type="submit" className="btn btn-primary" disabled={!isFormModified}>Update</button>
                                                         </div>
                                                     </form>
