@@ -152,7 +152,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Gun Connector: <span style={{ fontWeight: 'normal' }}>{deviceData.gun_connector === 1 ? 'Single phase' : deviceData.gun_connector === 2 ? 'CSS Type 2' : deviceData.gun_connector === 3 ? '3 phase socket' : '-'}</span></div>
+                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Gun Connector: <span style={{ fontWeight: 'normal' }}>{deviceData.gun_connector ? deviceData.gun_connector === 1 ? '1 Gun Connector' : `${deviceData.gun_connector} Gun Connector's` : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
