@@ -155,7 +155,7 @@ Widget _buildLoadingIndicator() {
     width: double.infinity,
     height: double.infinity,
     color: Colors.black.withOpacity(0.7), // Transparent black background
-    child: Center(
+    child: const Center(
       child: Icon(
         Icons.bolt, // Use a charging icon like 'bolt' or 'electric_car'
         color: Colors.yellow, // Set the icon color
@@ -260,7 +260,7 @@ Widget _buildLoadingIndicator() {
   Future<void> endChargingSession(String chargerID, int? connectorId) async {
     try {
       final response = await http.post(
-        Uri.parse('http://122.166.210.142:9098/charging/endChargingSession'),
+        Uri.parse('http://122.166.210.142:4444/charging/endChargingSession'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'charger_id': chargerID, 'connector_id': connectorId}),
       );
@@ -286,7 +286,7 @@ Widget _buildLoadingIndicator() {
     // Introduce a 3-second delay before sending the request
     await Future.delayed(const Duration(seconds: 5));
 
-      var url = Uri.parse('http://122.166.210.142:9098/charging/getUpdatedCharingDetails');
+      var url = Uri.parse('http://122.166.210.142:4444/charging/getUpdatedCharingDetails');
       var body = {
         'chargerID': chargerID,
         'user': username,
@@ -361,7 +361,7 @@ Widget _buildLoadingIndicator() {
         //     ],
         //   ),
         // );
-        AlertBanner(
+        const AlertBanner(
           message:'Updation unsuccessful!' ,
           backgroundColor: Colors.red,
         );
@@ -384,7 +384,7 @@ Widget _buildLoadingIndicator() {
       //     ],
       //   ),
       // );
-      AlertBanner(
+      const AlertBanner(
         message:'Failed to update charging details' ,
         backgroundColor: Colors.red,
       );
@@ -486,7 +486,7 @@ Widget _buildLoadingIndicator() {
   Future<void> fetchLastStatus(String chargerID, int? connectorId) async {
     try {
       final response = await http.post(
-        Uri.parse('http://122.166.210.142:9098/charging/FetchLaststatus'),
+        Uri.parse('http://122.166.210.142:4444/charging/FetchLaststatus'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'id': chargerID, 'connector_id': connectorId, 'connector_type': widget.connector_type}),
       );
@@ -815,8 +815,8 @@ void RcdMsg(Map<String, dynamic> parsedMessage) async {
 
   void initializeWebSocket() {
     channel = WebSocketChannel.connect(
-      Uri.parse('ws://122.166.210.142:8566'),
-      // Uri.parse('ws://122.166.210.142:7002'),
+      // Uri.parse('ws://122.166.210.142:8566'),
+      Uri.parse('ws://122.166.210.142:7002'),
     );
 
     channel.stream.listen(
@@ -935,7 +935,7 @@ void toggleBatteryScreen() {
     });
 
       final response = await http.post(
-        Uri.parse('http://122.166.210.142:9098/charging/start'),
+        Uri.parse('http://122.166.210.142:4444/charging/start'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -987,7 +987,7 @@ void handleStopTransaction() async {
     });
 
     final response = await http.post(
-      Uri.parse('http://122.166.210.142:9098/charging/stop'),
+      Uri.parse('http://122.166.210.142:4444/charging/stop'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -1008,10 +1008,10 @@ void handleStopTransaction() async {
   } catch (error) {
     print('Error: $error');
   } finally {
-    setState(() {
-      isLoading = false;
-      _isStopLoading = false;
-    });
+    // setState(() {
+    //   isLoading = false;
+    //   _isStopLoading = false;
+    // });
   }
 }
 
@@ -1050,18 +1050,18 @@ Widget _buildAnimatedTempColorCircle() {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Current t°',
                     style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     // '${_currentTemperature.toInt()} °C' ,
                     '33.5 °C',
-                    style: const TextStyle(color: Colors.white, fontSize: 24),
+                    style: TextStyle(color: Colors.white, fontSize: 24),
                   ),
                 ],
               ),
@@ -2323,27 +2323,27 @@ Widget build(BuildContext context) {
               ),
             ),
             if (TagIDStatus == 'Invalid')
-              AlertBanner(
+              const AlertBanner(
                 message: 'Invalid NFC Card',
                 backgroundColor: Colors.red,
               ),
             if (TagIDStatus == 'blocked')
-              AlertBanner(
+              const AlertBanner(
                 message: 'Your account is blocked',
                 backgroundColor: Colors.red,
               ),
             if (TagIDStatus == 'expired')
-              AlertBanner(
+              const AlertBanner(
                 message: 'Your NFC Card has expired',
                 backgroundColor: Colors.red,
               ),
             if (TagIDStatus == 'Concurrent')
-              AlertBanner(
+              const AlertBanner(
                 message: 'Concurrent transaction in progress',
                 backgroundColor: Colors.red,
               ),
               if (NoResponseFromCharger)
-                AlertBanner(
+                const AlertBanner(
                 message:'No response from the charger. Please try again!' ,
                 backgroundColor: Colors.red,
               ),
@@ -3111,7 +3111,7 @@ class __AnimatedChargingIconState extends State<_AnimatedChargingIcon>
           ),
         );
       },
-      child: Icon(
+      child: const Icon(
         Icons.bolt_sharp, // Charging icon
         color: Colors.green, // Set the icon color
         size: 200, // Adjust the size as needed
