@@ -12,7 +12,7 @@ const ViewUnalloc = ({ userInfo, handleLogout }) => {
         charger_id: '', charger_model: '', charger_type: '', model: '', type: '', gun_connector: '', max_current: '', created_date: '', status: '',
         assigned_association_date: '', assigned_client_date: '', assigned_reseller_date: '', charger_accessibility: '',
         client_commission: '', created_by: '', current_or_active_user: '', max_power: '', modified_by: '', modified_date: '',
-        reseller_commission: '', short_description: '', socket_count: '', vendor: '', wifi_password: '',
+        reseller_commission: '', short_description: '', socket_count: '', vendor: '', wifi_password: '', connector_details: '', wifi_username: '',
     });
 
     useEffect(() => {
@@ -26,8 +26,8 @@ const ViewUnalloc = ({ userInfo, handleLogout }) => {
                 charger_accessibility: charger.charger_accessibility || '', client_commission: charger.client_commission || '',
                 created_by: charger.created_by || '', current_or_active_user: charger.current_or_active_user || '',
                 max_power: charger.max_power || '', modified_by: charger.modified_by || '', modified_date: charger.modified_date || '',
-                reseller_commission: charger.reseller_commission || '', short_description: charger.short_description || '',
-                socket_count: charger.socket_count || '', vendor: charger.vendor || '', wifi_password: charger.wifi_password || '',
+                reseller_commission: charger.reseller_commission || '', short_description: charger.short_description || '', wifi_username: charger.wifi_username || '',
+                socket_count: charger.socket_count || '', vendor: charger.vendor || '', wifi_password: charger.wifi_password || '', connector_details: charger.connector_details || '',
             });
          // Save to localStorage
          localStorage.setItem('userData', JSON.stringify(charger));
@@ -149,7 +149,7 @@ const ViewUnalloc = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Socket Count: <span style={{fontWeight:'normal'}}>{newDevice.socket_count === 1 ? '1 Socket ' : newDevice.socket_count === 2 ? '2 Sockets' : newDevice.socket_count === 3 ? '3 Sockets' : newDevice.socket_count === 4 ? '4 Sockets' : '-'}</span></div>
+                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Socket Count: <span style={{fontWeight:'normal'}}>{newDevice.socket_count ? newDevice.socket_count === 1 ? '1 Socket' : `${newDevice.socket_count} Socket's` : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
@@ -188,11 +188,16 @@ const ViewUnalloc = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Wifi Password: <span style={{fontWeight:'normal'}}>{newDevice.wifi_password ? newDevice.wifi_password : '-'}</span></div>
+                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Wifi Username: <span style={{fontWeight:'normal'}}>{newDevice.wifi_username ? newDevice.wifi_username : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div className="row col-12 col-xl-12 viewDataCss">
+                                                        <div className="col-md-4">
+                                                            <div className="form-group row">
+                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Wifi Password: <span style={{fontWeight:'normal'}}>{newDevice.wifi_password ? newDevice.wifi_password : '-'}</span></div>
+                                                            </div>
+                                                        </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Created By: <span style={{fontWeight:'normal'}}>{newDevice.created_by ? newDevice.created_by : '-'}</span></div>
@@ -203,13 +208,13 @@ const ViewUnalloc = ({ userInfo, handleLogout }) => {
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Created Date: <span style={{fontWeight:'normal'}}>{newDevice.created_date ? formatTimestamp(newDevice.created_date) : '-'}</span></div>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12 viewDataCss">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Modified By: <span style={{fontWeight:'normal'}}>{newDevice.modified_by ? newDevice.modified_by : '-'}</span></div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="row col-12 col-xl-12 viewDataCss">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Modified Date: <span style={{fontWeight:'normal'}}>{newDevice.modified_date ? formatTimestamp(newDevice.modified_date) : '-'}</span></div>
@@ -220,13 +225,13 @@ const ViewUnalloc = ({ userInfo, handleLogout }) => {
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Assigned Association Date: <span style={{fontWeight:'normal'}}>{newDevice.assigned_association_date ? formatTimestamp(newDevice.assigned_association_date) : '-'}</span></div>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <div className="row col-12 col-xl-12 viewDataCss">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Assigned Client Date: <span style={{fontWeight:'normal'}}>{newDevice.assigned_client_date ? formatTimestamp(newDevice.assigned_client_date) : '-'}</span></div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="row col-12 col-xl-12 viewDataCss">
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
                                                                 <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Assigned Reseller Date: <span style={{fontWeight:'normal'}}>{newDevice.assigned_reseller_date ? formatTimestamp(newDevice.assigned_reseller_date) : '-'}</span></div>
@@ -238,6 +243,30 @@ const ViewUnalloc = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                         </div>                                                               
                                                     </div>
+                                                    {/* Connector Details */}
+                                                    {newDevice.connector_details && newDevice.connector_details.length > 0 ? (
+                                                        <div className="row col-12 col-xl-12 viewDataCss">
+                                                            {newDevice.connector_details.map((connector, index) => (
+                                                            <div className="col-md-4" style={{paddingBottom:'15px'}} key={index}>
+                                                                <div className="form-group row">
+                                                                    <div className="col-sm-12" style={{ fontWeight: 'bold' }}>
+                                                                        Connector {index + 1}: <span style={{ fontWeight: 'bold' }}>
+                                                                        Type: <span style={{ fontWeight: 'normal' }}>{connector.connector_type},</span> Type Name: <span style={{ fontWeight: 'normal' }}>{connector.connector_type_name}</span>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="row col-12 col-xl-12 viewDataCss">
+                                                            <div className="col-md-4">
+                                                                <div className="form-group row">
+                                                                    <div className="col-sm-12"><span style={{ fontWeight: 'bold' }}>Connector:</span> No Connector Details Available</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

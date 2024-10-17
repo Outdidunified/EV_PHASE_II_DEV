@@ -12,7 +12,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
         max_current: '', max_power: '', socket_count: '', current_active_user: '', client_commission: '',
         ip: '', lat: '', long: '', landmark: '', short_description: '', charger_accessibility: '',
         unit_price: '', assigned_user: '', wifi_username: '', wifi_password: '', created_by: '', created_date: '',
-        modified_by: '', modified_date: '', status: '', _id: '',
+        modified_by: '', modified_date: '', status: '', _id: '', connector_details: '',
     });
 
     useEffect(() => {
@@ -45,7 +45,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                 created_date: dataItem.created_date || '',
                 modified_by: dataItem.modified_by || '',
                 modified_date: dataItem.modified_date || '',
-                status: dataItem.status || '',
+                status: dataItem.status || '', connector_details: dataItem.connector_details || '',
                 _id: dataItem._id || '',
             });
             // Save to localStorage
@@ -169,7 +169,7 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                         </div>
                                                         <div className="col-md-4">
                                                             <div className="form-group row">
-                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Socket Count: <span style={{fontWeight:'normal'}}>{deviceData.socket_count === 1 ? '1 Socket ' : deviceData.socket_count === 2 ? '2 Sockets' : deviceData.socket_count === 3 ? '3 Sockets' : deviceData.socket_count === 4 ? '4 Sockets' : '-'}</span></div>
+                                                                <div className="col-sm-12" style={{ fontWeight: 'bold' }}>Socket Count: <span style={{fontWeight:'normal'}}>{deviceData.socket_count ? deviceData.socket_count === 1 ? '1 Socket' : `${deviceData.socket_count} Socket's` : '-'}</span></div>
                                                             </div>
                                                         </div>
                                                         <div className="col-md-4">
@@ -275,6 +275,30 @@ const ViewManageDevice = ({ userInfo, handleLogout }) => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    {/* Connector Details */}
+                                                    {deviceData.connector_details && deviceData.connector_details.length > 0 ? (
+                                                        <div className="row col-12 col-xl-12 viewDataCss">
+                                                            {deviceData.connector_details.map((connector, index) => (
+                                                            <div className="col-md-4" style={{paddingBottom:'15px'}} key={index}>
+                                                                <div className="form-group row">
+                                                                    <div className="col-sm-12" style={{ fontWeight: 'bold' }}>
+                                                                        Connector {index + 1}: <span style={{ fontWeight: 'bold' }}>
+                                                                        Type: <span style={{ fontWeight: 'normal' }}>{connector.connector_type},</span> Type Name: <span style={{ fontWeight: 'normal' }}>{connector.connector_type_name}</span>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="row col-12 col-xl-12 viewDataCss">
+                                                            <div className="col-md-4">
+                                                                <div className="form-group row">
+                                                                    <div className="col-sm-12"><span style={{ fontWeight: 'bold' }}>Connector:</span> No Connector Details Available</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
