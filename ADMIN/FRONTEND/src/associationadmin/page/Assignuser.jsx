@@ -12,9 +12,10 @@ const Assignuser = ({ userInfo, handleLogout }) => {
   const [originalUsersToUnassign, setOriginalUsersToUnassign] = useState([]); // Store original users list
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [email_id, setAssEmail] = useState();
-  const [phone_no, setAssPhone] = useState();
+  const [email_id, setAssEmail] = useState('');
+  const [phone_no, setAssPhone] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage2, setErrorMessage2] = useState('');
   const fetchUsersToUnassignCalled = useRef(false);
 
   // fetch user to unassign data
@@ -23,12 +24,14 @@ const Assignuser = ({ userInfo, handleLogout }) => {
       const response = await axios.post('/associationadmin/FetchUsersWithSpecificRolesToUnAssgin', {
         association_id: userInfo.data.association_id,
       });
-      setUsersToUnassign(response.data.data); // assuming response.data.data is an array of users
-      setOriginalUsersToUnassign(response.data.data); // Store the original list
+      const users = response.data.data || []; // Use an empty array if data is undefined
+      setUsersToUnassign(users);
+      setOriginalUsersToUnassign(users); // Store the original list
       setLoading(false);
     } catch (error) {
       setError('Error fetching data. Please try again.');
       console.error(error);
+      setLoading(false); // Ensure loading state is updated in case of error
     }
   }, [userInfo.data.association_id]);
 
@@ -64,18 +67,25 @@ const Assignuser = ({ userInfo, handleLogout }) => {
       });
     }
   };
-  
 
   // Search assign users name
   const handleSearchInputChange = (e) => {
     const inputValue = e.target.value.toUpperCase();
     if (inputValue === '') {
       setUsersToUnassign(originalUsersToUnassign); // Reset to original list if search is cleared
+      setErrorMessage2(''); // Clear any existing error message
     } else {
       const filteredAssignUsers = originalUsersToUnassign.filter((item) =>
-        item.username.toUpperCase().includes(inputValue)
+        item.username?.toUpperCase().includes(inputValue) // Use optional chaining
       );
       setUsersToUnassign(filteredAssignUsers);
+
+      // Set error message if no users are found
+      if (filteredAssignUsers.length === 0) {
+        setErrorMessage2('');
+      } else {
+        setErrorMessage2(''); // Clear error message if users are found
+      }
     }
   };
 
@@ -86,12 +96,10 @@ const Assignuser = ({ userInfo, handleLogout }) => {
     const passwordRegex = /^\d{10}$/;
     if (!phone_no || !passwordRegex.test(phone_no)) {
       setErrorMessage('Phone number must be a 10-digit number.');
-      
-      // Set timeout to clear the error message after 1 minute (5000 milliseconds)
+      // Set timeout to clear the error message after 5 seconds (5000 milliseconds)
       setTimeout(() => {
         setErrorMessage('');
       }, 5000);
-
       return;
     }
 
@@ -114,7 +122,6 @@ const Assignuser = ({ userInfo, handleLogout }) => {
         setAssEmail('');
         setAssPhone('');
       } else {
-        alert();
         Swal.fire({
           title: 'Error!',
           text: 'Unexpected response: ' + response.status,
@@ -124,17 +131,17 @@ const Assignuser = ({ userInfo, handleLogout }) => {
       }
   
     } catch (error) {
-      if(error.response.status === 404){
+      if (error.response && error.response.status === 404) {
         Swal.fire({
           title: 'Error!',
           text: error.response.data.message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
-      }else{
+      } else {
         Swal.fire({
           title: 'Error!',
-          text: 'There was a problem assign the users: ' + error.message,
+          text: 'There was a problem assigning the users: ' + error.message,
           icon: 'error',
           confirmButtonText: 'OK'
         });
@@ -146,6 +153,7 @@ const Assignuser = ({ userInfo, handleLogout }) => {
   const handleViewAssignTagID = (dataItem) => {
     navigate('/associationadmin/AssignTagID', { state: { dataItem } });
   };
+
   return (
     <div className='container-scroller'>
       {/* Header */}
@@ -278,7 +286,7 @@ const Assignuser = ({ userInfo, handleLogout }) => {
                               ))
                             ) : (
                               <tr>
-                                <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>No Assign user's found</td>
+                                <td colSpan="9" style={{ marginTop: '50px', textAlign: 'center' }}>{errorMessage2}No Assign user's found</td>
                               </tr>
                             )
                           )}
