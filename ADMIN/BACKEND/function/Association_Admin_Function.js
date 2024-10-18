@@ -515,9 +515,10 @@ async function FetchAllocatedChargerByClientToAssociation(req) {
 //UpdateDevice 
 async function UpdateDevice(req, res, next) {
     try {
-        const { modified_by, charger_id, charger_accessibility , wifi_username, wifi_password,lat, long, landmark} = req.body;
-        // Validate the input
-        if (!modified_by || !charger_id || !charger_accessibility || !wifi_username || !wifi_password || !lat || !long || !landmark) {
+        const { modified_by, charger_id, charger_accessibility, wifi_username, wifi_password, lat, long, landmark } = req.body;
+
+        // Validate the input for mandatory fields
+        if (!modified_by || !charger_id || !charger_accessibility || !lat || !long || !landmark) {
             return res.status(400).json({ message: 'All the fields are required' });
         }
 
@@ -525,26 +526,34 @@ async function UpdateDevice(req, res, next) {
         const devicesCollection = db.collection("charger_details");
 
         // Check if the charger exists
-        const existingRole = await devicesCollection.findOne({ charger_id: charger_id });
-        if (!existingRole) {
-            return res.status(404).json({ message: 'chargerID not found' });
+        const existingCharger = await devicesCollection.findOne({ charger_id: charger_id });
+        if (!existingCharger) {
+            return res.status(404).json({ message: 'ChargerID not found' });
         }
 
-        // Update existing role
+        // Create an object for the fields to update
+        const updateFields = {
+            charger_accessibility: charger_accessibility,
+            lat: lat,
+            long: long,
+            landmark: landmark,
+            modified_by: modified_by,
+            modified_date: new Date(),
+        };
+
+        // Conditionally add wifi_username and wifi_password only if they are not undefined or null
+        if (wifi_username !== undefined && wifi_username !== null) {
+            updateFields.wifi_username = wifi_username; // This includes empty string as a valid value
+        }
+
+        if (wifi_password !== undefined && wifi_password !== null) {
+            updateFields.wifi_password = wifi_password; // This includes empty string as a valid value
+        }
+
+        // Update the charger details
         const updateResult = await devicesCollection.updateOne(
             { charger_id: charger_id },
-            {
-                $set: {
-                    charger_accessibility: charger_accessibility,
-                    wifi_username: wifi_username,
-                    wifi_password: wifi_password,
-                    lat: lat,
-                    long: long,
-                    landmark: landmark,
-                    modified_by: modified_by,
-                    modified_date: new Date(),
-                }
-            }
+            { $set: updateFields }
         );
 
         if (updateResult.matchedCount === 0) {
@@ -558,6 +567,7 @@ async function UpdateDevice(req, res, next) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
 //DeActivateOrActivate 
 async function DeActivateOrActivateCharger(req, res, next) {
     try {
