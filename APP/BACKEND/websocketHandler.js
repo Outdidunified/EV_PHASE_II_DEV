@@ -443,10 +443,16 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                                 chargingSessionID.set(key, GenerateChargingSessionID);
                             }
 
-                            if ((status === 'SuspendedEV' || status === 'Faulted') && (charging_states.get(key) == true)) {
+                            if ((status === 'SuspendedEV' || status === 'Faulted') && (charging_states.get(key) === true)) {
                                 sessionFlags.set(key, 1);
                                 //StopTimestamp = timestamp;
                                 chargerStopTime.set(key, timestamp);
+                                //charging_states.set(key, false);
+                                startedChargingSet.delete(key);
+                                deleteMeterValues(key);
+                            }
+
+                            if ((status === 'Finishing') && (charging_states.get(key) === true)) {
                                 charging_states.set(key, false);
                                 startedChargingSet.delete(key);
                                 deleteMeterValues(key);
@@ -1036,7 +1042,7 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             sessionFlags.set(key, 1);
                             // StopTimestamp = timestamp;
                             chargerStopTime.set(key, timestamp);
-                            charging_states.set(key, false);
+                            //charging_states.set(key, false);
                             startedChargingSet.delete(key);
                         }
                     
@@ -1052,6 +1058,7 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             ({ unit, sessionPrice } = await calculateDifference(meterValues.firstMeterValues, meterValues.lastMeterValues, uniqueIdentifier));
                             console.log(`Energy consumed during charging session: ${unit} Unit's - Price: ${sessionPrice}`);
                             deleteMeterValues(key);
+                            chargingSessionID.delete(key);
                         } else {
                             console.log("StartMeterValues or LastMeterValues is not available.");
                         }
@@ -1071,9 +1078,8 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             console.log(`ChargerID ${uniqueIdentifier}: User is ${user}, so cant update the sesison price and commission.`);
                         }
                 
-                        if (charging_states.get(key) == false) {
+                        if (charging_states.get(key) === false) {
                             const result = await updateCurrentOrActiveUserToNull(uniqueIdentifier, connectorId);
-                            chargingSessionID.delete(key);
                             if (result === true) {
                                 console.log(`ChargerID ${uniqueIdentifier} ConnectorID ${connectorId} Stop - End charging session is updated successfully.`);
                             } else {
