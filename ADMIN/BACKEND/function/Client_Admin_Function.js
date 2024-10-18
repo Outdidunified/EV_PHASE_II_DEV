@@ -490,15 +490,10 @@ async function FetchAllocatedCharger(req) {
         const { client_id } = req.body;
         const db = await database.connectToDatabase();
         const devicesCollection = db.collection("charger_details");
-        const financeCollection = db.collection("finance_details");
+        const configCollection = db.collection("socket_gun_config");
+        //const financeCollection = db.collection("finance_details");
 
-        // Fetch the eb_charges from finance_details
-        // const financeDetails = await financeCollection.findOne();
-        // if (!financeDetails) {
-        //     throw new Error('No finance details found');
-        // }
-
-        // Aggregation to fetch chargers with client names and append unit_price
+        // Aggregation to fetch chargers with association details and append unit_price
         const chargersWithClients = await devicesCollection.aggregate([
             {
                 $match: { assigned_client_id: { $ne: null }, assigned_client_id: client_id }
@@ -517,17 +512,56 @@ async function FetchAllocatedCharger(req) {
             {
                 $addFields: {
                     association_name: '$associationDetails.association_name',
-                    //unit_price: financeDetails.eb_charges // Append unit_price to each charger
+                    //unit_price: financeDetails.eb_charges // Append unit_price to each charger (optional)
                 }
             },
             {
                 $project: {
-                    clientDetails: 0 // Exclude the full clientDetails object
+                    associationDetails: 0 // Exclude the full associationDetails object
                 }
             }
         ]).toArray();
 
-        return chargersWithClients; // Only return data, don't send response
+        const results = [];
+
+        for (let charger of chargersWithClients) {
+            const chargerID = charger.charger_id;
+
+            // Fetch corresponding socket/gun configuration
+            const config = await configCollection.findOne({ charger_id: chargerID });
+
+            let connectorDetails = []; // Initialize as an array
+
+            if (config) {
+                // Loop over connector configurations dynamically
+                let connectorIndex = 1;
+                while (config[`connector_${connectorIndex}_type`] !== undefined) {
+                    // Map connector types: 1 -> "Socket", 2 -> "Gun"
+                    let connectorTypeValue;
+                    if (config[`connector_${connectorIndex}_type`] === 1) {
+                        connectorTypeValue = "Socket";
+                    } else if (config[`connector_${connectorIndex}_type`] === 2) {
+                        connectorTypeValue = "Gun";
+                    }
+
+                    // Push connector details to the array
+                    connectorDetails.push({
+                        connector_type: connectorTypeValue || config[`connector_${connectorIndex}_type`],
+                        connector_type_name: config[`connector_${connectorIndex}_type_name`]
+                    });
+
+                    connectorIndex++; // Move to the next connector
+                }
+            }
+
+            // If there are no connector details, the charger will have an empty connector_details array
+            results.push({
+                ...charger,
+                connector_details: connectorDetails.length > 0 ? connectorDetails : null
+            });
+        }
+
+        return results; // Only return data, don't send response
     } catch (error) {
         console.error(`Error fetching chargers: ${error}`);
         throw new Error('Failed to fetch chargers');
@@ -540,8 +574,9 @@ async function FetchUnAllocatedCharger(req) {
         const { client_id } = req.body;
         const db = await database.connectToDatabase();
         const devicesCollection = db.collection("charger_details");
+        const configCollection = db.collection("socket_gun_config");
 
-        // Aggregation to fetch unallocated chargers with association names (even though there are none)
+        // Aggregation to fetch unallocated chargers with no association assigned
         const chargersWithoutAssociations = await devicesCollection.aggregate([
             {
                 $match: { assigned_association_id: null, assigned_client_id: client_id } // Find chargers with no assigned associations
@@ -556,7 +591,7 @@ async function FetchUnAllocatedCharger(req) {
             },
             {
                 $addFields: {
-                    association_name: { $arrayElemAt: ['$associationDetails.association_name', 0] } // Include the association name, if any (which won't be in this case)
+                    association_name: { $arrayElemAt: ['$associationDetails.association_name', 0] } // Include the association name, if any (but won't exist here)
                 }
             },
             {
@@ -566,7 +601,46 @@ async function FetchUnAllocatedCharger(req) {
             }
         ]).toArray();
 
-        return chargersWithoutAssociations; // Only return data, don't send response
+        const results = [];
+
+        for (let charger of chargersWithoutAssociations) {
+            const chargerID = charger.charger_id;
+
+            // Fetch corresponding socket/gun configuration
+            const config = await configCollection.findOne({ charger_id: chargerID });
+
+            let connectorDetails = []; // Initialize as an array
+
+            if (config) {
+                // Loop over connector configurations dynamically
+                let connectorIndex = 1;
+                while (config[`connector_${connectorIndex}_type`] !== undefined) {
+                    // Map connector types: 1 -> "Socket", 2 -> "Gun"
+                    let connectorTypeValue;
+                    if (config[`connector_${connectorIndex}_type`] === 1) {
+                        connectorTypeValue = "Socket";
+                    } else if (config[`connector_${connectorIndex}_type`] === 2) {
+                        connectorTypeValue = "Gun";
+                    }
+
+                    // Push connector details to the array
+                    connectorDetails.push({
+                        connector_type: connectorTypeValue || config[`connector_${connectorIndex}_type`],
+                        connector_type_name: config[`connector_${connectorIndex}_type_name`]
+                    });
+
+                    connectorIndex++; // Move to the next connector
+                }
+            }
+
+            // If there are no connector details, the charger will have an empty connector_details array
+            results.push({
+                ...charger,
+                connector_details: connectorDetails.length > 0 ? connectorDetails : null
+            });
+        }
+
+        return results; // Only return data, don't send response
     } catch (error) {
         console.error(`Error fetching chargers: ${error}`);
         throw new Error('Failed to fetch chargers'); // Throw error, handle in route

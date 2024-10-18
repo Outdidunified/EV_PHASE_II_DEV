@@ -413,26 +413,25 @@ async function FetchAllocatedChargerByClientToAssociation(req) {
 
         const db = await database.connectToDatabase();
         const devicesCollection = db.collection("charger_details");
+        const configCollection = db.collection("socket_gun_config"); // Collection for socket/gun configuration
         const financeCollection = db.collection("finance_details");
 
         // Fetch chargers assigned to the specified association_id
         const chargers = await devicesCollection.find({ assigned_association_id: association_id }).toArray();
 
         if (!chargers.length) {
-            //throw new Error('No chargers found for the specified association');
-            const message = "No Charger's were found";
+            const message = "No chargers were found";
             const status = 404;
-            return {message, status};
+            return { message, status };
         }
 
         // Fetch all finance details
         const financeDetailsList = await financeCollection.find().toArray();
 
         if (!financeDetailsList.length) {
-            //throw new Error('No finance details found');
-            const message = "No finance's were found";
+            const message = "No finances were found";
             const status = 404;
-            return {message, status};
+            return { message, status };
         }
 
         // Create a map of finance details for quick lookup by finance_id
@@ -441,8 +440,39 @@ async function FetchAllocatedChargerByClientToAssociation(req) {
             return map;
         }, {});
 
-        // Calculate and append unit_price to each charger
-        const chargersWithUnitPrice = chargers.map(charger => {
+        const results = [];
+
+        for (let charger of chargers) {
+            const chargerID = charger.charger_id;
+
+            // Fetch corresponding socket/gun configuration
+            const config = await configCollection.findOne({ charger_id: chargerID });
+
+            let connectorDetails = []; // Initialize as an array
+
+            if (config) {
+                // Loop over connector configurations dynamically
+                let connectorIndex = 1;
+                while (config[`connector_${connectorIndex}_type`] !== undefined) {
+                    // Map connector types: 1 -> "Socket", 2 -> "Gun"
+                    let connectorTypeValue;
+                    if (config[`connector_${connectorIndex}_type`] === 1) {
+                        connectorTypeValue = "Socket";
+                    } else if (config[`connector_${connectorIndex}_type`] === 2) {
+                        connectorTypeValue = "Gun";
+                    }
+
+                    // Push connector details to the array
+                    connectorDetails.push({
+                        connector_type: connectorTypeValue || config[`connector_${connectorIndex}_type`],
+                        connector_type_name: config[`connector_${connectorIndex}_type_name`]
+                    });
+
+                    connectorIndex++; // Move to the next connector
+                }
+            }
+
+            // Fetch the finance details for this charger
             const financeDetails = financeDetailsMap[charger.finance_id];
 
             if (financeDetails) {
@@ -459,19 +489,21 @@ async function FetchAllocatedChargerByClientToAssociation(req) {
                 const totalPrice = pricePerUnit + (pricePerUnit * totalPercentage / 100);
                 const total_price = totalPrice.toFixed(2); // Format to 2 decimal places
 
-                return {
+                results.push({
                     ...charger,
-                    unit_price: total_price
-                };
+                    unit_price: total_price,
+                    connector_details: connectorDetails.length > 0 ? connectorDetails : null // Add connector details
+                });
             } else {
-                return {
+                results.push({
                     ...charger,
-                    unit_price: null // If no finance details found, set unit_price to null
-                };
+                    unit_price: null, // If no finance details found, set unit_price to null
+                    connector_details: connectorDetails.length > 0 ? connectorDetails : null // Add connector details
+                });
             }
-        });
+        }
 
-        return chargersWithUnitPrice; // Return the chargers with the unit price included
+        return results; // Return the chargers with the unit price and connector details included
 
     } catch (error) {
         console.error(`Error fetching chargers: ${error.message}`);
