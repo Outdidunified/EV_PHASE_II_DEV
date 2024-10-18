@@ -636,7 +636,7 @@ async function checkAuthorization(charger_id, idTag) {
         for (let i = 1; i <= totalConnectors; i++) {
             projection[`current_or_active_user_for_connector_${i}`] = 1;
             projection[`tag_id_for_connector_${i}`] = 1;
-            // projection[`tag_id_for_connector_${i}_in_use`] = 1;
+            projection[`tag_id_for_connector_${i}_in_use`] = 1;
         }
         
         // Fetch charger details with dynamically generated projection
