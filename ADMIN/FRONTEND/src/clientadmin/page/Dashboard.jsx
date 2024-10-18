@@ -89,7 +89,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
     
     // Chart data 
     useEffect(() => {
-        const xValues = ['Total', 'Online', 'Offline'];
+        const xValues = ['Total', 'Active', 'DeActive'];
         const yValues = [
             data.length,
             onlineChargers.length,
@@ -239,7 +239,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                                     <td><h5 className="font-weight-bold mb-0">{data.length}</h5></td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td className="text-muted"><h5>Online</h5>Currently Charging</td>
+                                                                                    <td className="text-muted"><h5>Active</h5>On live</td>
                                                                                     <td className="w-100 px-0">
                                                                                         <div className="progress progress-md mx-4">
                                                                                             <div className="progress-bar bg-success" role="progressbar"  style={{width:`${onlinePercentage}%`}}></div>
@@ -248,7 +248,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                                     <td><h5 className="font-weight-bold mb-0">{onlineChargers.length}</h5></td>
                                                                                 </tr>
                                                                                 <tr>
-                                                                                    <td className="text-muted"><h5>Offline</h5>Not live</td>
+                                                                                    <td className="text-muted"><h5>DeActive</h5>Not live</td>
                                                                                     <td className="w-100 px-0">
                                                                                         <div className="progress progress-md mx-4">
                                                                                             <div className="progress-bar bg-danger" role="progressbar"  style={{width:`${offlinePercentage}%`}}></div>
@@ -287,14 +287,14 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                                                             <div className="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
                                                                                 <div className="d-flex align-items-center">
                                                                                     <div className="mr-3" style={{width:'20px', height:'20px', borderRadius:'50%', backgroundColor:' #57B657'}}></div>
-                                                                                    <p className="mb-0">Online </p>
+                                                                                    <p className="mb-0">Active </p>
                                                                                 </div>
                                                                                         <p className="mb-0">{onlineChargers.length}</p>
                                                                             </div>
                                                                             <div className="d-flex justify-content-between mx-4 mx-xl-5 mt-3">
                                                                                 <div className="d-flex align-items-center">
                                                                                     <div className="mr-3" style={{width:'20px', height:'20px', borderRadius:'50%', backgroundColor:' #FF4747'}}></div>
-                                                                                    <p className="mb-0">Offline</p>
+                                                                                    <p className="mb-0">DeActive</p>
                                                                                 </div>
                                                                                 <p className="mb-0">{offlineChargers.length}</p>
                                                                             </div>

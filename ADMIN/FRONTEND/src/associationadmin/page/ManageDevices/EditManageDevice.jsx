@@ -189,7 +189,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-12 col-form-label labelInput">Wifi Username</label>
                                                                     <div className="col-sm-12">
-                                                                        <input type="text" className="form-control" value={wifiUsername} maxLength={25} onChange={(e) => setWifiUsername(e.target.value)} required />
+                                                                        <input type="text" className="form-control" value={wifiUsername} maxLength={25} onChange={(e) => setWifiUsername(e.target.value)} />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -197,7 +197,7 @@ const EditManageDevice = ({ userInfo, handleLogout }) => {
                                                                 <div className="form-group row">
                                                                     <label className="col-sm-12 col-form-label labelInput">Wifi Password</label>
                                                                     <div className="col-sm-12">
-                                                                        <input type="text" className="form-control" value={wifiPassword} maxLength={15} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/\s/g, ''); setWifiPassword(sanitizedValue); }} required />
+                                                                        <input type="text" className="form-control" value={wifiPassword} maxLength={15} onChange={(e) => {const value = e.target.value; const sanitizedValue = value.replace(/\s/g, ''); setWifiPassword(sanitizedValue); }} />
                                                                     </div>
                                                                 </div>
                                                             </div>
