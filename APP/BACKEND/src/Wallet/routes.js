@@ -107,7 +107,7 @@ router.all('/pay-return-url', async function (req, res) {
 });
 router.post('/createOrder', async (req, res) => {
     const options = {
-        amount: req.body.amount * 100, // amount in the smallest currency unit
+        amount: Math.round(req.body.amount * 100), // amount in the smallest currency unit
         currency: req.body.currency,
         receipt: 'receipt_order_01'
     };
