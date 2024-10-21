@@ -1058,7 +1058,6 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             ({ unit, sessionPrice } = await calculateDifference(meterValues.firstMeterValues, meterValues.lastMeterValues, uniqueIdentifier));
                             console.log(`Energy consumed during charging session: ${unit} Unit's - Price: ${sessionPrice}`);
                             deleteMeterValues(key);
-                            chargingSessionID.delete(key);
                         } else {
                             console.log("StartMeterValues or LastMeterValues is not available.");
                         }
@@ -1080,6 +1079,7 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                 
                         if (charging_states.get(key) === false) {
                             const result = await updateCurrentOrActiveUserToNull(uniqueIdentifier, connectorId);
+                            chargingSessionID.delete(key);
                             if (result === true) {
                                 console.log(`ChargerID ${uniqueIdentifier} ConnectorID ${connectorId} Stop - End charging session is updated successfully.`);
                             } else {
