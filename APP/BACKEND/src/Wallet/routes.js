@@ -107,21 +107,22 @@ router.all('/pay-return-url', async function (req, res) {
 });
 router.post('/createOrder', async (req, res) => {
     try {
-    const db = await database.connectToDatabase();
-    const usersCollection = db.collection("users");
-    const getUserDetails = await usersCollection.findOne({ user_id: user_id, status: true });
-    
-    if (!getUserDetails) {
-        return res.status(404).json({ message: 'Your account has been deactivated. Please contact the admin.' });
-    }
+        const { userId } = req.body;
+        const db = await database.connectToDatabase();
+        const usersCollection = db.collection("users");
+        const getUserDetails = await usersCollection.findOne({ user_id: userId, status: true });
+        
+        if (!getUserDetails) {
+            return res.status(404).json({ message: 'Your account has been deactivated. Please contact the admin.' });
+        }
 
-    const options = {
-        amount: Math.round(req.body.amount * 100), // amount in the smallest currency unit
-        currency: req.body.currency,
-    };
+        const options = {
+            amount: Math.round(req.body.amount * 100), // amount in the smallest currency unit
+            currency: req.body.currency,
+        };
 
-    const response = await razorpay.orders.create(options);
-    res.json(response);
+        const response = await razorpay.orders.create(options);
+        res.json(response);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

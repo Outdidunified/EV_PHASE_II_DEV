@@ -51,9 +51,9 @@ async function UpdateUserProfile(req, res, next) {
         const usersCollection = db.collection("users");
 
         // Check if the user exists
-        const existingUser = await usersCollection.findOne({ user_id: user_id });
+        const existingUser = await usersCollection.findOne({ user_id: user_id, status: true });
         if (!existingUser) {
-            return res.status(404).json({ error_message: 'User not found' });
+            return res.status(404).json({ error_message: 'Your account has been deactivated. Please contact the admin.' });
         }
 
         if (phone_no.toString().length !== 10) {
