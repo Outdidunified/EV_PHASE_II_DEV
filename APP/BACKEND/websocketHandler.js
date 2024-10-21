@@ -842,8 +842,10 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                             if (!meterValues.firstMeterValues && !meterValues.connectorId) {
                                 meterValues.connectorId = connectorId;
                                 meterValues.firstMeterValues = await captureMetervalues(Identifier, requestData, uniqueIdentifier, clientIpAddress, UniqueChargingSessionId, connectorId);
+                                meterValues.lastMeterValues = meterValues.firstMeterValues;
                                 console.log(`First MeterValues for ${uniqueIdentifier} for Connector ${connectorId}: ${meterValues.firstMeterValues}`);
-                            
+                                console.log(`Last MeterValues for ${uniqueIdentifier} for Connector ${connectorId}: ${meterValues.lastMeterValues}`);
+
                                 await processMeterValues(meterValues.firstMeterValues, meterValues.lastMeterValues, autostopSettings, uniqueIdentifier, connectorId);
                             } else {
                                 meterValues.lastMeterValues = await captureMetervalues(Identifier, requestData, uniqueIdentifier, clientIpAddress, UniqueChargingSessionId, connectorId);
