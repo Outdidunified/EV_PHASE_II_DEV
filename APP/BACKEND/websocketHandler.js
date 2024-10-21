@@ -449,13 +449,13 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                                 chargerStopTime.set(key, timestamp);
                                 //charging_states.set(key, false);
                                 startedChargingSet.delete(key);
-                                deleteMeterValues(key);
+                                //deleteMeterValues(key);
                             }
 
                             if ((status === 'Finishing') && (charging_states.get(key) === true)) {
                                 charging_states.set(key, false);
                                 startedChargingSet.delete(key);
-                                deleteMeterValues(key);
+                                //deleteMeterValues(key);
                             }
                 
                         } else {
