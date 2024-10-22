@@ -138,6 +138,7 @@ async function endChargingSession(req, res) {
 
         if (chargerStatus.charger_status === 'Finishing') {
             const connectorField = `current_or_active_user_for_connector_${connector_id}`;
+            const chargerDetails = await chargerDetailsCollection.findOne({ charger_id });
             let result;
 
             if (chargerDetails[connectorField] === null) {
