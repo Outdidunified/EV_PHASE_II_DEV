@@ -27,7 +27,7 @@ const OcppConfig = () => {
     // Get the action payload
     const getActionPayload = async () => {
         try {
-            const response = await axios.get('http://192.168.1.32:4444/OcppConfig/GetAction');
+            const response = await axios.get('http://122.166.210.142:4444/OcppConfig/GetAction');
             // console.log("Data", response.data);
             // setCommandsLibrary(response.data);
             const sortedData = response.data.sort((a, b) => a.action.localeCompare(b.action));
@@ -82,7 +82,7 @@ const OcppConfig = () => {
                     Swal.showLoading();
                     
                     try {
-                        const response = await axios.get(`http://192.168.1.32:4444/OcppConfig/SendOCPPRequest?id=${chargerId}&req=${encodeURIComponent(JSON.stringify(payload))}&actionBtn=${selectedCommand}`);
+                        const response = await axios.get(`http://122.166.210.142:4444/OcppConfig/SendOCPPRequest?id=${chargerId}&req=${encodeURIComponent(JSON.stringify(payload))}&actionBtn=${selectedCommand}`);
                         const responseData = response.data;
 
                         // Once the response is received, set the data
