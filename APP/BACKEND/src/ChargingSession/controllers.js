@@ -137,7 +137,7 @@ async function endChargingSession(req, res) {
         }
 
         // Check if the status is one of the acceptable statuses
-        if (['Available', 'Faulted', 'Finishing', 'Unavailable'].includes(chargerStatus.charger_status)) {
+        if (['Available', 'Faulted', 'Unavailable'].includes(chargerStatus.charger_status)) {
             const connectorField = `current_or_active_user_for_connector_${connector_id}`;
 
             // Check the current value of the connector field
