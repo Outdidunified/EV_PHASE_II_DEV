@@ -154,7 +154,7 @@ const Dashboard = ({ userInfo, handleLogout }) => {
                                 <div className="row">
                                     <div className="col-12 col-xl-8 mb-4 mb-xl-0">
                                         <h3 className="font-weight-bold">Welcome to <span style={{color:'#4B49AC'}}>{userInfo.data.email_id}</span>,</h3>
-                                        <h4 className="font-weight-bold">Associationadmin Admin Dashboard</h4>
+                                        <h4 className="font-weight-bold">Association Admin Dashboard</h4>
                                     </div>
                                 </div>
                             </div>
