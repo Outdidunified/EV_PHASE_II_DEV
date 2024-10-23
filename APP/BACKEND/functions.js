@@ -735,9 +735,9 @@ async function calculateDifference(startValues, lastValues,uniqueIdentifier) {
     const startEnergy = startValues || 0;
     const lastEnergy = lastValues || 0;
     console.log(startEnergy, lastEnergy);
-    const differ = lastEnergy - startEnergy;
+    const differ = parseFloat(lastEnergy - startEnergy);
     // let calculatedUnit = parseFloat(differ / 1000).toFixed(3);
-    let calculatedUnit = differ;
+    let calculatedUnit = differ.toFixed(3);
     let unit;
     if (calculatedUnit === null || isNaN(parseFloat(calculatedUnit))) {
         unit = 0;
