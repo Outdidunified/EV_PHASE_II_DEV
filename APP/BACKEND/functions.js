@@ -1007,6 +1007,12 @@ async function updateWallet(collection, id, amount, type) {
         const currentWallet = parseFloat(getWallet[walletField]) || 0;
         const updatedWallet = parseFloat((currentWallet + numericAmount).toFixed(3));
 
+        // Check to ensure the wallet doesn't go negative
+        if (updatedWallet < 0) {
+            console.log(`Cannot update ${type} wallet for ID: ${id}. The resulting balance would be negative.`);
+            return false;
+        }
+
         // Update the wallet with the new value
         const updateResult = await collection.updateOne(
             { [`${type}_id`]: id },
