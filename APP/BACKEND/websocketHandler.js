@@ -443,7 +443,7 @@ const handleWebSocketConnection = (WebSocket, wss, ClientWss, wsConnections, Cli
                                 chargingSessionID.set(key, GenerateChargingSessionID);
                             }
 
-                            if ((status === 'SuspendedEV' || status === 'Faulted') && (charging_states.get(key) === true)) {
+                            if ((status === 'SuspendedEV' || status === 'Faulted' || status === 'Unavailable') && (charging_states.get(key) === true)) {
                                 sessionFlags.set(key, 1);
                                 //StopTimestamp = timestamp;
                                 chargerStopTime.set(key, timestamp);
